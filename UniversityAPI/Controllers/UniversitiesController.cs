@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using UniversityAPI.DataModel;
-using UniversityAPI.Helpers;
-using UniversityAPI.Helpers.Filters;
-using UniversityAPI.Services;
+using UniversityAPI.Framework.Model;
+using UniversityAPI.Service;
+using UniversityAPI.Utility;
 
 namespace UniversityAPI.Controllers
 {

@@ -6,6 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
+		<SonarQubeTestProject>False</SonarQubeTestProject>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -19,11 +20,16 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.0" />
-		<PackageReference Include="TinyMapper" Version="3.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="Migrations\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\UniversityAPI.Framework\UniversityAPI.Framework.csproj" />
+	  <ProjectReference Include="..\UniversityAPI.Service\UniversityAPI.Service.csproj" />
+	  <ProjectReference Include="..\UniversityAPI.Utility\UniversityAPI.Utility.csproj" />
 	</ItemGroup>
 
 </Project>

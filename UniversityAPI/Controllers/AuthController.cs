@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using UniversityAPI.DataModel;
-using UniversityAPI.Services;
+using UniversityAPI.Framework;
+using UniversityAPI.Framework.Model;
+using UniversityAPI.Service;
 
 namespace UniversityAPI.Controllers
 {
@@ -61,5 +62,5 @@ namespace UniversityAPI.Controllers
                 Token = token
             };
         }
-    }    
+    }
 }

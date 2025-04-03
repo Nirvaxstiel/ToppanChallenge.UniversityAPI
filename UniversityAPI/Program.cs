@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
-using UniversityAPI.Data;
-using UniversityAPI.DataModel;
-using UniversityAPI.Services;
+using UniversityAPI.Framework;
+using UniversityAPI.Framework.Model;
+using UniversityAPI.Service;
+using UniversityAPI.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +16,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly("UniversityAPI"));
+});
 
 builder.Services.AddIdentity<UserDM, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -38,16 +42,15 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
-        ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha512, SecurityAlgorithms.HmacSha512Signature }
+        ValidAlgorithms = [SecurityAlgorithms.HmacSha512, SecurityAlgorithms.HmacSha512Signature]
     };
 });
 
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IUniversityService, UniversityService>();
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddServiceLayer(builder.Configuration);
+builder.Services.AddUtilityLayer(builder.Configuration);
 
-builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
+//builder.Services.AddAutoMapper(typeof(Program));
+//builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -115,6 +118,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+// Add this before your controllers/middleware pipeline
 
 using (var scope = app.Services.CreateScope())
 {
