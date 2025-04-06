@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using UniversityAPI.Framework.Database;
 
 namespace UniversityAPI.Framework.Model
 {
     public class UserDM : IdentityUser
-    {        
+    {
         public virtual ICollection<UserBookmarkDM> BookmarkedUniversities { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;

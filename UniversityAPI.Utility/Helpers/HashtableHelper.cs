@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace System.Collections
+﻿namespace System.Collections
 {
     public class HashtableHelper
     {
@@ -150,7 +147,7 @@ namespace System.Collections
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class HashItem<T>
@@ -160,24 +157,24 @@ namespace System.Collections
         public int Count => this.Items.Count;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public bool IsList { get; private set; }
 
         public bool HasValue => ValueHelper.IsNullOrEmpty(this.Items) == false;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public T First { get; private set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public List<T> Items { get; private set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="item"></param>
         public HashItem(string key, T item)
@@ -193,7 +190,7 @@ namespace System.Collections
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="item"></param>
         public void Add(T item)

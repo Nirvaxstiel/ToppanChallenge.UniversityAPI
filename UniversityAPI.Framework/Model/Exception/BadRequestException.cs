@@ -1,8 +1,10 @@
-﻿namespace UniversityAPI.Framework.Model
+﻿using Microsoft.AspNetCore.Http;
+
+namespace UniversityAPI.Framework.Model
 {
     public class BadRequestException : ApiException
     {
         public BadRequestException(string message, string? errorCode = null)
-            : base(message, 400, errorCode) { }
+            : base(message, StatusCodes.Status400BadRequest, errorCode) { }
     }
 }

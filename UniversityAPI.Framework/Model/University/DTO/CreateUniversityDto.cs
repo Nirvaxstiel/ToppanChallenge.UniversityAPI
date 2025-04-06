@@ -6,10 +6,10 @@ namespace UniversityAPI.Framework.Model
     {
         public Guid Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "University name is required")]
         public string Name { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Country is required")]
         public string Country { get; set; }
 
         [Url]

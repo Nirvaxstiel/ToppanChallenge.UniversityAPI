@@ -75,16 +75,6 @@ namespace UniversityAPI.Service
 
         public async Task<CreateUniversityDto> CreateUniversityAsync(CreateUniversityDto universityDto, Guid createdBy)
         {
-            if (string.IsNullOrWhiteSpace(universityDto.Name))
-            {
-                throw new BadRequestException("University name is required");
-            }
-
-            if (string.IsNullOrWhiteSpace(universityDto.Country))
-            {
-                throw new BadRequestException("Country is required");
-            }
-
             var existingUniversity = await _context.Universities
                 .FirstOrDefaultAsync(u => u.Name == universityDto.Name && u.Country == universityDto.Country);
             if (existingUniversity != null)
@@ -180,7 +170,7 @@ namespace UniversityAPI.Service
                 bookmark.UpdatedBy = userId;
                 bookmark.IsActive = true;
             }
-                
+
             await _context.SaveChangesAsync();
             return MapHelper.Map<UserBookmarkDM, UserBookmarkDto>(bookmark);
         }

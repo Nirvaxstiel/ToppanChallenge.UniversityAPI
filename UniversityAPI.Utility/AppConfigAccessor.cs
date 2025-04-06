@@ -12,6 +12,7 @@ namespace UniversityAPI.Utility
         }
 
         public string GetValue(string key) => _configuration[key];
+
         public IConfigurationSection GetSection(string key) => _configuration.GetSection(key);
     }
 }

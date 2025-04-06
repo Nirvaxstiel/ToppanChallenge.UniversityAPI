@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using System.Text.Json;
 using UniversityAPI.Framework.Model;
 
 namespace UniversityAPI.Framework

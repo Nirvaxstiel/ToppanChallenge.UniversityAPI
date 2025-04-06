@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
-using UniversityAPI.Framework.Database;
 using UniversityAPI.Framework.Model;
 
 namespace UniversityAPI.Framework
@@ -22,7 +19,6 @@ namespace UniversityAPI.Framework
         {
             base.OnModelCreating(builder);
 
-            // Configure your UserDM table name if needed
             builder.Entity<UserDM>().ToTable("Users");
 
             builder.Entity<UserDM>(b =>
@@ -36,7 +32,7 @@ namespace UniversityAPI.Framework
             });
 
             builder.Entity<UserBookmarkDM>()
-                .HasQueryFilter(item=> item.IsActive)
+                .HasQueryFilter(item => item.IsActive)
                 .HasKey(ub => new { ub.UserId, ub.UniversityId });
 
             builder.Entity<UniversityDM>()

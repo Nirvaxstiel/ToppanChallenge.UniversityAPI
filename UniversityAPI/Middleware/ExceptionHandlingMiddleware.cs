@@ -34,14 +34,18 @@ namespace UniversityAPI.Middleware
 
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            var statusCode = 500;
+            var statusCode = StatusCodes.Status500InternalServerError;
             var errorCode = "UNKNOWN_ERROR";
+            var includeDetails = false;
 
             if (exception is ApiException apiEx)
             {
                 statusCode = apiEx.StatusCode;
                 errorCode = apiEx.ErrorCode;
             }
+            //#if DEBUG
+            //includeDetails = true;
+            //#endif
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;
@@ -51,7 +55,7 @@ namespace UniversityAPI.Middleware
                 Status = statusCode,
                 ErrorCode = errorCode,
                 Message = exception.Message,
-                Details = statusCode == 0 ? exception.ToString() : null
+                Details = includeDetails ? exception.ToString() : null
             };
 
             return context.Response.WriteAsync(JsonSerializer.Serialize(response));

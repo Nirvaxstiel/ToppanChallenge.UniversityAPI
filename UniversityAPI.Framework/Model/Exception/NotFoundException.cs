@@ -1,8 +1,10 @@
-﻿namespace UniversityAPI.Framework.Model
+﻿using Microsoft.AspNetCore.Http;
+
+namespace UniversityAPI.Framework.Model
 {
     public class NotFoundException : ApiException
     {
         public NotFoundException(string message, string? errorCode = null)
-            : base(message, 404, errorCode) { }
+            : base(message, StatusCodes.Status404NotFound, errorCode) { }
     }
 }

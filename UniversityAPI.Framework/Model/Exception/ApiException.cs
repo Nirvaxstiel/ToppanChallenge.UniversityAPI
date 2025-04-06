@@ -5,7 +5,7 @@
         public int StatusCode { get; }
         public string? ErrorCode { get; }
 
-        public ApiException(string message, int statusCode = 500, string? errorCode = null)
+        public ApiException(string message, int statusCode, string? errorCode = null)
             : base(message)
         {
             StatusCode = statusCode;

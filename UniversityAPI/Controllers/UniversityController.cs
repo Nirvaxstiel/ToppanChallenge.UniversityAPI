@@ -23,15 +23,13 @@ namespace UniversityAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<PagedResult<UniversityDto>>> GetUniversities([FromQuery] UniversityFilter filter, [FromQuery] PaginationParams pagination)
         {
-            var userId = _currentUserService.UserId;
-            var result = await _universityService.GetUniversitiesAsync(userId, filter, pagination);
+            var result = await _universityService.GetUniversitiesAsync(_currentUserService.UserId, filter, pagination);
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<UniversityDto>> GetUniversity(Guid id)
         {
-            var userId = _currentUserService.UserId;
             var result = await _universityService.GetUniversityByIdAsync(id);
             if (result == null) return NotFound();
             return Ok(result);
@@ -41,8 +39,7 @@ namespace UniversityAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CreateUniversityDto>> CreateUniversity(CreateUniversityDto createUniversityDto)
         {
-            var userId = _currentUserService.UserId;
-            var result = await _universityService.CreateUniversityAsync(createUniversityDto, userId);
+            var result = await _universityService.CreateUniversityAsync(createUniversityDto, _currentUserService.UserId);
             if (result == null)
             {
                 return NotFound();
@@ -54,38 +51,33 @@ namespace UniversityAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUniversity(Guid id, UpdateUniversityDto updateUniversityDto)
         {
-            var userId = _currentUserService.UserId;
-            var result = await _universityService.UpdateUniversityAsync(id, updateUniversityDto, userId);
+            var result = await _universityService.UpdateUniversityAsync(id, updateUniversityDto, _currentUserService.UserId);
             if (result == null)
             {
                 return NotFound();
             }
             return NoContent();
-            //return Ok(result);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUniversity(Guid id)
         {
-            var userId = _currentUserService.UserId;
-            await _universityService.DeleteUniversityAsync(id, userId);
+            await _universityService.DeleteUniversityAsync(id, _currentUserService.UserId);
             return NoContent();
         }
 
         [HttpPost("bookmark/{id}")]
         public async Task<IActionResult> BookmarkUniversity(Guid id)
         {
-            var userId = _currentUserService.UserId;
-            var result = await _universityService.BookmarkUniversityAsync(id, userId);
+            var result = await _universityService.BookmarkUniversityAsync(id, _currentUserService.UserId);
             return NoContent();
         }
 
         [HttpDelete("bookmark/{id}")]
         public async Task<IActionResult> UnbookmarkUniversity(Guid id)
         {
-            var userId = _currentUserService.UserId;
-            await _universityService.UnbookmarkUniversityAsync(id, userId);
+            await _universityService.UnbookmarkUniversityAsync(id, _currentUserService.UserId);
             return NoContent();
         }
     }
