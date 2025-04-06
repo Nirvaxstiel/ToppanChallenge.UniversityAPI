@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using UniversityAPI.Framework;
 using UniversityAPI.Framework.Model;
+using UniversityAPI.Middleware;
 using UniversityAPI.Service;
 using UniversityAPI.Utility;
 
@@ -113,7 +114,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(config => config.SwaggerEndpoint("/swagger/v1/swagger.json", "University API V1"));
 }
-
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

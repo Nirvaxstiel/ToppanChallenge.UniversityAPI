@@ -1,6 +1,8 @@
-﻿namespace UniversityAPI.Framework.Model
+﻿using UniversityAPI.Framework.Database;
+
+namespace UniversityAPI.Framework.Model
 {
-    public class UniversityDM : DbEntity
+    public class UniversityDM : DbModel
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

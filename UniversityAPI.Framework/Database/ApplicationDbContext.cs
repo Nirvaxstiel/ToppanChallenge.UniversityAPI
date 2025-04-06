@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
+using UniversityAPI.Framework.Database;
 using UniversityAPI.Framework.Model;
 
 namespace UniversityAPI.Framework
@@ -11,6 +14,7 @@ namespace UniversityAPI.Framework
         {
         }
 
+        public DbSet<UserDM> Users { get; set; }
         public DbSet<UniversityDM> Universities { get; set; }
         public DbSet<UserBookmarkDM> UserBookmarks { get; set; }
 
@@ -18,8 +22,25 @@ namespace UniversityAPI.Framework
         {
             base.OnModelCreating(builder);
 
+            // Configure your UserDM table name if needed
+            builder.Entity<UserDM>().ToTable("Users");
+
+            builder.Entity<UserDM>(b =>
+            {
+                b.Property(u => u.CreatedDate).HasColumnName("CreatedDate");
+                b.Property(u => u.UpdatedDate).HasColumnName("UpdatedDate");
+                b.Property(u => u.CreatedBy).HasColumnName("CreatedBy");
+                b.Property(u => u.UpdatedBy).HasColumnName("UpdatedBy");
+                b.Property(u => u.IsActive).HasColumnName("IsActive");
+                b.HasQueryFilter(item => item.IsActive);
+            });
+
             builder.Entity<UserBookmarkDM>()
+                .HasQueryFilter(item=> item.IsActive)
                 .HasKey(ub => new { ub.UserId, ub.UniversityId });
+
+            builder.Entity<UniversityDM>()
+                .HasQueryFilter(item => item.IsActive);
         }
     }
 }

@@ -4,6 +4,8 @@ namespace UniversityAPI.Framework.Model
 {
     public class CreateUniversityDto
     {
+        public Guid Id { get; set; }
+
         [Required]
         public string Name { get; set; }
 
@@ -11,6 +13,6 @@ namespace UniversityAPI.Framework.Model
         public string Country { get; set; }
 
         [Url]
-        public string Webpages { get; set; }
+        public string Webpage { get; set; }
     }
 }

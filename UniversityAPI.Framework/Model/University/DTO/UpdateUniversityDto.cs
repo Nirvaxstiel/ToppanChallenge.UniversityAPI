@@ -11,6 +11,6 @@ namespace UniversityAPI.Framework.Model
         public string Country { get; set; }
 
         [Url]
-        public string Webpages { get; set; }
+        public string Webpage { get; set; }
     }
 }

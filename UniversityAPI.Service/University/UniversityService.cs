@@ -66,5 +66,144 @@ namespace UniversityAPI.Service
                 PageSize = pagination.PageSize
             };
         }
+
+        public async Task<UniversityDto> GetUniversityByIdAsync(Guid universityId)
+        {
+            var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+            return MapHelper.Map<UniversityDM, UniversityDto>(universityDM);
+        }
+
+        public async Task<CreateUniversityDto> CreateUniversityAsync(CreateUniversityDto universityDto, Guid createdBy)
+        {
+            if (string.IsNullOrWhiteSpace(universityDto.Name))
+            {
+                throw new BadRequestException("University name is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(universityDto.Country))
+            {
+                throw new BadRequestException("Country is required");
+            }
+
+            var existingUniversity = await _context.Universities
+                .FirstOrDefaultAsync(u => u.Name == universityDto.Name && u.Country == universityDto.Country);
+            if (existingUniversity != null)
+            {
+                throw new ConflictException("A university with this name and country already exists");
+            }
+
+            var universityDM = new UniversityDM
+            {
+                Id = Guid.NewGuid(),
+                Name = universityDto.Name,
+                Country = universityDto.Country,
+                Webpage = universityDto.Webpage,
+                IsActive = true,
+                CreatedDate = DateTime.UtcNow,
+                CreatedBy = createdBy
+            };
+
+            _context.Universities.Add(universityDM);
+            await _context.SaveChangesAsync();
+
+            return MapHelper.Map<UniversityDM, CreateUniversityDto>(universityDM);
+        }
+
+        public async Task<UpdateUniversityDto> UpdateUniversityAsync(Guid universityId, UpdateUniversityDto universityDto, Guid updatedBy)
+        {
+            var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+            if (universityDM == null)
+            {
+                throw new NotFoundException("University not found");
+            }
+
+            var existingUniversity = await _context.Universities.FirstOrDefaultAsync(u => u.Name == universityDto.Name
+                && u.Country == universityDto.Country
+                && u.Id != universityId);
+            if (existingUniversity != null)
+            {
+                throw new ConflictException("A university with this name and country already exists");
+            }
+
+            universityDM.Name = universityDto.Name;
+            universityDM.Country = universityDto.Country;
+            universityDM.Webpage = universityDto.Webpage;
+            universityDM.UpdatedDate = DateTime.UtcNow;
+            universityDM.UpdatedBy = updatedBy;
+            _context.Universities.Update(universityDM);
+            await _context.SaveChangesAsync();
+
+            return MapHelper.Map<UniversityDM, UpdateUniversityDto>(universityDM);
+        }
+
+        public async Task DeleteUniversityAsync(Guid universityId, Guid updatedBy)
+        {
+            var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+            if (universityDM == null)
+            {
+                throw new NotFoundException("University not found");
+            }
+
+            universityDM.UpdatedDate = DateTime.UtcNow;
+            universityDM.UpdatedBy = updatedBy;
+            universityDM.IsActive = false;
+            _context.Universities.Update(universityDM);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<UserBookmarkDto> BookmarkUniversityAsync(Guid universityId, Guid userId)
+        {
+            var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+            if (universityDM == null)
+            {
+                throw new NotFoundException("University not found");
+            }
+
+            var bookmarks = _context.UserBookmarks.Where(bookmark => bookmark.UserId == userId);
+            var bookmark = bookmarks.IgnoreQueryFilters().FirstOrDefault(bookmark => bookmark.UniversityId == universityId);
+            if (bookmark == null)
+            {
+                bookmark = new UserBookmarkDM
+                {
+                    UserId = userId,
+                    UniversityId = universityId,
+                    BookmarkedAt = DateTime.UtcNow,
+                    IsActive = true,
+                    CreatedDate = DateTime.UtcNow,
+                    CreatedBy = userId,
+                };
+                _context.UserBookmarks.Add(bookmark);
+            }
+            else if (bookmark != null && !bookmark.IsActive)
+            {
+                bookmark.UpdatedDate = DateTime.UtcNow;
+                bookmark.UpdatedBy = userId;
+                bookmark.IsActive = true;
+            }
+                
+            await _context.SaveChangesAsync();
+            return MapHelper.Map<UserBookmarkDM, UserBookmarkDto>(bookmark);
+        }
+
+        public async Task UnbookmarkUniversityAsync(Guid universityId, Guid userId)
+        {
+            var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+            if (universityDM == null)
+            {
+                throw new NotFoundException("University not found");
+            }
+
+            var bookmark = await _context.UserBookmarks.FirstOrDefaultAsync(bookmark => bookmark.UniversityId == universityId && bookmark.UserId == userId);
+            if (bookmark == null)
+            {
+                throw new NotFoundException("Bookmark not found");
+            }
+
+            bookmark.UpdatedDate = DateTime.UtcNow;
+            bookmark.UpdatedBy = userId;
+            bookmark.IsActive = false;
+            _context.UserBookmarks.Update(bookmark);
+            await _context.SaveChangesAsync();
+        }
     }
 }
