@@ -1,4 +1,3 @@
-```markdown
 # University API - Setup Guide
 
 ## Prerequisites
@@ -38,4 +37,53 @@
 - Test endpoints: Universities, Bookmarks
 
 Postman Collections:
-- [Download Postman Collecton](New Collection.postman_collection.json)
+- [Download Postman Collecton](New%20Collection.postman_collection.json)
+
+# Package Installation Commands 
+
+## Main API Project (UniversityAPI)
+```bash
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore
+dotnet add package Microsoft.AspNetCore.OpenApi
+dotnet add package Microsoft.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Swashbuckle.AspNetCore
+```
+
+## Test Project
+```bash
+dotnet add package coverlet.collector
+dotnet add package Microsoft.EntityFrameworkCore.InMemory
+dotnet add package Microsoft.NET.Test.Sdk
+dotnet add package Moq
+dotnet add package xunit
+dotnet add package xunit.runner.visualstudio
+```
+
+## Service Project
+```bash
+dotnet add package System.IdentityModel.Tokens.Jwt
+```
+
+## Utility Project
+```bash
+dotnet add package Microsoft.Extensions.Configuration.Abstractions
+dotnet add package Microsoft.Extensions.Configuration.Binder
+dotnet add package Microsoft.Extensions.DependencyInjection.Abstractions
+dotnet add package TinyMapper
+```
+
+## Framework Project
+```bash
+dotnet add package Microsoft.AspNetCore.Http.Abstractions
+dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore
+```
+
+## Notes
+- Run commands in each project's directory
+- Omitted version numbers to always get latest stable
+- Project references are handled via solution structure
+- Design-time packages are included where needed
+```
