@@ -1,0 +1,358 @@
+{
+	"info": {
+		"_postman_id": "826f4e51-9785-455d-b78e-2b41d7f1cf29",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43933632"
+	},
+	"item": [
+		{
+			"name": "Get Token/Login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"Admin@1234\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7098/api/auth/login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7098",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUniversitiess",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJiODRlZjU0MC1hZDlhLTQzZDYtOThkOC1lODAyMjJiN2JhNDMiLCJ1bmlxdWVfbmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkB1bml2ZXJzaXR5LmNvbSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NDI2NTIwNywiZXhwIjoxNzQ0MzUxNjA3LCJpYXQiOjE3NDQyNjUyMDcsImlzcyI6IllvdXJBcHBOYW1lIiwiYXVkIjoiWW91ckFwcENsaWVudCJ9.dt9rbfllvYlmMGrQBty_cLNVMIQ-9Kv1F0SzIJWlKTwLreIfIL3Owix6UqZ9qX2h2wlTJjQZwsJKhh8Znf-iPg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7098/api/university?name=&country=&pagenumber=1&pagesize=10",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7098",
+					"path": [
+						"api",
+						"university"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": ""
+						},
+						{
+							"key": "country",
+							"value": ""
+						},
+						{
+							"key": "pagenumber",
+							"value": "1"
+						},
+						{
+							"key": "pagesize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUniversitiessById",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJiODRlZjU0MC1hZDlhLTQzZDYtOThkOC1lODAyMjJiN2JhNDMiLCJ1bmlxdWVfbmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkB1bml2ZXJzaXR5LmNvbSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NDI2NTIwNywiZXhwIjoxNzQ0MzUxNjA3LCJpYXQiOjE3NDQyNjUyMDcsImlzcyI6IllvdXJBcHBOYW1lIiwiYXVkIjoiWW91ckFwcENsaWVudCJ9.dt9rbfllvYlmMGrQBty_cLNVMIQ-9Kv1F0SzIJWlKTwLreIfIL3Owix6UqZ9qX2h2wlTJjQZwsJKhh8Znf-iPg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:7098/api/university/b81ee4f4-e834-4d02-894c-860b0953f528",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7098",
+					"path": [
+						"api",
+						"university",
+						"b81ee4f4-e834-4d02-894c-860b0953f528"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create University",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJiODRlZjU0MC1hZDlhLTQzZDYtOThkOC1lODAyMjJiN2JhNDMiLCJ1bmlxdWVfbmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkB1bml2ZXJzaXR5LmNvbSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NDI2NTIwNywiZXhwIjoxNzQ0MzUxNjA3LCJpYXQiOjE3NDQyNjUyMDcsImlzcyI6IllvdXJBcHBOYW1lIiwiYXVkIjoiWW91ckFwcENsaWVudCJ9.dt9rbfllvYlmMGrQBty_cLNVMIQ-9Kv1F0SzIJWlKTwLreIfIL3Owix6UqZ9qX2h2wlTJjQZwsJKhh8Znf-iPg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"test111\",\r\n    \"country\": \"asdasdsad\",\r\n    \"webpage\": \"https://test.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7098/api/university",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7098",
+					"path": [
+						"api",
+						"university"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update University",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJiODRlZjU0MC1hZDlhLTQzZDYtOThkOC1lODAyMjJiN2JhNDMiLCJ1bmlxdWVfbmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkB1bml2ZXJzaXR5LmNvbSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NDI2NTIwNywiZXhwIjoxNzQ0MzUxNjA3LCJpYXQiOjE3NDQyNjUyMDcsImlzcyI6IllvdXJBcHBOYW1lIiwiYXVkIjoiWW91ckFwcENsaWVudCJ9.dt9rbfllvYlmMGrQBty_cLNVMIQ-9Kv1F0SzIJWlKTwLreIfIL3Owix6UqZ9qX2h2wlTJjQZwsJKhh8Znf-iPg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"test1112\",\r\n    \"country\": \"asdasdsad\",\r\n    \"webpage\": \"https://test.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7098/api/university/b81ee4f4-e834-4d02-894c-860b0953f528",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7098",
+					"path": [
+						"api",
+						"university",
+						"b81ee4f4-e834-4d02-894c-860b0953f528"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete University",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJiODRlZjU0MC1hZDlhLTQzZDYtOThkOC1lODAyMjJiN2JhNDMiLCJ1bmlxdWVfbmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkB1bml2ZXJzaXR5LmNvbSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NDI2NTIwNywiZXhwIjoxNzQ0MzUxNjA3LCJpYXQiOjE3NDQyNjUyMDcsImlzcyI6IllvdXJBcHBOYW1lIiwiYXVkIjoiWW91ckFwcENsaWVudCJ9.dt9rbfllvYlmMGrQBty_cLNVMIQ-9Kv1F0SzIJWlKTwLreIfIL3Owix6UqZ9qX2h2wlTJjQZwsJKhh8Znf-iPg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7098/api/university/b81ee4f4-e834-4d02-894c-860b0953f528",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7098",
+					"path": [
+						"api",
+						"university",
+						"b81ee4f4-e834-4d02-894c-860b0953f528"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bookmark University",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJiODRlZjU0MC1hZDlhLTQzZDYtOThkOC1lODAyMjJiN2JhNDMiLCJ1bmlxdWVfbmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkB1bml2ZXJzaXR5LmNvbSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NDI2NTIwNywiZXhwIjoxNzQ0MzUxNjA3LCJpYXQiOjE3NDQyNjUyMDcsImlzcyI6IllvdXJBcHBOYW1lIiwiYXVkIjoiWW91ckFwcENsaWVudCJ9.dt9rbfllvYlmMGrQBty_cLNVMIQ-9Kv1F0SzIJWlKTwLreIfIL3Owix6UqZ9qX2h2wlTJjQZwsJKhh8Znf-iPg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7098/api/university/bookmark/b81ee4f4-e834-4d02-894c-860b0953f528",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7098",
+					"path": [
+						"api",
+						"university",
+						"bookmark",
+						"b81ee4f4-e834-4d02-894c-860b0953f528"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unbookmark University",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJiODRlZjU0MC1hZDlhLTQzZDYtOThkOC1lODAyMjJiN2JhNDMiLCJ1bmlxdWVfbmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkB1bml2ZXJzaXR5LmNvbSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTc0NDI2NTIwNywiZXhwIjoxNzQ0MzUxNjA3LCJpYXQiOjE3NDQyNjUyMDcsImlzcyI6IllvdXJBcHBOYW1lIiwiYXVkIjoiWW91ckFwcENsaWVudCJ9.dt9rbfllvYlmMGrQBty_cLNVMIQ-9Kv1F0SzIJWlKTwLreIfIL3Owix6UqZ9qX2h2wlTJjQZwsJKhh8Znf-iPg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7098/api/university/bookmark/b81ee4f4-e834-4d02-894c-860b0953f528",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7098",
+					"path": [
+						"api",
+						"university",
+						"bookmark",
+						"b81ee4f4-e834-4d02-894c-860b0953f528"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
