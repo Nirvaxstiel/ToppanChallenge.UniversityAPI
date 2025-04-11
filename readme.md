@@ -83,7 +83,3 @@ dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore
 
 ## Notes
 - Run commands in each project's directory
-- Omitted version numbers to always get latest stable
-- Project references are handled via solution structure
-- Design-time packages are included where needed
-```
