@@ -21,6 +21,15 @@ namespace UniversityAPI.Service
 
         public async Task<string> GenerateToken(UserDM user)
         {
+            var jwtKey = ConvertHelper.ToString(
+                _configuration["TOPPAN_UNIVERSITYAPI_JWT_KEY"]
+                ?? Environment.GetEnvironmentVariable("TOPPAN_UNIVERSITYAPI_JWT_KEY")
+                ?? _configuration["Jwt:Key"]
+            );
+            if (string.IsNullOrEmpty(jwtKey))
+                throw new InvalidOperationException("JWT signing key is not configured.");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -33,8 +42,6 @@ namespace UniversityAPI.Service
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("Jwt:Key").Value));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 

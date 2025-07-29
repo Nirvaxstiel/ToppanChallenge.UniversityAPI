@@ -39,6 +39,9 @@ namespace UniversityAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<CreateUniversityDto>> CreateUniversity(CreateUniversityDto createUniversityDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await _universityService.CreateUniversityAsync(createUniversityDto, _currentUserService.UserId);
             if (result == null)
             {
@@ -51,6 +54,9 @@ namespace UniversityAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateUniversity(Guid id, UpdateUniversityDto updateUniversityDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await _universityService.UpdateUniversityAsync(id, updateUniversityDto, _currentUserService.UserId);
             if (result == null)
             {

@@ -7,11 +7,13 @@ namespace UniversityAPI.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+        private readonly IWebHostEnvironment _env;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger, IWebHostEnvironment env)
         {
             _next = next;
             _logger = logger;
+            _env = env;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -23,29 +25,26 @@ namespace UniversityAPI.Middleware
             catch (ApiException ex)
             {
                 _logger.LogError(ex, "API Exception occurred");
-                await HandleExceptionAsync(context, ex);
+                await HandleExceptionAsync(context, ex, _env);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An unhandled exception occurred");
-                await HandleExceptionAsync(context, ex);
+                await HandleExceptionAsync(context, ex, _env);
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static Task HandleExceptionAsync(HttpContext context, Exception exception, IWebHostEnvironment env)
         {
             var statusCode = StatusCodes.Status500InternalServerError;
             var errorCode = "UNKNOWN_ERROR";
-            var includeDetails = false;
+            var includeDetails = env.IsDevelopment();
 
             if (exception is ApiException apiEx)
             {
                 statusCode = apiEx.StatusCode;
                 errorCode = apiEx.ErrorCode;
             }
-            //#if DEBUG
-            //includeDetails = true;
-            //#endif
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;

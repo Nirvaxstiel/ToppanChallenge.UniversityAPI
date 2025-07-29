@@ -16,10 +16,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+// Prefer user-secrets/configuration, then environment variables, then appsettings.json
+var jwtKey = builder.Configuration["TOPPAN_UNIVERSITYAPI_JWT_KEY"]
+    ?? Environment.GetEnvironmentVariable("TOPPAN_UNIVERSITYAPI_JWT_KEY")
+    ?? builder.Configuration["Jwt:Key"];
+var dbConnection = builder.Configuration["TOPPAN_UNIVERSITYAPI_DB_CONNECTION"]
+    ?? Environment.GetEnvironmentVariable("TOPPAN_UNIVERSITYAPI_DB_CONNECTION")
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
+        dbConnection,
         b => b.MigrationsAssembly("UniversityAPI"));
 });
 
@@ -42,13 +50,24 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
         ValidAlgorithms = [SecurityAlgorithms.HmacSha512, SecurityAlgorithms.HmacSha512Signature]
     };
 });
 
 builder.Services.AddServiceLayer(builder.Configuration);
 builder.Services.AddUtilityLayer(builder.Configuration);
+
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DefaultPolicy", policy =>
+    {
+        policy.WithOrigins("https://your-frontend.com")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 //builder.Services.AddAutoMapper(typeof(Program));
 //builder.Services.AddAutoMapper(typeof(Program).Assembly);
@@ -116,6 +135,7 @@ if (app.Environment.IsDevelopment())
 }
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
+app.UseCors("DefaultPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

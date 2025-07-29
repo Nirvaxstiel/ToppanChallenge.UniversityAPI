@@ -4,7 +4,10 @@
     {
         public static bool IsNullOrEmpty(object value)
         {
-            return value == null || value == DBNull.Value || string.IsNullOrEmpty(value.ToString().Trim());
+            if (value == null || value == DBNull.Value)
+                return true;
+            var str = value.ToString();
+            return string.IsNullOrWhiteSpace(str);
         }
 
         public static bool IsNullOrEmpty<TModel>(IEnumerable<TModel> items)
@@ -14,7 +17,10 @@
 
         public static string GetTextValue(object value)
         {
-            return IsNullOrEmpty(value) ? string.Empty : value.ToString();
+            if (value == null || value == DBNull.Value)
+                return string.Empty;
+            var str = value.ToString();
+            return IsNullOrEmpty(str) ? string.Empty : str;
         }
     }
 }

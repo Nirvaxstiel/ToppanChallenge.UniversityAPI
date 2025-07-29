@@ -225,10 +225,10 @@ namespace System
         {
             if (ValueHelper.IsNullOrEmpty(value))
             {
-                return null;
+                return string.Empty;
             }
-
-            return value.ToString();
+            var str = value.ToString();
+            return str ?? string.Empty;
         }
 
         public static string ToBase64String(string text)
