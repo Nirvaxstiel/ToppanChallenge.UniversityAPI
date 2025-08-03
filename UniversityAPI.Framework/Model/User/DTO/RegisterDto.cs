@@ -4,14 +4,14 @@ namespace UniversityAPI.Framework.Model
 {
     public class RegisterDto
     {
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string Username { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string Password { get; set; }
     }
 }

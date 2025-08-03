@@ -4,10 +4,10 @@ namespace UniversityAPI.Framework.Model
 {
     public class LoginDto
     {
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string Username { get; set; }
 
-        [Required]
+        [Required(AllowEmptyStrings = false)]
         public string Password { get; set; }
     }
 }

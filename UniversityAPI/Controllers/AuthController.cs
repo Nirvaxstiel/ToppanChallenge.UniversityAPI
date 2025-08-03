@@ -23,6 +23,11 @@ namespace UniversityAPI.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> Login(LoginDto loginDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var user = await _userManager.FindByNameAsync(loginDto.Username);
             if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
                 return Unauthorized();
@@ -39,6 +44,23 @@ namespace UniversityAPI.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<AuthResponse>> Register(RegisterDto registerDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var existingUserByUsername = await _userManager.FindByNameAsync(registerDto.Username);
+            if (existingUserByUsername != null)
+            {
+                return BadRequest(new { message = "Username already exists" });
+            }
+
+            var existingUserByEmail = await _userManager.FindByEmailAsync(registerDto.Email);
+            if (existingUserByEmail != null)
+            {
+                return BadRequest(new { message = "Email already exists" });
+            }
+
             var user = new UserDM { UserName = registerDto.Username, Email = registerDto.Email };
             var result = await _userManager.CreateAsync(user, registerDto.Password);
 
