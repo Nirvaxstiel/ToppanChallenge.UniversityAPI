@@ -39,7 +39,7 @@ namespace UniversityAPI.Framework
 
             if (string.IsNullOrWhiteSpace(adminUsername) || string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
             {
-                throw new Exception("Admin username, email, or password not set. Set Admin:InitialUsername, Admin:InitialEmail, Admin:InitialPassword in dotnet secrets or corresponding environment variables.");
+                throw new Exception("Admin username, email, or password not set. Set TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME, TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL, TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD in dotnet secrets or corresponding environment variables.");
             }
 
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
