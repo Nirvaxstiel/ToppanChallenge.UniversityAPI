@@ -5,44 +5,52 @@ namespace UniversityAPI.Utility
 {
     public static class ConfigHelper
     {
-        private static readonly Lazy<IConfiguration> _configuration = new Lazy<IConfiguration>(() =>
-            throw new InvalidOperationException("Configuration not initialized"));
+        private static IConfiguration _configuration;
 
         public static void Initialize(IConfiguration configuration)
         {
-            _ = new Lazy<IConfiguration>(() => configuration);
+            _configuration = configuration;
         }
 
-        public static IConfiguration Configuration => _configuration.Value;
+        public static IConfiguration Configuration => _configuration ?? throw new InvalidOperationException("Configuration not initialized");
 
-        public static T GetDefaultValue<T>(string key)
+        /// <summary>
+        /// Gets a configuration value with automatic fallback to environment variables.
+        /// Priority: 1. Dotnet User-Secrets/Configuration, 2. Environment Variables, 3. Default value
+        /// </summary>
+        public static T GetValue<T>(string key, T defaultValue = default(T))
         {
             try
             {
-                var value = Configuration[key];
-                if (string.IsNullOrWhiteSpace(value))
+                // First, try to get from configuration (dotnet user-secrets, appsettings, etc.)
+                var configValue = Configuration[key];
+                if (!string.IsNullOrWhiteSpace(configValue))
                 {
-                    return default(T);
+                    return ConvertValue<T>(configValue);
                 }
 
-                if (typeof(T) == typeof(string))
+                // Second, try environment variable (convert key format: "Admin:InitialPassword" -> "ADMIN_INITIAL_PASSWORD")
+                var envValue = Environment.GetEnvironmentVariable(key);
+                if (!string.IsNullOrWhiteSpace(envValue))
                 {
-                    return (T)(object)value;
+                    return ConvertValue<T>(envValue);
                 }
 
-                var converter = TypeDescriptor.GetConverter(typeof(T));
-                if (converter != null && converter.CanConvertFrom(typeof(string)))
-                {
-                    return (T)converter.ConvertFromString(value);
-                }
-
-                // Fallback to Convert.ChangeType
-                return (T)Convert.ChangeType(value, typeof(T));
+                // Finally, return default value
+                return defaultValue;
             }
             catch
             {
-                return default(T);
+                return defaultValue;
             }
+        }
+
+        /// <summary>
+        /// Legacy method - now uses GetValue internally
+        /// </summary>
+        public static T GetDefaultValue<T>(string key)
+        {
+            return GetValue<T>(key, default);
         }
 
         public static T GetSection<T>(string sectionKey) where T : class, new()
@@ -55,6 +63,23 @@ namespace UniversityAPI.Utility
             {
                 return new T();
             }
+        }
+
+        private static T ConvertValue<T>(string value)
+        {
+            if (typeof(T) == typeof(string))
+            {
+                return (T)(object)value;
+            }
+
+            var converter = TypeDescriptor.GetConverter(typeof(T));
+            if (converter != null && converter.CanConvertFrom(typeof(string)))
+            {
+                return (T)converter.ConvertFromString(value);
+            }
+
+            // Fallback to Convert.ChangeType
+            return (T)Convert.ChangeType(value, typeof(T));
         }
     }
 }

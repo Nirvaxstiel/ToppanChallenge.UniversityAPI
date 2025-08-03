@@ -1,3 +1,4 @@
+using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -58,14 +59,31 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddServiceLayer(builder.Configuration);
 builder.Services.AddUtilityLayer(builder.Configuration);
 
-// Add CORS policy
+// Policy-based Authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("CanEditUniversity", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") ||
+            context.User.HasClaim("Permission", "EditUniversity")));
+});
+
+// Rate Limiting (ensure AspNetCoreRateLimit is configured in appsettings.json and enabled here)
+builder.Services.AddMemoryCache();
+builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+builder.Services.AddInMemoryRateLimiting();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
+// CORS Policy (already strict, but ensure only trusted origins are allowed)
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DefaultPolicy", policy =>
     {
-        policy.WithOrigins("https://your-frontend.com")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.WithOrigins(allowedOrigins ?? Array.Empty<string>())
+             .AllowAnyHeader()
+             .AllowAnyMethod();
     });
 });
 
@@ -124,6 +142,8 @@ builder.Services.AddSwaggerGen(config =>
         }
     });
 });
+
+ConfigHelper.Initialize(builder.Configuration);
 
 var app = builder.Build();
 

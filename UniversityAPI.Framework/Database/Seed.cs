@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 using UniversityAPI.Framework.Model;
+using UniversityAPI.Utility;
 
 namespace UniversityAPI.Framework
 {
@@ -32,19 +33,26 @@ namespace UniversityAPI.Framework
 
         private static async Task SeedAdminUser(UserManager<UserDM> userManager)
         {
-            var adminEmail = "admin@university.com";
+            string adminUsername = ConfigHelper.GetDefaultValue<string>("TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME");
+            string adminEmail = ConfigHelper.GetDefaultValue<string>("TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL");
+            string adminPassword = ConfigHelper.GetDefaultValue<string>("TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD");
+
+            if (string.IsNullOrWhiteSpace(adminUsername) || string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
+            {
+                throw new Exception("Admin username, email, or password not set. Set Admin:InitialUsername, Admin:InitialEmail, Admin:InitialPassword in dotnet secrets or corresponding environment variables.");
+            }
+
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
             if (adminUser == null)
             {
                 var newAdmin = new UserDM
                 {
-                    UserName = "admin",
+                    UserName = adminUsername,
                     Email = adminEmail,
                     EmailConfirmed = true
                 };
 
-                string adminPassword = "Admin@1234";
                 var createUser = await userManager.CreateAsync(newAdmin, adminPassword);
 
                 if (createUser.Succeeded)

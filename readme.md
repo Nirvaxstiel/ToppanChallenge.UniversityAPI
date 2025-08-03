@@ -98,6 +98,12 @@ Sensitive values such as the JWT signing key and database connection string are 
 - `TOPPAN_UNIVERSITYAPI_JWT_KEY` — The secret key for JWT token signing
 - `TOPPAN_UNIVERSITYAPI_DB_CONNECTION` — The database connection string
 
+Admin user seeding:
+
+- `TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME`
+- `TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL`
+- `TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD`
+
 For local development, you can use the .NET User Secrets feature or set environment variables directly.
 
 ### Using .NET User Secrets (Local Development)
@@ -115,6 +121,9 @@ For local development, you can use the .NET User Secrets feature or set environm
    ```bash
    dotnet user-secrets set "TOPPAN_UNIVERSITYAPI_JWT_KEY" "your-very-secret-key"
    dotnet user-secrets set "TOPPAN_UNIVERSITYAPI_DB_CONNECTION" "your-sql-connection-string"
+   dotnet user-secrets set "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME" "youradmin"
+   dotnet user-secrets set "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL" "admin@yourdomain.com"
+   dotnet user-secrets set "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD" "YourSecurePassword"
    ```
 4. **Run your project as usual:**
    ```bash

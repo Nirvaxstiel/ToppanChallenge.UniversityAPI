@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Service;
 using UniversityAPI.Utility;

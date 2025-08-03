@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Restore dependencies
+        run: dotnet restore UniversityAPI/UniversityAPI.sln
+
+      - name: Build
+        run: dotnet build --no-restore UniversityAPI/UniversityAPI.sln
+
+      - name: Test with coverage
+        run: |
+          dotnet test UniversityAPI/UniversityAPI.sln \
+            --no-build \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults
+          echo "If you want to check coverage, download the coverage.cobertura.xml from ./TestResults or use a local tool."
