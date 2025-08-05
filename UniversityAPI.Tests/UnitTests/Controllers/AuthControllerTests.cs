@@ -3,16 +3,17 @@ using Moq;
 using UniversityAPI.Controllers;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Service;
+using UniversityAPI.Tests.Shared.Fixtures;
 
-namespace UniversityAPI.Tests.Controllers
+namespace UniversityAPI.Tests.UnitTests.Controllers
 {
-    public class AuthControllerTests : IClassFixture<UniversityAPITestFixture>
+    public class AuthControllerTests : IClassFixture<UnitTestFixture>
     {
-        private readonly UniversityAPITestFixture _fixture;
+        private readonly UnitTestFixture _fixture;
         private readonly AuthController _authController;
         private readonly Mock<ITokenService> _mockTokenService;
 
-        public AuthControllerTests(UniversityAPITestFixture fixture)
+        public AuthControllerTests(UnitTestFixture fixture)
         {
             _fixture = fixture;
             _mockTokenService = new Mock<ITokenService>();
@@ -48,7 +49,7 @@ namespace UniversityAPI.Tests.Controllers
             var registerDto = new RegisterDto
             {
                 Username = "newuser", // Different username
-                Email = existingUser.Email, // Duplicate email
+                Email = existingUser?.Email, // Duplicate email
                 Password = "TestPassword123!"
             };
 
@@ -66,7 +67,7 @@ namespace UniversityAPI.Tests.Controllers
             var existingUser = _fixture.Context.Users.First();
             var registerDto = new RegisterDto
             {
-                Username = existingUser.UserName, // Duplicate username
+                Username = existingUser?.UserName, // Duplicate username
                 Email = "different@example.com",  // Different email
                 Password = "TestPassword123!"
             };

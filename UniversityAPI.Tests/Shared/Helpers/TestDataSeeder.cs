@@ -2,7 +2,7 @@
 using UniversityAPI.Framework;
 using UniversityAPI.Framework.Model;
 
-namespace UniversityAPI.Tests
+namespace UniversityAPI.Tests.Shared.Helpers
 {
     public static class TestDataSeeder
     {

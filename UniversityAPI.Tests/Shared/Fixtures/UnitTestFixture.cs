@@ -4,16 +4,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using UniversityAPI.Framework;
 using UniversityAPI.Framework.Model;
+using UniversityAPI.Tests.Shared.Helpers;
 
-namespace UniversityAPI.Tests
+namespace UniversityAPI.Tests.Shared.Fixtures
 {
-    public class UniversityAPITestFixture : IDisposable
+    public class UnitTestFixture : IDisposable
     {
         public ApplicationDbContext Context { get; }
         public UserManager<UserDM> UserManager { get; private set; }
         public RoleManager<IdentityRole> RoleManager { get; private set; }
 
-        public UniversityAPITestFixture()
+        public UnitTestFixture()
         {
             var serviceProvider = new ServiceCollection()
                 .AddEntityFrameworkInMemoryDatabase()

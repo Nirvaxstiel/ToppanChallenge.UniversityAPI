@@ -2,17 +2,18 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Service;
+using UniversityAPI.Tests.Shared.Fixtures;
 using UniversityAPI.Utility;
 
-namespace UniversityAPI.Tests.Services
+namespace UniversityAPI.Tests.UnitTests.Services
 {
-    public class UniversityServiceTests : IClassFixture<UniversityAPITestFixture>
+    public class UniversityServiceTests : IClassFixture<UnitTestFixture>
     {
-        private readonly UniversityAPITestFixture _fixture;
+        private readonly UnitTestFixture _fixture;
         private readonly Mock<ICurrentUserService> _mockCurrentUserService;
         private readonly UniversityService _universityService;
 
-        public UniversityServiceTests(UniversityAPITestFixture fixture)
+        public UniversityServiceTests(UnitTestFixture fixture)
         {
             _fixture = fixture;
             _universityService = new UniversityService(_fixture.Context);

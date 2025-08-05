@@ -5,6 +5,12 @@ namespace UniversityAPI.Utility
 {
     public static class ConfigHelper
     {
+        private const string PUBLIC_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
+        private const string JWT_KEY_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
+        private const string DB_CONNECTION_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
+        private const string ADMIN_INIT_USERNAME_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
+        private const string ADMIN_INIT_PASSWORD_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
+        private const string ADMIN_INIT_EMAIL_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
         private static IConfiguration _configuration;
 
         public static void Initialize(IConfiguration configuration)
@@ -63,6 +69,36 @@ namespace UniversityAPI.Utility
             {
                 return new T();
             }
+        }
+
+        public static T GetPublicCipherKey<T>()
+        {
+            return GetValue<T>(PUBLIC_KEY_NAME);
+        }
+
+        public static T GetJwtKey<T>()
+        {
+            return GetValue<T>(JWT_KEY_KEY_NAME);
+        }
+
+        public static T GetDbConnection<T>()
+        {
+            return GetValue<T>(DB_CONNECTION_KEY_NAME);
+        }
+
+        public static T GetAdminInitUsername<T>()
+        {
+            return GetValue<T>(ADMIN_INIT_USERNAME_KEY_NAME);
+        }
+
+        public static T GetAdminInitPassword<T>()
+        {
+            return GetValue<T>(ADMIN_INIT_PASSWORD_KEY_NAME);
+        }
+
+        public static T GetAdminInitEmail<T>()
+        {
+            return GetValue<T>(ADMIN_INIT_EMAIL_KEY_NAME);
         }
 
         private static T ConvertValue<T>(string value)

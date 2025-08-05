@@ -3,18 +3,19 @@ using Moq;
 using UniversityAPI.Controllers;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Service;
+using UniversityAPI.Tests.Shared.Fixtures;
 using UniversityAPI.Utility;
 
-namespace UniversityAPI.Tests.Controllers
+namespace UniversityAPI.Tests.UnitTests.Controllers
 {
-    public class UniversityControllerTests : IClassFixture<UniversityAPITestFixture>
+    public class UniversityControllerTests : IClassFixture<UnitTestFixture>
     {
-        private readonly UniversityAPITestFixture _fixture;
+        private readonly UnitTestFixture _fixture;
         private readonly UniversityController _universityController;
         private readonly Mock<IUniversityService> _mockUniversityService;
         private readonly Mock<ICurrentUserService> _mockCurrentUserService;
 
-        public UniversityControllerTests(UniversityAPITestFixture fixture)
+        public UniversityControllerTests(UnitTestFixture fixture)
         {
             _fixture = fixture;
             _mockUniversityService = new Mock<IUniversityService>();

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using System.Text.Json;
 using UniversityAPI.Framework.Model;
 
 namespace UniversityAPI.Middleware
@@ -43,7 +44,7 @@ namespace UniversityAPI.Middleware
             if (exception is ApiException apiEx)
             {
                 statusCode = apiEx.StatusCode;
-                errorCode = apiEx.ErrorCode;
+                errorCode = apiEx.ErrorCode ?? ReasonPhrases.GetReasonPhrase(statusCode);
             }
 
             context.Response.ContentType = "application/json";
