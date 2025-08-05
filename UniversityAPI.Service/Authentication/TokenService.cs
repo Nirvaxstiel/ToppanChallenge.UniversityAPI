@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using UniversityAPI.Framework.Model;
+using UniversityAPI.Utility;
 
 namespace UniversityAPI.Service
 {
@@ -21,11 +22,7 @@ namespace UniversityAPI.Service
 
         public async Task<string> GenerateToken(UserDM user)
         {
-            var jwtKey = ConvertHelper.ToString(
-                _configuration["TOPPAN_UNIVERSITYAPI_JWT_KEY"]
-                ?? Environment.GetEnvironmentVariable("TOPPAN_UNIVERSITYAPI_JWT_KEY")
-                ?? _configuration["Jwt:Key"]
-            );
+            var jwtKey = ConfigHelper.GetJwtKey<string>();
             if (string.IsNullOrEmpty(jwtKey))
                 throw new InvalidOperationException("JWT signing key is not configured.");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));

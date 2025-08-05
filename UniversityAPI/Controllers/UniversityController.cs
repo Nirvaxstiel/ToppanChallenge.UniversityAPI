@@ -11,26 +11,26 @@ namespace UniversityAPI.Controllers
     [Authorize]
     public class UniversityController : ControllerBase
     {
-        private readonly IUniversityService _universityService;
-        private readonly ICurrentUserService _currentUserService;
+        private readonly IUniversityService universityService;
+        private readonly ICurrentUserService currentUserService;
 
         public UniversityController(IUniversityService universityService, ICurrentUserService currentUserService)
         {
-            _universityService = universityService;
-            _currentUserService = currentUserService;
+            this.universityService = universityService;
+            this.currentUserService = currentUserService;
         }
 
         [HttpGet]
         public async Task<ActionResult<PagedResult<UniversityDto>>> GetUniversities([FromQuery] UniversityFilter filter, [FromQuery] PaginationParams pagination)
         {
-            var result = await _universityService.GetUniversitiesAsync(_currentUserService.UserId, filter, pagination);
+            var result = await universityService.GetUniversitiesAsync(currentUserService.UserId, filter, pagination);
             return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<UniversityDto>> GetUniversity(Guid id)
         {
-            var result = await _universityService.GetUniversityByIdAsync(id);
+            var result = await universityService.GetUniversityByIdAsync(id);
             if (result == null) return NotFound();
             return Ok(result);
         }
@@ -42,7 +42,7 @@ namespace UniversityAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _universityService.CreateUniversityAsync(createUniversityDto, _currentUserService.UserId);
+            var result = await universityService.CreateUniversityAsync(createUniversityDto, currentUserService.UserId);
             if (result == null)
             {
                 return NotFound();
@@ -57,7 +57,7 @@ namespace UniversityAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _universityService.UpdateUniversityAsync(id, updateUniversityDto, _currentUserService.UserId);
+            var result = await universityService.UpdateUniversityAsync(id, updateUniversityDto, currentUserService.UserId);
             if (result == null)
             {
                 return NotFound();
@@ -69,21 +69,21 @@ namespace UniversityAPI.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUniversity(Guid id)
         {
-            await _universityService.DeleteUniversityAsync(id, _currentUserService.UserId);
+            await universityService.DeleteUniversityAsync(id, currentUserService.UserId);
             return NoContent();
         }
 
         [HttpPost("bookmark/{id}")]
         public async Task<IActionResult> BookmarkUniversity(Guid id)
         {
-            var result = await _universityService.BookmarkUniversityAsync(id, _currentUserService.UserId);
+            var result = await universityService.BookmarkUniversityAsync(id, currentUserService.UserId);
             return NoContent();
         }
 
         [HttpDelete("bookmark/{id}")]
         public async Task<IActionResult> UnbookmarkUniversity(Guid id)
         {
-            await _universityService.UnbookmarkUniversityAsync(id, _currentUserService.UserId);
+            await universityService.UnbookmarkUniversityAsync(id, currentUserService.UserId);
             return NoContent();
         }
     }

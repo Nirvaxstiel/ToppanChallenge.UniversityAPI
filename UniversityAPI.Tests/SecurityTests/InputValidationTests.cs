@@ -6,24 +6,17 @@ using UniversityAPI.Tests.Shared.Fixtures;
 
 namespace UniversityAPI.Tests.SecurityTests
 {
-    public class InputValidationTests : IClassFixture<ApiTestApplicationFactory>
+    public class InputValidationTests(ApiTestApplicationFactory factory) : IClassFixture<ApiTestApplicationFactory>
     {
-        private readonly HttpClient _client;
-        private readonly ApiTestApplicationFactory _factory;
-
-        public InputValidationTests(ApiTestApplicationFactory factory)
-        {
-            _client = factory.CreateClient();
-            _factory = factory;
-        }
+        private readonly HttpClient client = factory.CreateClient();
+        private readonly ApiTestApplicationFactory factory = factory;
 
         [Fact]
         public async Task CreateUniversity_EmptyName_ReturnsBadRequest()
         {
-
             var createDto = new CreateUniversityDto
             {
-                Name = "",
+                Name = string.Empty,
                 Country = "Test Country",
                 Webpage = "https://test.edu"
             };
@@ -31,7 +24,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/universities", content);
+            var response = await client.PostAsync("/api/universities", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -50,7 +43,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/universities", content);
+            var response = await client.PostAsync("/api/universities", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -69,7 +62,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/universities", content);
+            var response = await client.PostAsync("/api/universities", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -88,7 +81,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/universities", content);
+            var response = await client.PostAsync("/api/universities", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -107,7 +100,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(registerDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/auth/register", content);
+            var response = await client.PostAsync("/api/auth/register", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -126,7 +119,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(registerDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/auth/register", content);
+            var response = await client.PostAsync("/api/auth/register", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -145,7 +138,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(registerDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/auth/register", content);
+            var response = await client.PostAsync("/api/auth/register", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -155,7 +148,7 @@ namespace UniversityAPI.Tests.SecurityTests
         {
 
 
-            var response = await _client.GetAsync("/api/universities?pageNumber=-1&pageSize=0");
+            var response = await client.GetAsync("/api/universities?pageNumber=-1&pageSize=0");
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -163,9 +156,7 @@ namespace UniversityAPI.Tests.SecurityTests
         [Fact]
         public async Task GetUniversities_ExtremelyLargePageSize_ReturnsBadRequest()
         {
-
-
-            var response = await _client.GetAsync("/api/universities?pageSize=10001");
+            var response = await client.GetAsync("/api/universities?pageSize=10001");
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -173,7 +164,6 @@ namespace UniversityAPI.Tests.SecurityTests
         [Fact]
         public async Task CreateUniversity_SqlInjectionAttempt_ReturnsBadRequest()
         {
-
             var createDto = new CreateUniversityDto
             {
                 Name = "'; DROP TABLE Universities; --",
@@ -184,7 +174,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/universities", content);
+            var response = await client.PostAsync("/api/universities", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -203,7 +193,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/universities", content);
+            var response = await client.PostAsync("/api/universities", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -222,7 +212,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(updateDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PutAsync("/api/universities/invalid-guid", content);
+            var response = await client.PutAsync("/api/universities/invalid-guid", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -232,7 +222,7 @@ namespace UniversityAPI.Tests.SecurityTests
         {
 
 
-            var response = await _client.GetAsync("/api/universities/invalid-guid");
+            var response = await client.GetAsync("/api/universities/invalid-guid");
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -251,7 +241,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/universities", content);
+            var response = await client.PostAsync("/api/universities", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -269,7 +259,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(loginDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/auth/login", content);
+            var response = await client.PostAsync("/api/auth/login", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -288,7 +278,7 @@ namespace UniversityAPI.Tests.SecurityTests
             var json = JsonSerializer.Serialize(registerDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/auth/register", content);
+            var response = await client.PostAsync("/api/auth/register", content);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }

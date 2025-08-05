@@ -52,13 +52,13 @@ namespace UniversityAPI.Controllers
             var existingUserByUsername = await _userManager.FindByNameAsync(registerDto.Username);
             if (existingUserByUsername != null)
             {
-                return BadRequest(new { message = "Username already exists" });
+                return Conflict(new { message = "Username already exists" });
             }
 
             var existingUserByEmail = await _userManager.FindByEmailAsync(registerDto.Email);
             if (existingUserByEmail != null)
             {
-                return BadRequest(new { message = "Email already exists" });
+                return Conflict(new { message = "Email already exists" });
             }
 
             var user = new UserDM { UserName = registerDto.Username, Email = registerDto.Email };

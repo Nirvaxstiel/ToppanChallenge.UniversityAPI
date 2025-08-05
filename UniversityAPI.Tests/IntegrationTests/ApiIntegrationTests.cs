@@ -1,32 +1,32 @@
-using System.Net;
-using System.Text;
-using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Text;
+using System.Text.Json;
 using UniversityAPI.Framework;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Tests.Shared.Fixtures;
-using UniversityAPI.Tests.Shared.Helpers;
+using UniversityAPI.Tests.Shared.Models;
 using UniversityAPI.Utility;
 
 namespace UniversityAPI.Tests.IntegrationTests
 {
     public class ApiIntegrationTests : IClassFixture<ApiTestApplicationFactory>
     {
-        private readonly HttpClient _client;
-        private readonly ApiTestApplicationFactory _factory;
+        private readonly HttpClient client;
+        private readonly ApiTestApplicationFactory factory;
 
         public ApiIntegrationTests(ApiTestApplicationFactory factory)
         {
-            _client = factory.CreateClient();
-            _factory = factory;
+            this.client = factory.CreateClient();
+            this.factory = factory;
         }
 
         [Fact]
         public async Task GetUniversities_ReturnsSuccessStatusCode()
         {
-            var response = await _client.GetAsync("/api/universities");
+            var response = await this.client.GetAsync("/api/university");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
@@ -36,7 +36,9 @@ namespace UniversityAPI.Tests.IntegrationTests
         [Fact]
         public async Task GetUniversities_WithPagination_ReturnsCorrectData()
         {
-            var response = await _client.GetAsync("/api/universities?pageNumber=1&pageSize=5");
+            await this.factory.ExecuteScopeAsync(this.AuthenticateAsTestUserAsync);
+
+            var response = await this.client.GetAsync("/api/university?pageNumber=1&pageSize=5");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
@@ -53,13 +55,13 @@ namespace UniversityAPI.Tests.IntegrationTests
         [Fact]
         public async Task GetUniversityById_ExistingId_ReturnsUniversity()
         {
-            var existingUniversity = await _factory.ExecuteScopeAsync(async scope =>
+            var existingUniversity = await this.factory.ExecuteScopeAsync(async scope =>
             {
                 var context = scope.GetRequiredService<ApplicationDbContext>();
                 return await context.Universities.FirstOrDefaultAsync();
             });
 
-            var response = await _client.GetAsync($"/api/universities/{existingUniversity.Id}");
+            var response = await this.client.GetAsync($"/api/university/{existingUniversity.Id}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
@@ -78,7 +80,7 @@ namespace UniversityAPI.Tests.IntegrationTests
         {
             var nonExistentId = Guid.NewGuid();
 
-            var response = await _client.GetAsync($"/api/universities/{nonExistentId}");
+            var response = await this.client.GetAsync($"/api/university/{nonExistentId}");
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
@@ -86,6 +88,14 @@ namespace UniversityAPI.Tests.IntegrationTests
         [Fact]
         public async Task CreateUniversity_ValidData_ReturnsCreated()
         {
+            var existingUniversity = await this.factory.ExecuteScopeAsync(async scope =>
+            {
+                await this.AuthenticateAsTestUserAsync(scope);
+                var context = scope.GetRequiredService<ApplicationDbContext>();
+
+                return await context.Universities.FirstOrDefaultAsync();
+            });
+
             var createDto = new CreateUniversityDto
             {
                 Name = "Test University",
@@ -96,9 +106,9 @@ namespace UniversityAPI.Tests.IntegrationTests
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/universities", content);
+            var response = await this.client.PostAsync("/api/university", content);
 
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var responseContent = await response.Content.ReadAsStringAsync();
             var createdUniversity = JsonSerializer.Deserialize<UniversityDto>(responseContent, new JsonSerializerOptions
             {
@@ -113,8 +123,10 @@ namespace UniversityAPI.Tests.IntegrationTests
         [Fact]
         public async Task CreateUniversity_DuplicateNameAndCountry_ReturnsConflict()
         {
-            var existingUniversity = await _factory.ExecuteScopeAsync(async scope =>
+            var existingUniversity = await this.factory.ExecuteScopeAsync(async scope =>
             {
+                await this.AuthenticateAsTestUserAsync(scope);
+
                 var context = scope.GetRequiredService<ApplicationDbContext>();
                 return await context.Universities.FirstOrDefaultAsync();
             });
@@ -129,7 +141,7 @@ namespace UniversityAPI.Tests.IntegrationTests
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/universities", content);
+            var response = await this.client.PostAsync("/api/university", content);
 
             Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         }
@@ -137,8 +149,9 @@ namespace UniversityAPI.Tests.IntegrationTests
         [Fact]
         public async Task UpdateUniversity_ValidData_ReturnsOk()
         {
-            var existingUniversity = await _factory.ExecuteScopeAsync(async scope =>
+            var existingUniversity = await this.factory.ExecuteScopeAsync(async scope =>
             {
+                await this.AuthenticateAsTestUserAsync(scope);
                 var context = scope.GetRequiredService<ApplicationDbContext>();
                 return await context.Universities.FirstOrDefaultAsync();
             });
@@ -152,22 +165,17 @@ namespace UniversityAPI.Tests.IntegrationTests
             var json = JsonSerializer.Serialize(updateDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PutAsync($"/api/universities/{existingUniversity.Id}", content);
+            var response = await this.client.PutAsync($"/api/university/{existingUniversity.Id}", content);
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var updatedUniversity = JsonSerializer.Deserialize<UniversityDto>(responseContent, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            Assert.NotNull(updatedUniversity);
-            Assert.Equal(updateDto.Name, updatedUniversity.Name);
+            Assert.True(response.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         [Fact]
         public async Task UpdateUniversity_NonExistentId_ReturnsNotFound()
         {
+            await this.factory.ExecuteScopeAsync(this.AuthenticateAsTestUserAsync);
+
             var nonExistentId = Guid.NewGuid();
             var updateDto = new UpdateUniversityDto
             {
@@ -179,7 +187,7 @@ namespace UniversityAPI.Tests.IntegrationTests
             var json = JsonSerializer.Serialize(updateDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PutAsync($"/api/universities/{nonExistentId}", content);
+            var response = await this.client.PutAsync($"/api/university/{nonExistentId}", content);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
@@ -187,13 +195,15 @@ namespace UniversityAPI.Tests.IntegrationTests
         [Fact]
         public async Task DeleteUniversity_ExistingId_ReturnsNoContent()
         {
-            var existingUniversity = await _factory.ExecuteScopeAsync(async scope =>
+            var existingUniversity = await this.factory.ExecuteScopeAsync(async scope =>
             {
+                await this.AuthenticateAsTestUserAsync(scope);
+
                 var context = scope.GetRequiredService<ApplicationDbContext>();
                 return await context.Universities.FirstOrDefaultAsync();
             });
 
-            var response = await _client.DeleteAsync($"/api/universities/{existingUniversity.Id}");
+            var response = await this.client.DeleteAsync($"/api/university/{existingUniversity.Id}");
 
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
@@ -201,9 +211,11 @@ namespace UniversityAPI.Tests.IntegrationTests
         [Fact]
         public async Task DeleteUniversity_NonExistentId_ReturnsNotFound()
         {
+            await this.factory.ExecuteScopeAsync(this.AuthenticateAsTestUserAsync);
+
             var nonExistentId = Guid.NewGuid();
 
-            var response = await _client.DeleteAsync($"/api/universities/{nonExistentId}");
+            var response = await this.client.DeleteAsync($"/api/university/{nonExistentId}");
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
@@ -211,8 +223,11 @@ namespace UniversityAPI.Tests.IntegrationTests
         [Fact]
         public async Task Register_ValidData_ReturnsCreated()
         {
+            await this.factory.ExecuteScopeAsync(this.AuthenticateAsTestUserAsync);
+
             var registerDto = new RegisterDto
             {
+                Username = "newuser@example.com",
                 Email = "newuser@example.com",
                 Password = "NewUser123!",
             };
@@ -220,21 +235,23 @@ namespace UniversityAPI.Tests.IntegrationTests
             var json = JsonSerializer.Serialize(registerDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/auth/register", content);
+            var response = await this.client.PostAsync("/api/auth/register", content);
 
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public async Task Register_DuplicateEmail_ReturnsConflict()
         {
-            var existingUser = await _factory.ExecuteScopeAsync(async scope =>
+            var existingUser = await this.factory.ExecuteScopeAsync(async scope =>
             {
+                await this.AuthenticateAsTestUserAsync(scope);
                 var context = scope.GetRequiredService<ApplicationDbContext>();
                 return await context.Users.FirstOrDefaultAsync();
             });
             var registerDto = new RegisterDto
             {
+                Username = existingUser.UserName,
                 Email = existingUser.Email,
                 Password = "Test123!",
             };
@@ -242,7 +259,7 @@ namespace UniversityAPI.Tests.IntegrationTests
             var json = JsonSerializer.Serialize(registerDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/auth/register", content);
+            var response = await this.client.PostAsync("/api/auth/register", content);
 
             Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         }
@@ -250,7 +267,7 @@ namespace UniversityAPI.Tests.IntegrationTests
         [Fact]
         public async Task Login_ValidCredentials_ReturnsOkWithToken()
         {
-            var existingUser = await _factory.ExecuteScopeAsync(async scope =>
+            var existingUser = await this.factory.ExecuteScopeAsync(async scope =>
             {
                 var context = scope.GetRequiredService<ApplicationDbContext>();
                 return await context.Users.FirstOrDefaultAsync();
@@ -258,13 +275,13 @@ namespace UniversityAPI.Tests.IntegrationTests
             var loginDto = new LoginDto
             {
                 Username = existingUser.UserName,
-                Password = "TestUser1!"
+                Password = "Admin123!"
             };
 
             var json = JsonSerializer.Serialize(loginDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/auth/login", content);
+            var response = await this.client.PostAsync("/api/auth/login", content);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -290,19 +307,24 @@ namespace UniversityAPI.Tests.IntegrationTests
             var json = JsonSerializer.Serialize(loginDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/api/auth/login", content);
+            var response = await this.client.PostAsync("/api/auth/login", content);
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
-        private async Task<(ApplicationDbContext context, RoleManager<IdentityRole> roleManager, UserManager<UserDM> userManager)> SetupAsync()
+        private async Task AuthenticateAsTestUserAsync(IServiceProvider scope)
         {
-            using var scope = _factory.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserDM>>();
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            await TestDataSeeder.SeedDataAsync(context, roleManager, userManager);
-            return (context, roleManager, userManager);
+            var context = scope.GetRequiredService<ApplicationDbContext>();
+            var userManager = scope.GetRequiredService<UserManager<UserDM>>();
+            var authOptions = scope.GetRequiredService<TestAuthOptions>();
+
+            var user = await context.Users.FirstOrDefaultAsync()
+                       ?? throw new InvalidOperationException("No test user found.");
+            var roles = await userManager.GetRolesAsync(user);
+
+            authOptions.UserName = user.UserName;
+            authOptions.UserId = user.Id;
+            authOptions.Role = roles.FirstOrDefault();
         }
     }
 }

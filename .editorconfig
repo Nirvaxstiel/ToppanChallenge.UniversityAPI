@@ -1,0 +1,3 @@
+dotnet_analyzer_diagnostic.severity = warning
+dotnet_analyzer_diagnostic.category-NullableAnalysis.severity = warning
+dotnet.server.useOmnisharp = true

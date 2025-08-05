@@ -5,6 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "C#: Toppan Challenge Debug",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/UniversityApi.Tests/UniversityAPI.Tests.csproj"
+        },
+        {
             "args": [
                 "--extensionDevelopmentPath=${workspaceFolder}"
             ],
@@ -15,45 +21,6 @@
             "preLaunchTask": "npm",
             "request": "launch",
             "type": "extensionHost",
-        },
-        {
-            "name": "Debug testhost with dotnet exec",
-            "type": "coreclr",
-            "request": "launch",
-            "program": "dotnet",
-            "args": [
-                "exec",
-                "${workspaceFolder}/tests/UniversityAPI.Tests/bin/Debug/net9.0/testhost.dll"
-            ],
-            "cwd": "${workspaceFolder}/tests/UniversityAPI.Tests",
-            "stopAtEntry": false,
-            "justMyCode": false
-        },
-        {
-            "name": "C#: UniversityAPI Debug",
-            "type": "dotnet",
-            "request": "launch",
-            "projectPath": "${workspaceFolder}/UniversityAPI/UniversityAPI.csproj",
-        },
-        {
-            "name": ".NET Core Launch (web)",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/UniversityAPI/bin/Debug/net9.0/UniversityAPI.dll",
-            "args": [],
-            "cwd": "${workspaceFolder}/UniversityAPI",
-            "stopAtEntry": false,
-            "serverReadyAction": {
-                "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-            },
-            "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
-            },
-            "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
-            }
         }
     ]
 }

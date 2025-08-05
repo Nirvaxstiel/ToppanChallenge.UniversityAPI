@@ -1,9 +1,9 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using UniversityAPI.Service;
 using UniversityAPI.Tests.Shared.Fixtures;
 
@@ -190,9 +190,9 @@ namespace UniversityAPI.Tests.UnitTests.Services
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = key,
 
-                ValidateIssuer = false, // or specify issuer if you want to validate it
-                ValidateAudience = false, // same with audience
-                ValidateLifetime = false, // set to true in production
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = false,
 
                 NameClaimType = ClaimTypes.Name,
                 RoleClaimType = ClaimTypes.Role

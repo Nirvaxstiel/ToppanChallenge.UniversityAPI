@@ -6,11 +6,11 @@ namespace UniversityAPI.Utility
     public static class ConfigHelper
     {
         private const string PUBLIC_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
-        private const string JWT_KEY_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
-        private const string DB_CONNECTION_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
-        private const string ADMIN_INIT_USERNAME_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
-        private const string ADMIN_INIT_PASSWORD_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
-        private const string ADMIN_INIT_EMAIL_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
+        private const string JWT_KEY_KEY_NAME = "TOPPAN_UNIVERSITYAPI_JWT_KEY";
+        private const string DB_CONNECTION_KEY_NAME = "TOPPAN_UNIVERSITYAPI_DB_CONNECTION";
+        private const string ADMIN_INIT_USERNAME_KEY_NAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME";
+        private const string ADMIN_INIT_PASSWORD_KEY_NAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD";
+        private const string ADMIN_INIT_EMAIL_KEY_NAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL";
         private static IConfiguration _configuration;
 
         public static void Initialize(IConfiguration configuration)

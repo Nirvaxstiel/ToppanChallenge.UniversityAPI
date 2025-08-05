@@ -59,7 +59,6 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddServiceLayer(builder.Configuration);
 builder.Services.AddUtilityLayer(builder.Configuration);
 
-// Policy-based Authorization
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
@@ -69,13 +68,11 @@ builder.Services.AddAuthorization(options =>
             context.User.HasClaim("Permission", "EditUniversity")));
 });
 
-// Rate Limiting (ensure AspNetCoreRateLimit is configured in appsettings.json and enabled here)
 builder.Services.AddMemoryCache();
 builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
 builder.Services.AddInMemoryRateLimiting();
 builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
-// CORS Policy (already strict, but ensure only trusted origins are allowed)
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
 builder.Services.AddCors(options =>
 {
@@ -86,9 +83,6 @@ builder.Services.AddCors(options =>
              .AllowAnyMethod();
     });
 });
-
-//builder.Services.AddAutoMapper(typeof(Program));
-//builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -142,8 +136,6 @@ builder.Services.AddSwaggerGen(config =>
         }
     });
 });
-
-ConfigHelper.Initialize(builder.Configuration);
 
 var app = builder.Build();
 
