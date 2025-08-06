@@ -90,8 +90,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("DefaultPolicy", policy =>
     {
         policy.WithOrigins(allowedOrigins ?? Array.Empty<string>())
-             .AllowAnyHeader()
-             .AllowAnyMethod();
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
