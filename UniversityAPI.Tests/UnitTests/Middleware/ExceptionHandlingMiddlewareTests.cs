@@ -14,13 +14,13 @@ namespace UniversityAPI.Tests.UnitTests.Middleware
 {
     public class ExceptionHandlingMiddlewareTests
     {
-        private readonly Mock<ILogger<ExceptionHandlingMiddleware>> _mockLogger;
-        private readonly Mock<IWebHostEnvironment> _mockEnvironment;
+        private readonly Mock<ILogger<ExceptionHandlingMiddleware>> mockLogger;
+        private readonly Mock<IWebHostEnvironment> mockEnvironment;
 
         public ExceptionHandlingMiddlewareTests()
         {
-            _mockLogger = new Mock<ILogger<ExceptionHandlingMiddleware>>();
-            _mockEnvironment = new Mock<IWebHostEnvironment>();
+            this.mockLogger = new Mock<ILogger<ExceptionHandlingMiddleware>>();
+            this.mockEnvironment = new Mock<IWebHostEnvironment>();
         }
 
         [Fact]
@@ -28,8 +28,8 @@ namespace UniversityAPI.Tests.UnitTests.Middleware
         {
             var middleware = new ExceptionHandlingMiddleware(
                 next: (context) => Task.CompletedTask,
-                _mockLogger.Object,
-                _mockEnvironment.Object
+                this.mockLogger.Object,
+                this.mockEnvironment.Object
                                                             );
 
             var context = new DefaultHttpContext();
@@ -42,11 +42,11 @@ namespace UniversityAPI.Tests.UnitTests.Middleware
         [Fact]
         public async Task InvokeAsync_ApiException_ReturnsCorrectStatusCodeAndMessage()
         {
-            var expectedException = new NotFoundException("Resource not found");
+            var expectedException = new NotFoundError("Resource not found");
             var middleware = new ExceptionHandlingMiddleware(
                 next: (context) => throw expectedException,
-                _mockLogger.Object,
-                _mockEnvironment.Object
+                this.mockLogger.Object,
+                this.mockEnvironment.Object
                                                             );
 
             var context = new DefaultHttpContext();
@@ -73,8 +73,8 @@ namespace UniversityAPI.Tests.UnitTests.Middleware
             var expectedException = new InvalidOperationException("Something went wrong");
             var middleware = new ExceptionHandlingMiddleware(
                 next: (context) => throw expectedException,
-                _mockLogger.Object,
-                _mockEnvironment.Object
+                this.mockLogger.Object,
+                this.mockEnvironment.Object
                                                             );
 
             var context = new DefaultHttpContext();
@@ -98,12 +98,12 @@ namespace UniversityAPI.Tests.UnitTests.Middleware
         [Fact]
         public async Task InvokeAsync_DevelopmentEnvironment_IncludesExceptionDetails()
         {
-            _mockEnvironment.Setup(x => x.EnvironmentName).Returns(Environments.Development);
-            var expectedException = new BadRequestException("Invalid input");
+            this.mockEnvironment.Setup(x => x.EnvironmentName).Returns(Environments.Development);
+            var expectedException = new BadRequestError("Invalid input");
             var middleware = new ExceptionHandlingMiddleware(
                 next: (context) => throw expectedException,
-                _mockLogger.Object,
-                _mockEnvironment.Object);
+                this.mockLogger.Object,
+                this.mockEnvironment.Object);
 
             var context = new DefaultHttpContext();
             context.Response.Body = new MemoryStream();
@@ -122,12 +122,12 @@ namespace UniversityAPI.Tests.UnitTests.Middleware
         [Fact]
         public async Task InvokeAsync_ProductionEnvironment_ExcludesExceptionDetails()
         {
-            _mockEnvironment.Setup(x => x.EnvironmentName).Returns(Environments.Production);
-            var expectedException = new ConflictException("Resource conflict");
+            this.mockEnvironment.Setup(x => x.EnvironmentName).Returns(Environments.Production);
+            var expectedException = new ConflictError("Resource conflict");
             var middleware = new ExceptionHandlingMiddleware(
                 next: (context) => throw expectedException,
-                _mockLogger.Object,
-                _mockEnvironment.Object);
+                this.mockLogger.Object,
+                this.mockEnvironment.Object);
 
             var context = new DefaultHttpContext();
             context.Response.Body = new MemoryStream();
@@ -147,17 +147,17 @@ namespace UniversityAPI.Tests.UnitTests.Middleware
         {
             var testCases = new List<TestExceptionModel>
             {
-                new TestExceptionModel { Exception = new BadRequestException("Bad request"), ExpectedStatusCode = 400 },
-                new TestExceptionModel { Exception = new NotFoundException("Not found"), ExpectedStatusCode = 404 },
-                new TestExceptionModel { Exception = new ConflictException("Conflict"), ExpectedStatusCode = 409 }
+                new TestExceptionModel { Exception = new BadRequestError("Bad request"), ExpectedStatusCode = 400 },
+                new TestExceptionModel { Exception = new NotFoundError("Not found"), ExpectedStatusCode = 404 },
+                new TestExceptionModel { Exception = new ConflictError("Conflict"), ExpectedStatusCode = 409 }
             };
 
             foreach (var testCase in testCases)
             {
                 var middleware = new ExceptionHandlingMiddleware(
                     next: (context) => throw testCase.Exception,
-                    _mockLogger.Object,
-                    _mockEnvironment.Object
+                    this.mockLogger.Object,
+                    this.mockEnvironment.Object
                                                                 );
 
                 var context = new DefaultHttpContext();
@@ -184,15 +184,15 @@ namespace UniversityAPI.Tests.UnitTests.Middleware
             var expectedException = new Exception("Test exception");
             var middleware = new ExceptionHandlingMiddleware(
                 next: (context) => throw expectedException,
-                _mockLogger.Object,
-                _mockEnvironment.Object
+                this.mockLogger.Object,
+                this.mockEnvironment.Object
                                                             );
 
             var context = new DefaultHttpContext();
 
             await middleware.InvokeAsync(context);
 
-            _mockLogger.Verify(
+            this.mockLogger.Verify(
                 x => x.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
@@ -205,18 +205,18 @@ namespace UniversityAPI.Tests.UnitTests.Middleware
         [Fact]
         public async Task InvokeAsync_ApiException_LogsWithCorrectMessage()
         {
-            var expectedException = new NotFoundException("Resource not found");
+            var expectedException = new NotFoundError("Resource not found");
             var middleware = new ExceptionHandlingMiddleware(
                 next: (context) => throw expectedException,
-                _mockLogger.Object,
-                _mockEnvironment.Object
+                this.mockLogger.Object,
+                this.mockEnvironment.Object
                                                             );
 
             var context = new DefaultHttpContext();
 
             await middleware.InvokeAsync(context);
 
-            _mockLogger.Verify(
+            this.mockLogger.Verify(
                 x => x.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),

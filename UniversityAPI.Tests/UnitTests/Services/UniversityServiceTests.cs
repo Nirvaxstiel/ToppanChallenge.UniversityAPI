@@ -9,24 +9,24 @@ namespace UniversityAPI.Tests.UnitTests.Services
 {
     public class UniversityServiceTests : IClassFixture<UnitTestFixture>
     {
-        private readonly UnitTestFixture _fixture;
-        private readonly Mock<ICurrentUserService> _mockCurrentUserService;
-        private readonly UniversityService _universityService;
+        private readonly UnitTestFixture fixture;
+        private readonly Mock<ICurrentUserService> mockCurrentUserService;
+        private readonly UniversityService universityService;
 
         public UniversityServiceTests(UnitTestFixture fixture)
         {
-            _fixture = fixture;
-            _universityService = new UniversityService(_fixture.Context);
-            _mockCurrentUserService = new Mock<ICurrentUserService>();
-            var testUser = _fixture.Context.Users.First();
-            _mockCurrentUserService.Setup(x => x.UserId).Returns(ConvertHelper.ToGuid(testUser.Id));
+            this.fixture = fixture;
+            this.universityService = new UniversityService(this.fixture.Context);
+            this.mockCurrentUserService = new Mock<ICurrentUserService>();
+            var testUser = this.fixture.Context.Users.First();
+            this.mockCurrentUserService.Setup(x => x.UserId).Returns(ConvertHelper.ToGuid(testUser.Id));
         }
 
         [Fact]
         public async Task CreateUniversity_DuplicateNameAndCountry_ThrowsConflictException()
         {
-            var userId = _mockCurrentUserService.Object.UserId;
-            var existingUniversity = _fixture.Context.Universities.First();
+            var userId = this.mockCurrentUserService.Object.UserId;
+            var existingUniversity = this.fixture.Context.Universities.First();
             var duplicateDto = new CreateUniversityDto
             {
                 Name = existingUniversity.Name,
@@ -34,8 +34,8 @@ namespace UniversityAPI.Tests.UnitTests.Services
                 Webpage = "http://different.edu"
             };
 
-            var exception = await Assert.ThrowsAsync<ConflictException>(() =>
-                _universityService.CreateUniversityAsync(duplicateDto, userId));
+            var exception = await Assert.ThrowsAsync<ConflictError>(() =>
+                this.universityService.CreateUniversityAsync(duplicateDto, userId));
 
             Assert.Equal("A university with this name and country already exists", exception.Message);
         }
@@ -43,7 +43,7 @@ namespace UniversityAPI.Tests.UnitTests.Services
         [Fact]
         public async Task UpdateUniversity_NonExistentId_ThrowsNotFoundException()
         {
-            var userId = _mockCurrentUserService.Object.UserId;
+            var userId = this.mockCurrentUserService.Object.UserId;
             var nonExistentId = Guid.NewGuid();
             var updateDto = new UpdateUniversityDto
             {
@@ -52,8 +52,8 @@ namespace UniversityAPI.Tests.UnitTests.Services
                 Webpage = "http://updated.edu"
             };
 
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
-                _universityService.UpdateUniversityAsync(nonExistentId, updateDto, userId));
+            var exception = await Assert.ThrowsAsync<NotFoundError>(() =>
+                this.universityService.UpdateUniversityAsync(nonExistentId, updateDto, userId));
 
             Assert.Equal("University not found", exception.Message);
         }
@@ -61,11 +61,11 @@ namespace UniversityAPI.Tests.UnitTests.Services
         [Fact]
         public async Task BookmarkUniversity_NonExistentUniversity_ThrowsNotFoundException()
         {
-            var userId = _mockCurrentUserService.Object.UserId;
+            var userId = this.mockCurrentUserService.Object.UserId;
             var nonExistentId = Guid.NewGuid();
 
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
-                _universityService.BookmarkUniversityAsync(nonExistentId, userId));
+            var exception = await Assert.ThrowsAsync<NotFoundError>(() =>
+                this.universityService.BookmarkUniversityAsync(nonExistentId, userId));
 
             Assert.Equal("University not found", exception.Message);
         }
@@ -73,19 +73,19 @@ namespace UniversityAPI.Tests.UnitTests.Services
         [Fact]
         public async Task UnbookmarkUniversity_NonExistentBookmark_ThrowsNotFoundException()
         {
-            var userId = _mockCurrentUserService.Object.UserId;
-            var university = _fixture.Context.Universities.First();
+            var userId = this.mockCurrentUserService.Object.UserId;
+            var university = this.fixture.Context.Universities.First();
 
-            var existingBookmark = _fixture.Context.UserBookmarks
+            var existingBookmark = this.fixture.Context.UserBookmarks
                 .FirstOrDefault(b => b.UniversityId == university.Id && b.UserId == userId);
             if (existingBookmark != null)
             {
-                _fixture.Context.UserBookmarks.Remove(existingBookmark);
-                await _fixture.Context.SaveChangesAsync();
+                this.fixture.Context.UserBookmarks.Remove(existingBookmark);
+                await this.fixture.Context.SaveChangesAsync();
             }
 
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
-                _universityService.UnbookmarkUniversityAsync(university.Id, userId));
+            var exception = await Assert.ThrowsAsync<NotFoundError>(() =>
+                this.universityService.UnbookmarkUniversityAsync(university.Id, userId));
 
             Assert.Equal("Bookmark not found", exception.Message);
         }
@@ -93,11 +93,11 @@ namespace UniversityAPI.Tests.UnitTests.Services
         [Fact]
         public async Task DeleteUniversity_NonExistentId_ThrowsNotFoundException()
         {
-            var userId = _mockCurrentUserService.Object.UserId;
+            var userId = this.mockCurrentUserService.Object.UserId;
             var nonExistentId = Guid.NewGuid();
 
-            var exception = await Assert.ThrowsAsync<NotFoundException>(() =>
-                _universityService.DeleteUniversityAsync(nonExistentId, userId));
+            var exception = await Assert.ThrowsAsync<NotFoundError>(() =>
+                this.universityService.DeleteUniversityAsync(nonExistentId, userId));
 
             Assert.Equal("University not found", exception.Message);
         }
@@ -105,8 +105,8 @@ namespace UniversityAPI.Tests.UnitTests.Services
         [Fact]
         public async Task UpdateUniversity_DuplicateNameAndCountry_ThrowsConflictException()
         {
-            var userId = _mockCurrentUserService.Object.UserId;
-            var universities = _fixture.Context.Universities.Take(2).ToList();
+            var userId = this.mockCurrentUserService.Object.UserId;
+            var universities = this.fixture.Context.Universities.Take(2).ToList();
             var universityToUpdate = universities[0];
             var duplicateUniversity = universities[1];
 
@@ -117,8 +117,8 @@ namespace UniversityAPI.Tests.UnitTests.Services
                 Webpage = "http://updated.edu"
             };
 
-            var exception = await Assert.ThrowsAsync<ConflictException>(() =>
-                _universityService.UpdateUniversityAsync(universityToUpdate.Id, updateDto, userId));
+            var exception = await Assert.ThrowsAsync<ConflictError>(() =>
+                this.universityService.UpdateUniversityAsync(universityToUpdate.Id, updateDto, userId));
 
             Assert.Equal("A university with this name and country already exists", exception.Message);
         }
@@ -130,7 +130,7 @@ namespace UniversityAPI.Tests.UnitTests.Services
             var pagination = new PaginationParams { PageNumber = 1, PageSize = 10 };
             var emptyUserId = Guid.Empty;
 
-            var result = await _universityService.GetUniversitiesAsync(emptyUserId, filter, pagination);
+            var result = await this.universityService.GetUniversitiesAsync(emptyUserId, filter, pagination);
 
             Assert.NotEmpty(result.Items);
             Assert.All(result.Items, u => Assert.False(u.IsBookmarked));
@@ -141,7 +141,7 @@ namespace UniversityAPI.Tests.UnitTests.Services
         {
             var nonExistentId = Guid.NewGuid();
 
-            var result = await _universityService.GetUniversityByIdAsync(nonExistentId);
+            var result = await this.universityService.GetUniversityByIdAsync(nonExistentId);
 
             Assert.Null(result);
         }
@@ -149,7 +149,7 @@ namespace UniversityAPI.Tests.UnitTests.Services
         [Fact]
         public async Task CreateUniversity_ValidData_Succeeds()
         {
-            var userId = _mockCurrentUserService.Object.UserId;
+            var userId = this.mockCurrentUserService.Object.UserId;
             var createDto = new CreateUniversityDto
             {
                 Name = "Test University",
@@ -157,14 +157,14 @@ namespace UniversityAPI.Tests.UnitTests.Services
                 Webpage = "https://test.edu"
             };
 
-            var result = await _universityService.CreateUniversityAsync(createDto, userId);
+            var result = await this.universityService.CreateUniversityAsync(createDto, userId);
 
             Assert.NotNull(result);
             Assert.Equal(createDto.Name, result.Name);
             Assert.Equal(createDto.Country, result.Country);
             Assert.Equal(createDto.Webpage, result.Webpage);
 
-            var savedUniversity = _fixture.Context.Universities.FirstOrDefault(u => u.Name == createDto.Name);
+            var savedUniversity = this.fixture.Context.Universities.FirstOrDefault(u => u.Name == createDto.Name);
             Assert.NotNull(savedUniversity);
             Assert.True(savedUniversity.IsActive);
         }
@@ -172,8 +172,8 @@ namespace UniversityAPI.Tests.UnitTests.Services
         [Fact]
         public async Task UpdateUniversity_ValidData_Succeeds()
         {
-            var userId = _mockCurrentUserService.Object.UserId;
-            var existingUniversity = _fixture.Context.Universities.First();
+            var userId = this.mockCurrentUserService.Object.UserId;
+            var existingUniversity = this.fixture.Context.Universities.First();
             var updateDto = new UpdateUniversityDto
             {
                 Name = "Updated University Name",
@@ -181,7 +181,7 @@ namespace UniversityAPI.Tests.UnitTests.Services
                 Webpage = "https://updated.edu"
             };
 
-            var result = await _universityService.UpdateUniversityAsync(existingUniversity.Id, updateDto, userId);
+            var result = await this.universityService.UpdateUniversityAsync(existingUniversity.Id, updateDto, userId);
 
             Assert.NotNull(result);
             Assert.Equal(updateDto.Name, result.Name);
@@ -189,24 +189,24 @@ namespace UniversityAPI.Tests.UnitTests.Services
             Assert.Equal(updateDto.Webpage, result.Webpage);
 
             // Verify it was updated in database
-            var updatedUniversity = _fixture.Context.Universities.First(u => u.Id == existingUniversity.Id);
+            var updatedUniversity = this.fixture.Context.Universities.First(u => u.Id == existingUniversity.Id);
             Assert.Equal(updateDto.Name, updatedUniversity.Name);
         }
 
         [Fact]
         public async Task BookmarkUniversity_ValidData_Succeeds()
         {
-            var userId = _mockCurrentUserService.Object.UserId;
-            var university = _fixture.Context.Universities.First();
+            var userId = this.mockCurrentUserService.Object.UserId;
+            var university = this.fixture.Context.Universities.First();
 
-            var result = await _universityService.BookmarkUniversityAsync(university.Id, userId);
+            var result = await this.universityService.BookmarkUniversityAsync(university.Id, userId);
 
             Assert.NotNull(result);
             Assert.Equal(university.Id, result.UniversityId);
             Assert.Equal(userId, result.UserId);
 
             // Verify bookmark was created in database
-            var bookmark = _fixture.Context.UserBookmarks.FirstOrDefault(b =>
+            var bookmark = this.fixture.Context.UserBookmarks.FirstOrDefault(b =>
                 b.UniversityId == university.Id && b.UserId == userId);
             Assert.NotNull(bookmark);
             Assert.True(bookmark.IsActive);
@@ -215,13 +215,13 @@ namespace UniversityAPI.Tests.UnitTests.Services
         [Fact]
         public async Task UnbookmarkUniversity_ValidData_Succeeds()
         {
-            var userId = _mockCurrentUserService.Object.UserId;
-            var university = _fixture.Context.Universities.First();
+            var userId = this.mockCurrentUserService.Object.UserId;
+            var university = this.fixture.Context.Universities.First();
 
-            await _universityService.BookmarkUniversityAsync(university.Id, userId);
-            await _universityService.UnbookmarkUniversityAsync(university.Id, userId);
+            await this.universityService.BookmarkUniversityAsync(university.Id, userId);
+            await this.universityService.UnbookmarkUniversityAsync(university.Id, userId);
 
-            var bookmark = _fixture.Context.UserBookmarks.IgnoreQueryFilters().FirstOrDefault(b =>
+            var bookmark = this.fixture.Context.UserBookmarks.IgnoreQueryFilters().FirstOrDefault(b =>
                 b.UniversityId == university.Id && b.UserId == userId && !b.IsActive);
             Assert.NotNull(bookmark);
             Assert.False(bookmark.IsActive);
@@ -230,15 +230,15 @@ namespace UniversityAPI.Tests.UnitTests.Services
         [Fact]
         public async Task GetUniversities_WithUserId_ReturnsWithBookmarkStatus()
         {
-            var userId = _mockCurrentUserService.Object.UserId;
-            var university = _fixture.Context.Universities.First();
+            var userId = this.mockCurrentUserService.Object.UserId;
+            var university = this.fixture.Context.Universities.First();
 
-            await _universityService.BookmarkUniversityAsync(university.Id, userId);
+            await this.universityService.BookmarkUniversityAsync(university.Id, userId);
 
             var filter = new UniversityFilter();
             var pagination = new PaginationParams { PageNumber = 1, PageSize = 10 };
 
-            var result = await _universityService.GetUniversitiesAsync(userId, filter, pagination);
+            var result = await this.universityService.GetUniversitiesAsync(userId, filter, pagination);
 
             Assert.NotEmpty(result.Items);
             var bookmarkedUniversity = result.Items.FirstOrDefault(u => u.Id == university.Id);
@@ -249,9 +249,9 @@ namespace UniversityAPI.Tests.UnitTests.Services
         [Fact]
         public async Task GetUniversityById_ExistingId_ReturnsUniversity()
         {
-            var existingUniversity = _fixture.Context.Universities.First();
+            var existingUniversity = this.fixture.Context.Universities.First();
 
-            var result = await _universityService.GetUniversityByIdAsync(existingUniversity.Id);
+            var result = await this.universityService.GetUniversityByIdAsync(existingUniversity.Id);
 
             Assert.NotNull(result);
             Assert.Equal(existingUniversity.Id, result.Id);
@@ -262,12 +262,12 @@ namespace UniversityAPI.Tests.UnitTests.Services
         [Fact]
         public async Task DeleteUniversity_ExistingId_Succeeds()
         {
-            var userId = _mockCurrentUserService.Object.UserId;
-            var existingUniversity = _fixture.Context.Universities.First();
+            var userId = this.mockCurrentUserService.Object.UserId;
+            var existingUniversity = this.fixture.Context.Universities.First();
 
-            await _universityService.DeleteUniversityAsync(existingUniversity.Id, userId);
+            await this.universityService.DeleteUniversityAsync(existingUniversity.Id, userId);
 
-            var deletedUniversity = _fixture.Context.Universities.IgnoreQueryFilters().First(u => u.Id == existingUniversity.Id);
+            var deletedUniversity = this.fixture.Context.Universities.IgnoreQueryFilters().First(u => u.Id == existingUniversity.Id);
             Assert.False(deletedUniversity.IsActive);
         }
     }

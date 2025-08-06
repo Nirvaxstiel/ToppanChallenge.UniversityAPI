@@ -9,15 +9,15 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
 {
     public class AuthControllerTests : IClassFixture<UnitTestFixture>
     {
-        private readonly UnitTestFixture _fixture;
-        private readonly AuthController _authController;
-        private readonly Mock<ITokenService> _mockTokenService;
+        private readonly UnitTestFixture fixture;
+        private readonly AuthController authController;
+        private readonly Mock<ITokenService> mockTokenService;
 
         public AuthControllerTests(UnitTestFixture fixture)
         {
-            _fixture = fixture;
-            _mockTokenService = new Mock<ITokenService>();
-            _authController = new AuthController(_fixture.UserManager, _mockTokenService.Object);
+            this.fixture = fixture;
+            this.mockTokenService = new Mock<ITokenService>();
+            this.authController = new AuthController(this.fixture.UserManager, this.mockTokenService.Object);
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
                 Password = "TestPassword123!"
             };
 
-            var result = await _authController.Register(registerDto);
+            var result = await this.authController.Register(registerDto);
 
             Assert.IsType<ActionResult<AuthResponse>>(result);
             Assert.Null(result.Result);
@@ -45,7 +45,7 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         [Fact]
         public async Task Register_DuplicateEmail_ReturnsBadRequest()
         {
-            var existingUser = _fixture.Context.Users.First();
+            var existingUser = this.fixture.Context.Users.First();
             var registerDto = new RegisterDto
             {
                 Username = "newuser", // Different username
@@ -53,18 +53,18 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
                 Password = "TestPassword123!"
             };
 
-            var result = await _authController.Register(registerDto);
+            var result = await this.authController.Register(registerDto);
 
             Assert.IsType<ActionResult<AuthResponse>>(result);
             Assert.NotNull(result.Result);
-            Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.IsType<ConflictObjectResult>(result.Result);
             Assert.Null(result.Value);
         }
 
         [Fact]
         public async Task Register_DuplicateUsername_ReturnsBadRequest()
         {
-            var existingUser = _fixture.Context.Users.First();
+            var existingUser = this.fixture.Context.Users.First();
             var registerDto = new RegisterDto
             {
                 Username = existingUser?.UserName, // Duplicate username
@@ -72,11 +72,11 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
                 Password = "TestPassword123!"
             };
 
-            var result = await _authController.Register(registerDto);
+            var result = await this.authController.Register(registerDto);
 
             Assert.IsType<ActionResult<AuthResponse>>(result);
             Assert.NotNull(result.Result);
-            Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.IsType<ConflictObjectResult>(result.Result);
             Assert.Null(result.Value);
         }
 
@@ -93,7 +93,7 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
             };
 
             var password = "TestUser123!";
-            var createResult = await _fixture.UserManager.CreateAsync(testUser, password);
+            var createResult = await this.fixture.UserManager.CreateAsync(testUser, password);
             Assert.True(createResult.Succeeded, "Failed to create test user");
 
             var loginDto = new LoginDto
@@ -102,10 +102,10 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
                 Password = password
             };
 
-            _mockTokenService.Setup(x => x.GenerateToken(It.IsAny<UserDM>()))
+            this.mockTokenService.Setup(x => x.GenerateToken(It.IsAny<UserDM>()))
                 .ReturnsAsync("mock-jwt-token");
 
-            var result = await _authController.Login(loginDto);
+            var result = await this.authController.Login(loginDto);
 
             Assert.IsType<ActionResult<AuthResponse>>(result);
             Assert.Null(result.Result);
@@ -125,7 +125,7 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
                 Password = "WrongPassword"
             };
 
-            var result = await _authController.Login(loginDto);
+            var result = await this.authController.Login(loginDto);
             Assert.IsType<ActionResult<AuthResponse>>(result);
             Assert.NotNull(result.Result);
             Assert.IsType<UnauthorizedResult>(result.Result);
@@ -140,8 +140,8 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
                 Username = "",
                 Password = ""
             };
-            TestModelValidator.ValidateModel(loginDto, _authController);
-            var result = await _authController.Login(loginDto);
+            TestModelValidator.ValidateModel(loginDto, this.authController);
+            var result = await this.authController.Login(loginDto);
 
             Assert.IsType<ActionResult<AuthResponse>>(result);
             Assert.NotNull(result.Result);
@@ -159,9 +159,9 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
                 Password = ""
             };
 
-            TestModelValidator.ValidateModel(registerDto, _authController);
+            TestModelValidator.ValidateModel(registerDto, this.authController);
 
-            var result = await _authController.Register(registerDto);
+            var result = await this.authController.Register(registerDto);
 
             Assert.IsType<ActionResult<AuthResponse>>(result);
             Assert.NotNull(result.Result);

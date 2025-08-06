@@ -2,9 +2,9 @@
 
 namespace UniversityAPI.Framework.Model
 {
-    public class ConflictException : ApiException
+    public class ConflictError : ApiException
     {
-        public ConflictException(string message, string? errorCode = null)
+        public ConflictError(string message, string? errorCode = null)
             : base(message, StatusCodes.Status409Conflict, errorCode) { }
     }
 }

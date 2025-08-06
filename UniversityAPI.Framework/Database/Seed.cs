@@ -1,17 +1,22 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 using UniversityAPI.Framework.Model;
-using UniversityAPI.Utility;
+using UniversityAPI.Utility.Interfaces;
 
 namespace UniversityAPI.Framework
 {
     public static class Seed
     {
+        private const string UNABLETOSEEDADMINMESSAGE = "Admin username, email, or password not set. Set TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME, TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL, TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD in dotnet secrets or corresponding environment variables.";
+        private static IConfigHelper? configHelper;
+
         public static async Task SeedData(ApplicationDbContext context,
                                           UserManager<UserDM> userManager,
-                                          RoleManager<IdentityRole> roleManager)
+                                          RoleManager<IdentityRole> roleManager,
+                                          IConfigHelper configHelper)
         {
             await context.Database.EnsureCreatedAsync();
+            Seed.configHelper = configHelper;
             await SeedRoles(roleManager);
             await SeedAdminUser(userManager);
             await SeedUniversities(context);
@@ -33,13 +38,13 @@ namespace UniversityAPI.Framework
 
         private static async Task SeedAdminUser(UserManager<UserDM> userManager)
         {
-            string adminUsername = ConfigHelper.GetDefaultValue<string>("TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME");
-            string adminEmail = ConfigHelper.GetDefaultValue<string>("TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL");
-            string adminPassword = ConfigHelper.GetDefaultValue<string>("TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD");
+            var adminUsername = configHelper.GetAdminInitUsername<string>();
+            var adminEmail = configHelper.GetAdminInitUsername<string>();
+            var adminPassword = configHelper.GetAdminInitPassword<string>();
 
             if (string.IsNullOrWhiteSpace(adminUsername) || string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
             {
-                throw new Exception("Admin username, email, or password not set. Set TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME, TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL, TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD in dotnet secrets or corresponding environment variables.");
+                throw new ArgumentException(message: UNABLETOSEEDADMINMESSAGE);
             }
 
             var adminUser = await userManager.FindByEmailAsync(adminEmail);

@@ -1,69 +1,69 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.ComponentModel;
+using UniversityAPI.Utility.Interfaces;
 
 namespace UniversityAPI.Utility
 {
-    public static class ConfigHelper
+    public class ConfigHelper : IConfigHelper
     {
-        private const string PUBLIC_KEY_NAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
-        private const string JWT_KEY_KEY_NAME = "TOPPAN_UNIVERSITYAPI_JWT_KEY";
-        private const string DB_CONNECTION_KEY_NAME = "TOPPAN_UNIVERSITYAPI_DB_CONNECTION";
-        private const string ADMIN_INIT_USERNAME_KEY_NAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME";
-        private const string ADMIN_INIT_PASSWORD_KEY_NAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD";
-        private const string ADMIN_INIT_EMAIL_KEY_NAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL";
-        private static IConfiguration _configuration;
+        private readonly IConfiguration configuration;
+        private readonly ILogger<IConfiguration> logger;
 
-        public static void Initialize(IConfiguration configuration)
+        private const string PUBLICKEYNAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
+        private const string JWTKEYKEYNAME = "TOPPAN_UNIVERSITYAPI_JWT_KEY";
+        private const string DBCONNECTIONKEYNAME = "TOPPAN_UNIVERSITYAPI_DB_CONNECTION";
+        private const string ADMININITUSERNAMEKEYNAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME";
+        private const string ADMININITPASSWORDKEYNAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD";
+        private const string ADMININITEMAILKEYNAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL";
+
+        public ConfigHelper(IConfiguration configuration, ILogger<IConfiguration> logger)
         {
-            _configuration = configuration;
+            this.configuration = configuration;
+            this.logger = logger;
         }
 
-        public static IConfiguration Configuration => _configuration ?? throw new InvalidOperationException("Configuration not initialized");
+        public T GetValue<T>(string key)
+        {
+            this.TryGetValue<T>(key, out var value);
+            return value;
+        }
 
-        /// <summary>
-        /// Gets a configuration value with automatic fallback to environment variables.
-        /// Priority: 1. Dotnet User-Secrets/Configuration, 2. Environment Variables, 3. Default value
-        /// </summary>
-        public static T GetValue<T>(string key, T defaultValue = default(T))
+        public bool TryGetValue<T>(string key, out T value)
         {
             try
             {
-                // First, try to get from configuration (dotnet user-secrets, appsettings, etc.)
-                var configValue = Configuration[key];
+                var configValue = this.configuration[key];
                 if (!string.IsNullOrWhiteSpace(configValue))
                 {
-                    return ConvertValue<T>(configValue);
+                    value = this.ConvertValue<T>(configValue);
+                    return true;
                 }
 
-                // Second, try environment variable (convert key format: "Admin:InitialPassword" -> "ADMIN_INITIAL_PASSWORD")
-                var envValue = Environment.GetEnvironmentVariable(key);
+                var envKey = key.Replace(":", "_").ToUpperInvariant();
+                var envValue = Environment.GetEnvironmentVariable(envKey);
                 if (!string.IsNullOrWhiteSpace(envValue))
                 {
-                    return ConvertValue<T>(envValue);
+                    value = this.ConvertValue<T>(envValue);
+                    return true;
                 }
 
-                // Finally, return default value
-                return defaultValue;
+                this.logger.LogWarning("Configuration key '{Key}' not found in configuration or environment variables.", key);
             }
-            catch
+            catch (Exception ex)
             {
-                return defaultValue;
+                this.logger.LogError(ex, "Failed to retrieve configuration value for key '{Key}'", key);
             }
+
+            value = default!;
+            return false;
         }
 
-        /// <summary>
-        /// Legacy method - now uses GetValue internally
-        /// </summary>
-        public static T GetDefaultValue<T>(string key)
-        {
-            return GetValue<T>(key, default);
-        }
-
-        public static T GetSection<T>(string sectionKey) where T : class, new()
+        public T GetSection<T>(string sectionKey) where T : class, new()
         {
             try
             {
-                return Configuration.GetSection(sectionKey).Get<T>() ?? new T();
+                return this.configuration.GetSection(sectionKey).Get<T>() ?? new T();
             }
             catch
             {
@@ -71,51 +71,68 @@ namespace UniversityAPI.Utility
             }
         }
 
-        public static T GetPublicCipherKey<T>()
+        public T GetPublicCipherKey<T>()
         {
-            return GetValue<T>(PUBLIC_KEY_NAME);
+            return this.GetValue<T>(PUBLICKEYNAME);
         }
 
-        public static T GetJwtKey<T>()
+        public T GetJwtKey<T>()
         {
-            return GetValue<T>(JWT_KEY_KEY_NAME);
+            return this.GetValue<T>(JWTKEYKEYNAME);
         }
 
-        public static T GetDbConnection<T>()
+        public T GetDbConnection<T>()
         {
-            return GetValue<T>(DB_CONNECTION_KEY_NAME);
+            return this.GetValue<T>(DBCONNECTIONKEYNAME);
         }
 
-        public static T GetAdminInitUsername<T>()
+        public T GetAdminInitUsername<T>()
         {
-            return GetValue<T>(ADMIN_INIT_USERNAME_KEY_NAME);
+            return this.GetValue<T>(ADMININITUSERNAMEKEYNAME);
         }
 
-        public static T GetAdminInitPassword<T>()
+        public T GetAdminInitPassword<T>()
         {
-            return GetValue<T>(ADMIN_INIT_PASSWORD_KEY_NAME);
+            return this.GetValue<T>(ADMININITPASSWORDKEYNAME);
         }
 
-        public static T GetAdminInitEmail<T>()
+        public T GetAdminInitEmail<T>()
         {
-            return GetValue<T>(ADMIN_INIT_EMAIL_KEY_NAME);
+            return this.GetValue<T>(ADMININITEMAILKEYNAME);
         }
 
-        private static T ConvertValue<T>(string value)
+        public T ConvertValue<T>(string value)
         {
-            if (typeof(T) == typeof(string))
+            var targetType = typeof(T);
+
+            if (targetType == typeof(string))
             {
                 return (T)(object)value;
             }
 
-            var converter = TypeDescriptor.GetConverter(typeof(T));
-            if (converter != null && converter.CanConvertFrom(typeof(string)))
+            // Handle nullable types
+            var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+            // Handle enums
+            if (underlyingType.IsEnum)
             {
-                return (T)converter.ConvertFromString(value);
+                if (Enum.TryParse(underlyingType, value, ignoreCase: true, out var enumResult))
+                {
+                    return (T)enumResult;
+                }
+
+                throw new InvalidCastException($"Cannot convert '{value}' to enum type '{underlyingType.Name}'.");
+            }
+
+            // Use TypeConverter if available
+            var converter = TypeDescriptor.GetConverter(underlyingType);
+            if (converter.CanConvertFrom(typeof(string)))
+            {
+                return (T)converter.ConvertFromString(value)!;
             }
 
             // Fallback to Convert.ChangeType
-            return (T)Convert.ChangeType(value, typeof(T));
+            return (T)Convert.ChangeType(value, underlyingType);
         }
     }
 }

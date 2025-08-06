@@ -5,7 +5,7 @@ namespace UniversityAPI.Service
 {
     public static class ServiceStartup
     {
-        public static void AddServiceLayer(this IServiceCollection services, IConfiguration config)
+        public static void AddServiceLayer(this IServiceCollection services)
         {
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUniversityService, UniversityService>();

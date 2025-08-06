@@ -8,7 +8,7 @@ namespace UniversityAPI.Utility
         private static string[] ValidAttributes = new string[]
             { "STYLE", "SRC", "ALT", "HREF", "BORDER", "CELLPADDING", "CELLSPACING", "TARGET", "CLASS", "WIDTH", "HEIGHT", "CONTROLS" };
 
-        public const string CAPITAL_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        public const string CAPITALLETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private static readonly string LinuxNewLine = "\n";
 
         private static readonly string[] WildCards = new string[] { "%", "^", "*", "_" };

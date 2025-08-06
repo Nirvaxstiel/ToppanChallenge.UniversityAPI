@@ -2,9 +2,9 @@
 
 namespace UniversityAPI.Framework.Model
 {
-    public class BadRequestException : ApiException
+    public class BadRequestError : ApiException
     {
-        public BadRequestException(string message, string? errorCode = null)
+        public BadRequestError(string message, string? errorCode = null)
             : base(message, StatusCodes.Status400BadRequest, errorCode) { }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using UniversityAPI.Framework.Model.Exception;
 
 namespace UniversityAPI.Service
 {
@@ -19,7 +20,7 @@ namespace UniversityAPI.Service
                 var userId = ConvertHelper.ToGuid(_httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier));
                 if (userId == Guid.Empty)
                 {
-                    throw new InvalidOperationException("User ID is missing or invalid");
+                    throw new UnauthorisedError("User ID is missing or invalid");
                 }
                 return userId;
             }

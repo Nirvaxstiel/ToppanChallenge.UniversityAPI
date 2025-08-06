@@ -1,21 +1,30 @@
-﻿using System.Text;
-using Jose;
+﻿using Jose;
 using Jose.keys;
+using System.Text;
 using UniversityAPI.Utility;
+using UniversityAPI.Utility.Interfaces;
 
 namespace System.Security.Cryptography
 {
     public sealed class EncryptHelper
     {
         private static byte[] bytes = ASCIIEncoding.ASCII.GetBytes("ZeroCool");
-        private static readonly string fingerprint = ConfigHelper.GetDefaultValue<string>("fingerprint");
-        private static readonly bool is_FIPS_enabled = ConvertHelper.ToBool(ConfigHelper.GetDefaultValue<bool>("is_FIPS_enabled"));
+        private static string? fingerprint;
+        private static bool isFIPSEnabled;
+        private static IConfigHelper? configHelper;
+
+        public static void SetInstance(IConfigHelper config)
+        {
+            configHelper = config;
+            fingerprint = configHelper.GetValue<string>("fingerprint");
+            isFIPSEnabled = ConvertHelper.ToBool(configHelper.GetValue<bool>("is_FIPS_enabled"));
+        }
 
         public static string EncryptByMd5(string plainText)
         {
             plainText = plainText.Trim();
 
-            if (is_FIPS_enabled)
+            if (isFIPSEnabled)
             {
                 return EncryptBySha256(plainText);
             }
@@ -50,7 +59,7 @@ namespace System.Security.Cryptography
                 return string.Empty;
             }
 
-            var secretKey = ConfigHelper.GetPublicCipherKey<string>();
+            var secretKey = configHelper.GetPublicCipherKey<string>();
             string guidText = secretKey.ToLowerInvariant().Replace("-", "");
             string key = ConvertHelper.ToBase64String(guidText);
             string iv = ConvertHelper.ToBase64String(guidText.Substring(10, 16));
@@ -69,7 +78,7 @@ namespace System.Security.Cryptography
 
         public static string EncryptByAesCbc(string plainText, string key, string iv, int keySize = 128)
         {
-            if (is_FIPS_enabled)
+            if (isFIPSEnabled)
             {
                 return EncryptByAesCbcViaCryptoServiceProvider(plainText, key, iv, keySize);
             }
@@ -124,7 +133,7 @@ namespace System.Security.Cryptography
                 return string.Empty;
             }
 
-            if (is_FIPS_enabled)
+            if (isFIPSEnabled)
             {
                 return DecryptByAesCbcViaCryptoServiceProvider(cipherText, secretKey);
             }
@@ -152,7 +161,7 @@ namespace System.Security.Cryptography
                 return string.Empty;
             }
 
-            var secretKey = ConfigHelper.GetPublicCipherKey<string>();
+            var secretKey = configHelper.GetPublicCipherKey<string>();
             string guidText = secretKey.ToLowerInvariant().Replace("-", "");
             string key = ConvertHelper.ToBase64String(guidText);
             string iv = ConvertHelper.ToBase64String(guidText.Substring(10, 16));
@@ -162,7 +171,7 @@ namespace System.Security.Cryptography
 
         public static string DecryptByAesCbc(string cipherText, string key, string iv, int keySize = 128)
         {
-            if (is_FIPS_enabled)
+            if (isFIPSEnabled)
             {
                 return DecryptByAesCbcViaCryptoServiceProvider(cipherText, key, iv, keySize);
             }

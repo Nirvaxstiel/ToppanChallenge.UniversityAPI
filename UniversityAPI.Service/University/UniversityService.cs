@@ -79,7 +79,7 @@ namespace UniversityAPI.Service
                 .FirstOrDefaultAsync(u => u.Name == universityDto.Name && u.Country == universityDto.Country);
             if (existingUniversity != null)
             {
-                throw new ConflictException("A university with this name and country already exists");
+                throw new ConflictError("A university with this name and country already exists");
             }
 
             var universityDM = new UniversityDM
@@ -104,7 +104,7 @@ namespace UniversityAPI.Service
             var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
             if (universityDM == null)
             {
-                throw new NotFoundException("University not found");
+                throw new NotFoundError("University not found");
             }
 
             var existingUniversity = await _context.Universities.FirstOrDefaultAsync(u => u.Name == universityDto.Name
@@ -112,7 +112,7 @@ namespace UniversityAPI.Service
                 && u.Id != universityId);
             if (existingUniversity != null)
             {
-                throw new ConflictException("A university with this name and country already exists");
+                throw new ConflictError("A university with this name and country already exists");
             }
 
             universityDM.Name = universityDto.Name;
@@ -131,7 +131,7 @@ namespace UniversityAPI.Service
             var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
             if (universityDM == null)
             {
-                throw new NotFoundException("University not found");
+                throw new NotFoundError("University not found");
             }
 
             universityDM.UpdatedDate = DateTime.UtcNow;
@@ -146,7 +146,7 @@ namespace UniversityAPI.Service
             var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
             if (universityDM == null)
             {
-                throw new NotFoundException("University not found");
+                throw new NotFoundError("University not found");
             }
 
             var bookmarks = _context.UserBookmarks.Where(bookmark => bookmark.UserId == userId);
@@ -180,13 +180,13 @@ namespace UniversityAPI.Service
             var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
             if (universityDM == null)
             {
-                throw new NotFoundException("University not found");
+                throw new NotFoundError("University not found");
             }
 
             var bookmark = await _context.UserBookmarks.FirstOrDefaultAsync(bookmark => bookmark.UniversityId == universityId && bookmark.UserId == userId);
             if (bookmark == null)
             {
-                throw new NotFoundException("Bookmark not found");
+                throw new NotFoundError("Bookmark not found");
             }
 
             bookmark.UpdatedDate = DateTime.UtcNow;

@@ -1,6 +1,6 @@
 ﻿namespace UniversityAPI.Framework.Model
 {
-    public class ApiException : Exception
+    public class ApiException : System.Exception
     {
         public int StatusCode { get; }
         public string? ErrorCode { get; }
@@ -20,7 +20,7 @@
         {
         }
 
-        public ApiException(string? message, Exception? innerException) : base(message, innerException)
+        public ApiException(string? message, System.Exception? innerException) : base(message, innerException)
         {
         }
     }

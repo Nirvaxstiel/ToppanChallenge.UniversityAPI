@@ -4,18 +4,26 @@ using System.Data.SqlTypes;
 using System.Reflection;
 using System.Reflection.Emit;
 using UniversityAPI.Utility;
+using UniversityAPI.Utility.Interfaces;
 
 namespace System
 {
     public static class TimeZoneHelper
     {
-        public static readonly string DEFAULT_STANDARD_TIME = GetDefaultTimeZoneId();
+        private static string DEFAULTSTANDARDTIME;
+        private static IConfigHelper? configHelper;
 
-        public static readonly TimeZoneInfo StandardTimeZone = TimeZoneInfo.FindSystemTimeZoneById(DEFAULT_STANDARD_TIME);
+        public static void SetInstance(IConfigHelper config)
+        {
+            configHelper = config;
+            DEFAULTSTANDARDTIME = GetDefaultTimeZoneId();
+        }
+
+        public static TimeZoneInfo StandardTimeZone => TimeZoneInfo.FindSystemTimeZoneById(DEFAULTSTANDARDTIME);
 
         public static string GetDefaultTimeZoneId()
         {
-            string defaultTimeZoneId = ConfigHelper.GetDefaultValue<string>("default_standard_time");
+            string defaultTimeZoneId = configHelper.GetValue<string>("default_standard_time");
 
             return string.IsNullOrWhiteSpace(defaultTimeZoneId) ? "Singapore Standard Time" : defaultTimeZoneId;
         }

@@ -10,17 +10,17 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
 {
     public class UniversityControllerTests : IClassFixture<UnitTestFixture>
     {
-        private readonly UnitTestFixture _fixture;
+        private readonly UnitTestFixture fixture;
         private readonly UniversityController _universityController;
-        private readonly Mock<IUniversityService> _mockUniversityService;
-        private readonly Mock<ICurrentUserService> _mockCurrentUserService;
+        private readonly Mock<IUniversityService> mockUniversityService;
+        private readonly Mock<ICurrentUserService> mockCurrentUserService;
 
         public UniversityControllerTests(UnitTestFixture fixture)
         {
-            _fixture = fixture;
-            _mockUniversityService = new Mock<IUniversityService>();
-            _mockCurrentUserService = new Mock<ICurrentUserService>();
-            _universityController = new UniversityController(_mockUniversityService.Object, _mockCurrentUserService.Object);
+            this.fixture = fixture;
+            this.mockUniversityService = new Mock<IUniversityService>();
+            this.mockCurrentUserService = new Mock<ICurrentUserService>();
+            this._universityController = new UniversityController(this.mockUniversityService.Object, this.mockCurrentUserService.Object);
         }
 
         [Fact]
@@ -34,10 +34,10 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
                 PageSize = 10
             };
 
-            _mockUniversityService.Setup(x => x.GetUniversitiesAsync(It.IsAny<Guid>(), It.IsAny<UniversityFilter>(), It.IsAny<PaginationParams>()))
+            this.mockUniversityService.Setup(x => x.GetUniversitiesAsync(It.IsAny<Guid>(), It.IsAny<UniversityFilter>(), It.IsAny<PaginationParams>()))
                 .ReturnsAsync(mockResult);
 
-            var result = await _universityController.GetUniversities(new UniversityFilter(), new PaginationParams());
+            var result = await this._universityController.GetUniversities(new UniversityFilter(), new PaginationParams());
 
             Assert.IsType<ActionResult<PagedResult<UniversityDto>>>(result);
         }
@@ -48,10 +48,10 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
             var universityId = Guid.NewGuid();
             var mockUniversity = new UniversityDto { Id = universityId, Name = "Test University" };
 
-            _mockUniversityService.Setup(x => x.GetUniversityByIdAsync(universityId))
+            this.mockUniversityService.Setup(x => x.GetUniversityByIdAsync(universityId))
                 .ReturnsAsync(mockUniversity);
 
-            var result = await _universityController.GetUniversity(universityId);
+            var result = await this._universityController.GetUniversity(universityId);
 
             Assert.IsType<OkObjectResult>(result.Result);
             var okResult = result.Result as OkObjectResult;
@@ -64,10 +64,10 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         {
             var universityId = Guid.NewGuid();
 
-            _mockUniversityService.Setup(x => x.GetUniversityByIdAsync(universityId))
+            this.mockUniversityService.Setup(x => x.GetUniversityByIdAsync(universityId))
                 .ReturnsAsync((UniversityDto)null);
 
-            var result = await _universityController.GetUniversity(universityId);
+            var result = await this._universityController.GetUniversity(universityId);
 
             Assert.IsType<NotFoundResult>(result.Result);
             Assert.Null(result.Value);
@@ -90,10 +90,10 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
                 Webpage = createDto.Webpage
             };
 
-            _mockUniversityService.Setup(x => x.CreateUniversityAsync(It.IsAny<CreateUniversityDto>(), It.IsAny<Guid>()))
+            this.mockUniversityService.Setup(x => x.CreateUniversityAsync(It.IsAny<CreateUniversityDto>(), It.IsAny<Guid>()))
                 .ReturnsAsync(mockResult);
 
-            var result = await _universityController.CreateUniversity(createDto);
+            var result = await this._universityController.CreateUniversity(createDto);
 
             Assert.IsType<ActionResult<CreateUniversityDto>>(result);
         }
@@ -101,8 +101,8 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         [Fact]
         public async Task BookmarkUniversity_ValidData_ReturnsOkResult()
         {
-            var university = _fixture.Context.Universities.First();
-            var user = _fixture.Context.Users.First();
+            var university = this.fixture.Context.Universities.First();
+            var user = this.fixture.Context.Users.First();
 
             var mockBookmark = new UserBookmarkDto
             {
@@ -110,10 +110,10 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
                 UniversityId = university.Id
             };
 
-            _mockUniversityService.Setup(x => x.BookmarkUniversityAsync(university.Id, It.IsAny<Guid>()))
+            this.mockUniversityService.Setup(x => x.BookmarkUniversityAsync(university.Id, It.IsAny<Guid>()))
                 .ReturnsAsync(mockBookmark);
 
-            var result = await _universityController.BookmarkUniversity(university.Id);
+            var result = await this._universityController.BookmarkUniversity(university.Id);
 
             Assert.IsType<NoContentResult>(result);
         }

@@ -49,8 +49,8 @@ namespace UniversityAPI.Tests.Shared.Fixtures
                 services.Replace(ServiceDescriptor.Singleton(typeof(DbContextOptions<ApplicationDbContext>), new DbContextOptions<ApplicationDbContext>()));
                 services.Replace(ServiceDescriptor.Singleton(typeof(ApplicationDbContext), new ApplicationDbContext(contextOptions)));
 
-                services.AddServiceLayer(config);
-                services.AddUtilityLayer(config);
+                services.AddUtilityLayer();
+                services.AddServiceLayer();
 
                 services
                     .AddAuthentication("Test")
@@ -64,7 +64,7 @@ namespace UniversityAPI.Tests.Shared.Fixtures
                     options.DefaultAuthenticateScheme = "Test";
                     options.DefaultChallengeScheme = "Test";
                 });
-                services.AddSingleton<TestAuthOptions>();
+                //services.AddSingleton<TestAuthOptions>();
 
                 var serviceProvider = services.BuildServiceProvider();
 

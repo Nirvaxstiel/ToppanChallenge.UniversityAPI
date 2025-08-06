@@ -2,9 +2,9 @@
 
 namespace UniversityAPI.Framework.Model
 {
-    public class NotFoundException : ApiException
+    public class NotFoundError : ApiException
     {
-        public NotFoundException(string message, string? errorCode = null)
+        public NotFoundError(string message, string? errorCode = null)
             : base(message, StatusCodes.Status404NotFound, errorCode) { }
     }
 }

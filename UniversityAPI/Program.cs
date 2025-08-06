@@ -11,6 +11,7 @@ using UniversityAPI.Framework.Model;
 using UniversityAPI.Middleware;
 using UniversityAPI.Service;
 using UniversityAPI.Utility;
+using UniversityAPI.Utility.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,8 +57,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddServiceLayer(builder.Configuration);
-builder.Services.AddUtilityLayer(builder.Configuration);
+builder.Services.AddUtilityLayer();
+builder.Services.AddServiceLayer();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -161,7 +162,9 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<ApplicationDbContext>();
         var userManager = services.GetRequiredService<UserManager<UserDM>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-        await Seed.SeedData(context, userManager, roleManager);
+        var configHelper = services.GetRequiredService<IConfigHelper>();
+        configHelper.InjectStaticConfig();
+        await Seed.SeedData(context, userManager, roleManager, configHelper);
     }
     catch (Exception ex)
     {

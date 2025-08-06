@@ -6,17 +6,17 @@ namespace System
 {
     public class PropertyHelper
     {
-        private static ConcurrentDictionary<Type, PropertyHelper[]> _reflectionCache = new ConcurrentDictionary<Type, PropertyHelper[]>();
+        private static ConcurrentDictionary<Type, PropertyHelper[]> reflectionCache = new ConcurrentDictionary<Type, PropertyHelper[]>();
 
-        private Func<object, object> _valueGetter;
+        private Func<object, object> valueGetter;
 
         public PropertyHelper(PropertyInfo property)
         {
             Contract.Assert(property != null);
 
-            Name = property.Name;
-            Type = property.PropertyType;
-            _valueGetter = MakeFastPropertyGetter(property);
+            this.Name = property.Name;
+            this.Type = property.PropertyType;
+            this.valueGetter = MakeFastPropertyGetter(property);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace System
 
             // Create a delegate TValue -> "TDeclaringType.Property"
             var propertySetterAsAction = setMethod.CreateDelegate(typeof(Action<,>).MakeGenericType(typeInput, typeValue));
-            var callPropertySetterClosedGenericMethod = _callPropertySetterOpenGenericMethod.MakeGenericMethod(typeInput, typeValue);
+            var callPropertySetterClosedGenericMethod = callPropertySetterOpenGenericMethod.MakeGenericMethod(typeInput, typeValue);
             callPropertySetterDelegate = Delegate.CreateDelegate(typeof(Action<TDeclaringType, object>), propertySetterAsAction, callPropertySetterClosedGenericMethod);
 
             return (Action<TDeclaringType, object>)callPropertySetterDelegate;
@@ -59,9 +59,9 @@ namespace System
 
         public object GetValue(object instance)
         {
-            Contract.Assert(_valueGetter != null, "Must call Initialize before using this object");
+            Contract.Assert(this.valueGetter != null, "Must call Initialize before using this object");
 
-            return _valueGetter(instance);
+            return this.valueGetter(instance);
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace System
         /// <returns>a cached array of all public property getters from the underlying type of this instance.</returns>
         public static PropertyHelper[] GetProperties(object instance)
         {
-            return GetProperties(instance, CreateInstance, _reflectionCache);
+            return GetProperties(instance, CreateInstance, reflectionCache);
         }
 
         /// <summary>
@@ -100,14 +100,14 @@ namespace System
             {
                 // Create a delegate (ref TDeclaringType) -> TValue
                 Delegate propertyGetterAsFunc = getMethod.CreateDelegate(typeof(ByRefFunc<,>).MakeGenericType(typeInput, typeOutput));
-                MethodInfo callPropertyGetterClosedGenericMethod = _callPropertyGetterByReferenceOpenGenericMethod.MakeGenericMethod(typeInput, typeOutput);
+                MethodInfo callPropertyGetterClosedGenericMethod = callPropertyGetterByReferenceOpenGenericMethod.MakeGenericMethod(typeInput, typeOutput);
                 callPropertyGetterDelegate = Delegate.CreateDelegate(typeof(Func<object, object>), propertyGetterAsFunc, callPropertyGetterClosedGenericMethod);
             }
             else
             {
                 // Create a delegate TDeclaringType -> TValue
                 Delegate propertyGetterAsFunc = getMethod.CreateDelegate(typeof(Func<,>).MakeGenericType(typeInput, typeOutput));
-                MethodInfo callPropertyGetterClosedGenericMethod = _callPropertyGetterOpenGenericMethod.MakeGenericMethod(typeInput, typeOutput);
+                MethodInfo callPropertyGetterClosedGenericMethod = callPropertyGetterOpenGenericMethod.MakeGenericMethod(typeInput, typeOutput);
                 callPropertyGetterDelegate = Delegate.CreateDelegate(typeof(Func<object, object>), propertyGetterAsFunc, callPropertyGetterClosedGenericMethod);
             }
 
@@ -122,8 +122,8 @@ namespace System
         // Implementation of the fast getter.
         private delegate TValue ByRefFunc<TDeclaringType, TValue>(ref TDeclaringType arg);
 
-        private static readonly MethodInfo _callPropertyGetterOpenGenericMethod = typeof(PropertyHelper).GetMethod("CallPropertyGetter", BindingFlags.NonPublic | BindingFlags.Static);
-        private static readonly MethodInfo _callPropertyGetterByReferenceOpenGenericMethod = typeof(PropertyHelper).GetMethod("CallPropertyGetterByReference", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo callPropertyGetterOpenGenericMethod = typeof(PropertyHelper).GetMethod("CallPropertyGetter", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo callPropertyGetterByReferenceOpenGenericMethod = typeof(PropertyHelper).GetMethod("CallPropertyGetterByReference", BindingFlags.NonPublic | BindingFlags.Static);
 
         private static object CallPropertyGetter<TDeclaringType, TValue>(Func<TDeclaringType, TValue> getter, object @this)
         {
@@ -137,7 +137,7 @@ namespace System
         }
 
         // Implementation of the fast setter.
-        private static readonly MethodInfo _callPropertySetterOpenGenericMethod = typeof(PropertyHelper).GetMethod("CallPropertySetter", BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo callPropertySetterOpenGenericMethod = typeof(PropertyHelper).GetMethod("CallPropertySetter", BindingFlags.NonPublic | BindingFlags.Static);
 
         private static void CallPropertySetter<TDeclaringType, TValue>(Action<TDeclaringType, TValue> setter, object @this, object value)
         {
