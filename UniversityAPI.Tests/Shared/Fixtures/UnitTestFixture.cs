@@ -45,8 +45,21 @@ namespace UniversityAPI.Tests.Shared.Fixtures
                 .Options;
 
             this.Context = new ApplicationDbContext(options);
+
+            var identityOptions = Microsoft.Extensions.Options.Options.Create(new IdentityOptions()
+            {
+                Password = new PasswordOptions()
+                {
+                    RequireDigit = true,
+                    RequireLowercase = true,
+                    RequireUppercase = true,
+                    RequireNonAlphanumeric = true,
+                    RequiredLength = 12,
+                    RequiredUniqueChars = 5
+                }
+            });
             var userStore = new UserStore<UserDM>(this.Context);
-            this.UserManager = new UserManager<UserDM>(userStore, null, new PasswordHasher<UserDM>(), null, null, null, null, null, null);
+            this.UserManager = new UserManager<UserDM>(userStore, identityOptions, new PasswordHasher<UserDM>(), null, null, null, null, null, null);
 
             var roleStore = new RoleStore<IdentityRole>(this.Context);
             this.RoleManager = new RoleManager<IdentityRole>(roleStore, null, null, null, null);

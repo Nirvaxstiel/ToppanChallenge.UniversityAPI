@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="53550d3b-4e44-48c7-bae0-f6d97e26eeef" name="Kei@KEIENTERPRISE11 2025-08-03 23:04:40" runUser="KeiEnterprise11\Kei" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-08-03T23:04:40.8246075+08:00" queuing="2025-08-03T23:04:40.8246079+08:00" start="2025-08-03T23:04:37.3560344+08:00" finish="2025-08-03T23:04:40.8306052+08:00" />
+  <TestSettings name="default" id="b60d5943-ecda-4d8f-ba52-f1cecf179716">
+    <Deployment runDeploymentRoot="Kei_KEIENTERPRISE11_2025-08-03_23_04_40" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="585ab282-85f5-4e67-bdcc-7c3d8c2153bd" testId="132df53d-a3f7-d8f0-4c39-54b0359796a2" testName="UniversityAPI.Tests.Services.UniversityServiceTests.CreateUniversity_DuplicateNameAndCountry_ThrowsConflictException" computerName="KEIENTERPRISE11" duration="00:00:00.0099645" startTime="2025-08-03T23:04:40.7274773+08:00" endTime="2025-08-03T23:04:40.7374785+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="585ab282-85f5-4e67-bdcc-7c3d8c2153bd" />
+    <UnitTestResult executionId="d6ce1067-09fe-4c3d-958e-f094122bbebf" testId="24eb555b-8377-3f29-fe76-54b3f051ea67" testName="UniversityAPI.Tests.Services.UniversityServiceTests.BookmarkUniversity_NonExistentUniversity_ThrowsNotFoundException" computerName="KEIENTERPRISE11" duration="00:00:00.0015282" startTime="2025-08-03T23:04:40.7249027+08:00" endTime="2025-08-03T23:04:40.7263443+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d6ce1067-09fe-4c3d-958e-f094122bbebf" />
+    <UnitTestResult executionId="8bc739d0-1f93-4081-bce1-0e879d311350" testId="66b05b13-ac3a-5b6b-6ef9-794969538cad" testName="UniversityAPI.Tests.Services.UniversityServiceTests.DeleteUniversity_NonExistentId_ThrowsNotFoundException" computerName="KEIENTERPRISE11" duration="00:00:00.0012029" startTime="2025-08-03T23:04:40.7532041+08:00" endTime="2025-08-03T23:04:40.7542491+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8bc739d0-1f93-4081-bce1-0e879d311350" />
+    <UnitTestResult executionId="768d1c6c-4261-4586-b540-60ed9b3fcaba" testId="55ea0115-ae67-7fb5-75e5-750074b27336" testName="UniversityAPI.Tests.Services.UniversityServiceTests.GetUniversities_EmptyUserId_ReturnsAllWithoutBookmarks" computerName="KEIENTERPRISE11" duration="00:00:00.5071086" startTime="2025-08-03T23:04:40.1804021+08:00" endTime="2025-08-03T23:04:40.6759934+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="768d1c6c-4261-4586-b540-60ed9b3fcaba" />
+    <UnitTestResult executionId="c4f7e5ef-4306-4580-942f-0e9ccb74d716" testId="8cbb1c00-96ee-a80c-36d1-bf367ff137df" testName="UniversityAPI.Tests.Services.UniversityServiceTests.UnbookmarkUniversity_NonExistentBookmark_ThrowsNotFoundException" computerName="KEIENTERPRISE11" duration="00:00:00.0154352" startTime="2025-08-03T23:04:40.7377215+08:00" endTime="2025-08-03T23:04:40.7530237+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c4f7e5ef-4306-4580-942f-0e9ccb74d716" />
+    <UnitTestResult executionId="3857f936-2924-427a-8193-e016d712a3b1" testId="a7b7d482-eecd-94b0-07a0-3f163f40ace6" testName="UniversityAPI.Tests.Services.UniversityServiceTests.UpdateUniversity_NonExistentId_ThrowsNotFoundException" computerName="KEIENTERPRISE11" duration="00:00:00.0015113" startTime="2025-08-03T23:04:40.7239266+08:00" endTime="2025-08-03T23:04:40.7247347+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3857f936-2924-427a-8193-e016d712a3b1" />
+    <UnitTestResult executionId="1b85d405-ddeb-4e19-9431-57298aa31f9b" testId="91a05b72-83bf-528a-963e-55de9879e76b" testName="UniversityAPI.Tests.Services.UniversityServiceTests.UpdateUniversity_DuplicateNameAndCountry_ThrowsConflictException" computerName="KEIENTERPRISE11" duration="00:00:00.0469158" startTime="2025-08-03T23:04:40.6826498+08:00" endTime="2025-08-03T23:04:40.7232874+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1b85d405-ddeb-4e19-9431-57298aa31f9b" />
+    <UnitTestResult executionId="dfb7aff3-c3a5-4639-a7c4-81b5acf6efa7" testId="10365d01-d9a1-79c5-0ec7-c4cc26a60880" testName="UniversityAPI.Tests.Services.UniversityServiceTests.GetUniversityById_NonExistentId_ReturnsNull" computerName="KEIENTERPRISE11" duration="00:00:00.0009238" startTime="2025-08-03T23:04:40.7264719+08:00" endTime="2025-08-03T23:04:40.7273435+08:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dfb7aff3-c3a5-4639-a7c4-81b5acf6efa7" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="UniversityAPI.Tests.Services.UniversityServiceTests.GetUniversities_EmptyUserId_ReturnsAllWithoutBookmarks" storage="c:\users\kei\documents\nonwork\toppanchallenge\universityapi.tests\bin\debug\net9.0\universityapi.tests.dll" id="55ea0115-ae67-7fb5-75e5-750074b27336">
+      <Execution id="768d1c6c-4261-4586-b540-60ed9b3fcaba" />
+      <TestMethod codeBase="C:\Users\Kei\Documents\NonWork\ToppanChallenge\UniversityAPI.Tests\bin\Debug\net9.0\UniversityAPI.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="UniversityAPI.Tests.Services.UniversityServiceTests" name="GetUniversities_EmptyUserId_ReturnsAllWithoutBookmarks" />
+    </UnitTest>
+    <UnitTest name="UniversityAPI.Tests.Services.UniversityServiceTests.UpdateUniversity_NonExistentId_ThrowsNotFoundException" storage="c:\users\kei\documents\nonwork\toppanchallenge\universityapi.tests\bin\debug\net9.0\universityapi.tests.dll" id="a7b7d482-eecd-94b0-07a0-3f163f40ace6">
+      <Execution id="3857f936-2924-427a-8193-e016d712a3b1" />
+      <TestMethod codeBase="C:\Users\Kei\Documents\NonWork\ToppanChallenge\UniversityAPI.Tests\bin\Debug\net9.0\UniversityAPI.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="UniversityAPI.Tests.Services.UniversityServiceTests" name="UpdateUniversity_NonExistentId_ThrowsNotFoundException" />
+    </UnitTest>
+    <UnitTest name="UniversityAPI.Tests.Services.UniversityServiceTests.UpdateUniversity_DuplicateNameAndCountry_ThrowsConflictException" storage="c:\users\kei\documents\nonwork\toppanchallenge\universityapi.tests\bin\debug\net9.0\universityapi.tests.dll" id="91a05b72-83bf-528a-963e-55de9879e76b">
+      <Execution id="1b85d405-ddeb-4e19-9431-57298aa31f9b" />
+      <TestMethod codeBase="C:\Users\Kei\Documents\NonWork\ToppanChallenge\UniversityAPI.Tests\bin\Debug\net9.0\UniversityAPI.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="UniversityAPI.Tests.Services.UniversityServiceTests" name="UpdateUniversity_DuplicateNameAndCountry_ThrowsConflictException" />
+    </UnitTest>
+    <UnitTest name="UniversityAPI.Tests.Services.UniversityServiceTests.GetUniversityById_NonExistentId_ReturnsNull" storage="c:\users\kei\documents\nonwork\toppanchallenge\universityapi.tests\bin\debug\net9.0\universityapi.tests.dll" id="10365d01-d9a1-79c5-0ec7-c4cc26a60880">
+      <Execution id="dfb7aff3-c3a5-4639-a7c4-81b5acf6efa7" />
+      <TestMethod codeBase="C:\Users\Kei\Documents\NonWork\ToppanChallenge\UniversityAPI.Tests\bin\Debug\net9.0\UniversityAPI.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="UniversityAPI.Tests.Services.UniversityServiceTests" name="GetUniversityById_NonExistentId_ReturnsNull" />
+    </UnitTest>
+    <UnitTest name="UniversityAPI.Tests.Services.UniversityServiceTests.UnbookmarkUniversity_NonExistentBookmark_ThrowsNotFoundException" storage="c:\users\kei\documents\nonwork\toppanchallenge\universityapi.tests\bin\debug\net9.0\universityapi.tests.dll" id="8cbb1c00-96ee-a80c-36d1-bf367ff137df">
+      <Execution id="c4f7e5ef-4306-4580-942f-0e9ccb74d716" />
+      <TestMethod codeBase="C:\Users\Kei\Documents\NonWork\ToppanChallenge\UniversityAPI.Tests\bin\Debug\net9.0\UniversityAPI.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="UniversityAPI.Tests.Services.UniversityServiceTests" name="UnbookmarkUniversity_NonExistentBookmark_ThrowsNotFoundException" />
+    </UnitTest>
+    <UnitTest name="UniversityAPI.Tests.Services.UniversityServiceTests.BookmarkUniversity_NonExistentUniversity_ThrowsNotFoundException" storage="c:\users\kei\documents\nonwork\toppanchallenge\universityapi.tests\bin\debug\net9.0\universityapi.tests.dll" id="24eb555b-8377-3f29-fe76-54b3f051ea67">
+      <Execution id="d6ce1067-09fe-4c3d-958e-f094122bbebf" />
+      <TestMethod codeBase="C:\Users\Kei\Documents\NonWork\ToppanChallenge\UniversityAPI.Tests\bin\Debug\net9.0\UniversityAPI.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="UniversityAPI.Tests.Services.UniversityServiceTests" name="BookmarkUniversity_NonExistentUniversity_ThrowsNotFoundException" />
+    </UnitTest>
+    <UnitTest name="UniversityAPI.Tests.Services.UniversityServiceTests.DeleteUniversity_NonExistentId_ThrowsNotFoundException" storage="c:\users\kei\documents\nonwork\toppanchallenge\universityapi.tests\bin\debug\net9.0\universityapi.tests.dll" id="66b05b13-ac3a-5b6b-6ef9-794969538cad">
+      <Execution id="8bc739d0-1f93-4081-bce1-0e879d311350" />
+      <TestMethod codeBase="C:\Users\Kei\Documents\NonWork\ToppanChallenge\UniversityAPI.Tests\bin\Debug\net9.0\UniversityAPI.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="UniversityAPI.Tests.Services.UniversityServiceTests" name="DeleteUniversity_NonExistentId_ThrowsNotFoundException" />
+    </UnitTest>
+    <UnitTest name="UniversityAPI.Tests.Services.UniversityServiceTests.CreateUniversity_DuplicateNameAndCountry_ThrowsConflictException" storage="c:\users\kei\documents\nonwork\toppanchallenge\universityapi.tests\bin\debug\net9.0\universityapi.tests.dll" id="132df53d-a3f7-d8f0-4c39-54b0359796a2">
+      <Execution id="585ab282-85f5-4e67-bdcc-7c3d8c2153bd" />
+      <TestMethod codeBase="C:\Users\Kei\Documents\NonWork\ToppanChallenge\UniversityAPI.Tests\bin\Debug\net9.0\UniversityAPI.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="UniversityAPI.Tests.Services.UniversityServiceTests" name="CreateUniversity_DuplicateNameAndCountry_ThrowsConflictException" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="132df53d-a3f7-d8f0-4c39-54b0359796a2" executionId="585ab282-85f5-4e67-bdcc-7c3d8c2153bd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="24eb555b-8377-3f29-fe76-54b3f051ea67" executionId="d6ce1067-09fe-4c3d-958e-f094122bbebf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="66b05b13-ac3a-5b6b-6ef9-794969538cad" executionId="8bc739d0-1f93-4081-bce1-0e879d311350" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="55ea0115-ae67-7fb5-75e5-750074b27336" executionId="768d1c6c-4261-4586-b540-60ed9b3fcaba" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8cbb1c00-96ee-a80c-36d1-bf367ff137df" executionId="c4f7e5ef-4306-4580-942f-0e9ccb74d716" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a7b7d482-eecd-94b0-07a0-3f163f40ace6" executionId="3857f936-2924-427a-8193-e016d712a3b1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="91a05b72-83bf-528a-963e-55de9879e76b" executionId="1b85d405-ddeb-4e19-9431-57298aa31f9b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="10365d01-d9a1-79c5-0ec7-c4cc26a60880" executionId="dfb7aff3-c3a5-4639-a7c4-81b5acf6efa7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="8" executed="8" passed="8" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.0.2+dd36e86129 (64-bit .NET 9.0.7)&#xD;
+[xUnit.net 00:00:01.03]   Discovering: UniversityAPI.Tests&#xD;
+[xUnit.net 00:00:01.10]   Discovered:  UniversityAPI.Tests&#xD;
+[xUnit.net 00:00:01.12]   Starting:    UniversityAPI.Tests&#xD;
+[xUnit.net 00:00:02.59]   Finished:    UniversityAPI.Tests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

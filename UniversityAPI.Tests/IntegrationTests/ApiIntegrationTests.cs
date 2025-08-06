@@ -1,25 +1,22 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Net;
 using System.Text;
 using System.Text.Json;
 using UniversityAPI.Framework;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Tests.Shared.Fixtures;
+using UniversityAPI.Tests.Shared.Helpers;
 using UniversityAPI.Tests.Shared.Models;
 using UniversityAPI.Utility;
 
 namespace UniversityAPI.Tests.IntegrationTests
 {
-    public class ApiIntegrationTests : IClassFixture<ApiTestApplicationFactory>
+    public class ApiIntegrationTests(ApiTestApplicationFactory factory) : IClassFixture<ApiTestApplicationFactory>
     {
-        private readonly ApiTestApplicationFactory factory;
-        
-        public ApiIntegrationTests(ApiTestApplicationFactory factory)
-        {
-            this.factory = factory;
-        }
+        private readonly ApiTestApplicationFactory factory = factory;
 
         [Fact]
         public async Task GetUniversities_ReturnsSuccessStatusCode()
@@ -212,11 +209,17 @@ namespace UniversityAPI.Tests.IntegrationTests
         [Fact]
         public async Task Register_ValidData_ReturnsCreated()
         {
+            var strongPassword = await this.factory.ExecuteScopeAsync(async scope =>
+            {
+                var identityOptions = scope.GetRequiredService<IOptions<IdentityOptions>>().Value;
+                return TestPasswordGenerator.GeneratePassword(identityOptions.Password);
+            });
+
             var registerDto = new RegisterDto
             {
                 Username = "newuser@example.com",
                 Email = "newuser@example.com",
-                Password = "NewUser123!",
+                Password = strongPassword,
             };
 
             var json = JsonSerializer.Serialize(registerDto);
@@ -231,16 +234,22 @@ namespace UniversityAPI.Tests.IntegrationTests
         [Fact]
         public async Task Register_DuplicateEmail_ReturnsConflict()
         {
-            var existingUser = await this.factory.ExecuteScopeAsync(async scope =>
+            var (existingUser, strongPassword) = await this.factory.ExecuteScopeAsync(async scope =>
             {
                 var context = scope.GetRequiredService<ApplicationDbContext>();
-                return await context.Users.FirstOrDefaultAsync();
+                var user = await context.Users.FirstOrDefaultAsync();
+
+                var identityOptions = scope.GetRequiredService<IOptions<IdentityOptions>>().Value;
+                string strongPassword = TestPasswordGenerator.GeneratePassword(identityOptions.Password);
+                return (user, strongPassword);
+
             });
+
             var registerDto = new RegisterDto
             {
                 Username = existingUser.UserName,
                 Email = existingUser.Email,
-                Password = "Test123!",
+                Password = strongPassword,
             };
 
             var json = JsonSerializer.Serialize(registerDto);
@@ -259,10 +268,11 @@ namespace UniversityAPI.Tests.IntegrationTests
                 var context = scope.GetRequiredService<ApplicationDbContext>();
                 return await context.Users.FirstOrDefaultAsync();
             });
+
             var loginDto = new LoginDto
             {
                 Username = existingUser.UserName,
-                Password = "Admin123!"
+                Password = "Admin123!@@123" // seeded password
             };
 
             var json = JsonSerializer.Serialize(loginDto);
@@ -289,7 +299,7 @@ namespace UniversityAPI.Tests.IntegrationTests
             var loginDto = new LoginDto
             {
                 Username = "nonexistentUser",
-                Password = "WrongPassword123!"
+                Password = "WrongPassword123!@@@"
             };
 
             var json = JsonSerializer.Serialize(loginDto);

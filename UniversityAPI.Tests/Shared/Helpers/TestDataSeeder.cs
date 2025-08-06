@@ -12,8 +12,8 @@ namespace UniversityAPI.Tests.Shared.Helpers
 
             var adminUser = await SeedAdminUserAsync(userManager);
 
-            var testUser1 = await SeedUserAsync(userManager, "testuser1@example.com", "TestUser1!");
-            var testUser2 = await SeedUserAsync(userManager, "testuser2@example.com", "TestUser2!");
+            var testUser1 = await SeedUserAsync(userManager, "testuser1@example.com", "TestUser1!@@123");
+            var testUser2 = await SeedUserAsync(userManager, "testuser2@example.com", "TestUser2!@@123");
 
             var universities = SeedUniversities(context, ConvertHelper.ToGuid(adminUser.Id));
 
@@ -46,7 +46,7 @@ namespace UniversityAPI.Tests.Shared.Helpers
                 IsActive = true
             };
 
-            var result = await userManager.CreateAsync(adminUser, "Admin123!");
+            var result = await userManager.CreateAsync(adminUser, "Admin123!@@123");
             if (result.Succeeded)
             {
                 await userManager.AddToRoleAsync(adminUser, "Admin");

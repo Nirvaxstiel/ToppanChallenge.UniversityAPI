@@ -4,6 +4,7 @@ using UniversityAPI.Controllers;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Service;
 using UniversityAPI.Tests.Shared.Fixtures;
+using UniversityAPI.Tests.Shared.Helpers;
 
 namespace UniversityAPI.Tests.UnitTests.Controllers
 {
@@ -23,11 +24,12 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         [Fact]
         public async Task Register_ValidData_ReturnsOkResult()
         {
+            var strongPassword = TestPasswordGenerator.GeneratePassword(this.fixture.UserManager.Options.Password);
             var registerDto = new RegisterDto
             {
                 Username = "testuser",
                 Email = "test@example.com",
-                Password = "TestPassword123!"
+                Password = strongPassword
             };
 
             var result = await this.authController.Register(registerDto);
@@ -46,11 +48,13 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         public async Task Register_DuplicateEmail_ReturnsBadRequest()
         {
             var existingUser = this.fixture.Context.Users.First();
+            var strongPassword = TestPasswordGenerator.GeneratePassword(this.fixture.UserManager.Options.Password);
+
             var registerDto = new RegisterDto
             {
                 Username = "newuser", // Different username
                 Email = existingUser?.Email, // Duplicate email
-                Password = "TestPassword123!"
+                Password = strongPassword
             };
 
             var result = await this.authController.Register(registerDto);
@@ -65,11 +69,13 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         public async Task Register_DuplicateUsername_ReturnsBadRequest()
         {
             var existingUser = this.fixture.Context.Users.First();
+            var strongPassword = TestPasswordGenerator.GeneratePassword(this.fixture.UserManager.Options.Password);
+
             var registerDto = new RegisterDto
             {
                 Username = existingUser?.UserName, // Duplicate username
                 Email = "different@example.com",  // Different email
-                Password = "TestPassword123!"
+                Password = strongPassword
             };
 
             var result = await this.authController.Register(registerDto);
@@ -92,7 +98,7 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
                 IsActive = true
             };
 
-            var password = "TestUser123!";
+            var password = "TestUser123!@@123"; // seeded password
             var createResult = await this.fixture.UserManager.CreateAsync(testUser, password);
             Assert.True(createResult.Succeeded, "Failed to create test user");
 
@@ -119,10 +125,11 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         [Fact]
         public async Task Login_InvalidCredentials_ReturnsUnauthorized()
         {
+            var strongPassword = TestPasswordGenerator.GeneratePassword(this.fixture.UserManager.Options.Password);
             var loginDto = new LoginDto
             {
                 Username = "nonexistent",
-                Password = "WrongPassword"
+                Password = strongPassword
             };
 
             var result = await this.authController.Login(loginDto);
@@ -137,8 +144,8 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         {
             var loginDto = new LoginDto
             {
-                Username = "",
-                Password = ""
+                Username = string.Empty,
+                Password = string.Empty
             };
             TestModelValidator.ValidateModel(loginDto, this.authController);
             var result = await this.authController.Login(loginDto);
@@ -154,9 +161,9 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         {
             var registerDto = new RegisterDto
             {
-                Username = "",
-                Email = "",
-                Password = ""
+                Username = string.Empty,
+                Email = string.Empty,
+                Password = string.Empty
             };
 
             TestModelValidator.ValidateModel(registerDto, this.authController);

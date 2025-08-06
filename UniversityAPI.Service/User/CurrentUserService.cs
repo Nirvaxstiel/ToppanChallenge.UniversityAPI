@@ -6,18 +6,18 @@ namespace UniversityAPI.Service
 {
     public class CurrentUserService : ICurrentUserService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         public CurrentUserService(IHttpContextAccessor httpContextAccessor)
         {
-            _httpContextAccessor = httpContextAccessor;
+            this.httpContextAccessor = httpContextAccessor;
         }
 
         public Guid UserId
         {
             get
             {
-                var userId = ConvertHelper.ToGuid(_httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier));
+                var userId = ConvertHelper.ToGuid(httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier));
                 if (userId == Guid.Empty)
                 {
                     throw new UnauthorisedError("User ID is missing or invalid");
@@ -26,6 +26,6 @@ namespace UniversityAPI.Service
             }
         }
 
-        public string UserName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+        public string UserName => httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
     }
 }

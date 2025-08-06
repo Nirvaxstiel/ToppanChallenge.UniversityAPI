@@ -7,16 +7,16 @@ namespace UniversityAPI.Service
 {
     public class UniversityService : IUniversityService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext context;
 
         public UniversityService(ApplicationDbContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         public async Task<PagedResult<UniversityDto>> GetUniversitiesAsync(Guid userId, UniversityFilter filter, PaginationParams pagination)
         {
-            var query = _context.Universities.Where(u => u.IsActive).AsQueryable();
+            var query = context.Universities.Where(u => u.IsActive).AsQueryable();
 
             if (!string.IsNullOrEmpty(filter.Name))
             {
@@ -69,13 +69,13 @@ namespace UniversityAPI.Service
 
         public async Task<UniversityDto> GetUniversityByIdAsync(Guid universityId)
         {
-            var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+            var universityDM = await context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
             return MapHelper.Map<UniversityDM, UniversityDto>(universityDM);
         }
 
         public async Task<CreateUniversityDto> CreateUniversityAsync(CreateUniversityDto universityDto, Guid createdBy)
         {
-            var existingUniversity = await _context.Universities
+            var existingUniversity = await context.Universities
                 .FirstOrDefaultAsync(u => u.Name == universityDto.Name && u.Country == universityDto.Country);
             if (existingUniversity != null)
             {
@@ -93,21 +93,21 @@ namespace UniversityAPI.Service
                 CreatedBy = createdBy
             };
 
-            _context.Universities.Add(universityDM);
-            await _context.SaveChangesAsync();
+            context.Universities.Add(universityDM);
+            await context.SaveChangesAsync();
 
             return MapHelper.Map<UniversityDM, CreateUniversityDto>(universityDM);
         }
 
         public async Task<UpdateUniversityDto> UpdateUniversityAsync(Guid universityId, UpdateUniversityDto universityDto, Guid updatedBy)
         {
-            var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+            var universityDM = await context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
             if (universityDM == null)
             {
                 throw new NotFoundError("University not found");
             }
 
-            var existingUniversity = await _context.Universities.FirstOrDefaultAsync(u => u.Name == universityDto.Name
+            var existingUniversity = await context.Universities.FirstOrDefaultAsync(u => u.Name == universityDto.Name
                 && u.Country == universityDto.Country
                 && u.Id != universityId);
             if (existingUniversity != null)
@@ -120,15 +120,15 @@ namespace UniversityAPI.Service
             universityDM.Webpage = universityDto.Webpage;
             universityDM.UpdatedDate = DateTime.UtcNow;
             universityDM.UpdatedBy = updatedBy;
-            _context.Universities.Update(universityDM);
-            await _context.SaveChangesAsync();
+            context.Universities.Update(universityDM);
+            await context.SaveChangesAsync();
 
             return MapHelper.Map<UniversityDM, UpdateUniversityDto>(universityDM);
         }
 
         public async Task DeleteUniversityAsync(Guid universityId, Guid updatedBy)
         {
-            var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+            var universityDM = await context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
             if (universityDM == null)
             {
                 throw new NotFoundError("University not found");
@@ -137,19 +137,19 @@ namespace UniversityAPI.Service
             universityDM.UpdatedDate = DateTime.UtcNow;
             universityDM.UpdatedBy = updatedBy;
             universityDM.IsActive = false;
-            _context.Universities.Update(universityDM);
-            await _context.SaveChangesAsync();
+            context.Universities.Update(universityDM);
+            await context.SaveChangesAsync();
         }
 
         public async Task<UserBookmarkDto> BookmarkUniversityAsync(Guid universityId, Guid userId)
         {
-            var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+            var universityDM = await context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
             if (universityDM == null)
             {
                 throw new NotFoundError("University not found");
             }
 
-            var bookmarks = _context.UserBookmarks.Where(bookmark => bookmark.UserId == userId);
+            var bookmarks = context.UserBookmarks.Where(bookmark => bookmark.UserId == userId);
             var bookmark = bookmarks.IgnoreQueryFilters().FirstOrDefault(bookmark => bookmark.UniversityId == universityId);
             if (bookmark == null)
             {
@@ -162,7 +162,7 @@ namespace UniversityAPI.Service
                     CreatedDate = DateTime.UtcNow,
                     CreatedBy = userId,
                 };
-                _context.UserBookmarks.Add(bookmark);
+                context.UserBookmarks.Add(bookmark);
             }
             else if (bookmark != null && !bookmark.IsActive)
             {
@@ -171,19 +171,19 @@ namespace UniversityAPI.Service
                 bookmark.IsActive = true;
             }
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return MapHelper.Map<UserBookmarkDM, UserBookmarkDto>(bookmark);
         }
 
         public async Task UnbookmarkUniversityAsync(Guid universityId, Guid userId)
         {
-            var universityDM = await _context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
+            var universityDM = await context.Universities.FirstOrDefaultAsync(u => u.Id == universityId);
             if (universityDM == null)
             {
                 throw new NotFoundError("University not found");
             }
 
-            var bookmark = await _context.UserBookmarks.FirstOrDefaultAsync(bookmark => bookmark.UniversityId == universityId && bookmark.UserId == userId);
+            var bookmark = await context.UserBookmarks.FirstOrDefaultAsync(bookmark => bookmark.UniversityId == universityId && bookmark.UserId == userId);
             if (bookmark == null)
             {
                 throw new NotFoundError("Bookmark not found");
@@ -192,8 +192,8 @@ namespace UniversityAPI.Service
             bookmark.UpdatedDate = DateTime.UtcNow;
             bookmark.UpdatedBy = userId;
             bookmark.IsActive = false;
-            _context.UserBookmarks.Update(bookmark);
-            await _context.SaveChangesAsync();
+            context.UserBookmarks.Update(bookmark);
+            await context.SaveChangesAsync();
         }
     }
 }

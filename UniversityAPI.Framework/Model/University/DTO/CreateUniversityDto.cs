@@ -7,6 +7,7 @@ namespace UniversityAPI.Framework.Model
         public Guid Id { get; set; }
 
         [Required(ErrorMessage = "University name is required")]
+        [MaxLength(100)]
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Country is required")]
