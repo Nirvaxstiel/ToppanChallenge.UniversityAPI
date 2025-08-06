@@ -37,7 +37,9 @@ jobs:
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          fingerprint: ${{ secrets.fingerprint }}
+          FINGERPRINT: ${{ secrets.FINGERPRINT }}
+          Jwt__Issuer: "UniversityAPI"
+          Jwt__Audience: "UniversityAPIClient"
       - name: Upload Integration - API Results
         uses: actions/upload-artifact@v4
         with:
@@ -57,7 +59,9 @@ jobs:
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          fingerprint: ${{ secrets.fingerprint }}
+          FINGERPRINT: ${{ secrets.FINGERPRINT }}
+          Jwt__Issuer: "UniversityAPI"
+          Jwt__Audience: "UniversityAPIClient"
       - name: Upload Integration - Authorization Results
         uses: actions/upload-artifact@v4
         with:
@@ -77,7 +81,9 @@ jobs:
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          fingerprint: ${{ secrets.fingerprint }}
+          FINGERPRINT: ${{ secrets.FINGERPRINT }}
+          Jwt__Issuer: "UniversityAPI"
+          Jwt__Audience: "UniversityAPIClient"
       - name: Upload Security - InputValidation Results
         uses: actions/upload-artifact@v4
         with:
@@ -97,7 +103,9 @@ jobs:
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          fingerprint: ${{ secrets.fingerprint }}
+          FINGERPRINT: ${{ secrets.FINGERPRINT }}
+          Jwt__Issuer: "UniversityAPI"
+          Jwt__Audience: "UniversityAPIClient"
       - name: Upload Unit - Controllers - Auth Results
         uses: actions/upload-artifact@v4
         with:
@@ -117,7 +125,9 @@ jobs:
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          fingerprint: ${{ secrets.fingerprint }}
+          FINGERPRINT: ${{ secrets.FINGERPRINT }}
+          Jwt__Issuer: "UniversityAPI"
+          Jwt__Audience: "UniversityAPIClient"
       - name: Upload Unit - Controllers - University Results
         uses: actions/upload-artifact@v4
         with:
@@ -137,7 +147,9 @@ jobs:
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          fingerprint: ${{ secrets.fingerprint }}
+          FINGERPRINT: ${{ secrets.FINGERPRINT }}
+          Jwt__Issuer: "UniversityAPI"
+          Jwt__Audience: "UniversityAPIClient"
       - name: Upload Unit - Services - TokenService Results
         uses: actions/upload-artifact@v4
         with:
@@ -157,7 +169,9 @@ jobs:
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          fingerprint: ${{ secrets.fingerprint }}
+          FINGERPRINT: ${{ secrets.FINGERPRINT }}
+          Jwt__Issuer: "UniversityAPI"
+          Jwt__Audience: "UniversityAPIClient"
       - name: Upload Unit - Services - UniversityService Results
         uses: actions/upload-artifact@v4
         with:
@@ -177,7 +191,9 @@ jobs:
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
           TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          fingerprint: ${{ secrets.fingerprint }}
+          FINGERPRINT: ${{ secrets.FINGERPRINT }}
+          Jwt__Issuer: "UniversityAPI"
+          Jwt__Audience: "UniversityAPIClient"
       - name: Upload Unit - Middleware - ExceptionHandling Results
         uses: actions/upload-artifact@v4
         with:
