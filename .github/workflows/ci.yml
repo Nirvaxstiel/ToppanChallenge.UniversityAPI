@@ -24,10 +24,62 @@ jobs:
       - name: Build
         run: dotnet build --no-restore UniversityAPI/UniversityAPI.sln
 
-      - name: Test with coverage
+      - name: Test Unit - Controllers
         run: |
-          dotnet test UniversityAPI/UniversityAPI.sln \
-            --no-build \
-            --collect:"XPlat Code Coverage" \
-            --results-directory ./TestResults
-          echo "If you want to check coverage, download the coverage.cobertura.xml from ./TestResults or use a local tool."
+          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
+            --filter FullyQualifiedName~UnitTests.Controllers \
+            --logger "trx;LogFileName=Unit_Controllers.trx" \
+            --results-directory ./TestResults/UnitControllers
+      - name: Upload Unit - Controllers Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unit_Controllers_TestResults
+          path: ./TestResults/UnitControllers
+
+      - name: Test Unit - Services
+        run: |
+          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
+            --filter FullyQualifiedName~UnitTests.Services \
+            --logger "trx;LogFileName=Unit_Services.trx" \
+            --results-directory ./TestResults/UnitServices
+      - name: Upload Unit - Services Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unit_Services_TestResults
+          path: ./TestResults/UnitServices
+
+      - name: Test Unit - Middleware
+        run: |
+          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
+            --filter FullyQualifiedName~UnitTests.Middleware \
+            --logger "trx;LogFileName=Unit_Middleware.trx" \
+            --results-directory ./TestResults/UnitMiddleware
+      - name: Upload Unit - Middleware Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unit_Middleware_TestResults
+          path: ./TestResults/UnitMiddleware
+
+      - name: Test Integration
+        run: |
+          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
+            --filter FullyQualifiedName~IntegrationTests \
+            --logger "trx;LogFileName=Integration.trx" \
+            --results-directory ./TestResults/Integration
+      - name: Upload Integration Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Integration_TestResults
+          path: ./TestResults/Integration
+
+      - name: Test Security
+        run: |
+          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
+            --filter FullyQualifiedName~SecurityTests \
+            --logger "trx;LogFileName=Security.trx" \
+            --results-directory ./TestResults/Security
+      - name: Upload Security Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Security_TestResults
+          path: ./TestResults/Security
