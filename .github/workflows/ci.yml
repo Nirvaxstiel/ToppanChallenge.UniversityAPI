@@ -30,6 +30,14 @@ jobs:
             --filter FullyQualifiedName~IntegrationTests.ApiIntegrationTests \
             --logger "trx;LogFileName=Integration_Api.trx" \
             --results-directory ./TestResults/IntegrationApi
+        env:
+          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
+          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
+          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
+          fingerprint: ${{ secrets.fingerprint }}
       - name: Upload Integration - API Results
         uses: actions/upload-artifact@v4
         with:
@@ -42,6 +50,14 @@ jobs:
             --filter FullyQualifiedName~IntegrationTests.AuthorizationTests \
             --logger "trx;LogFileName=Integration_Authorization.trx" \
             --results-directory ./TestResults/IntegrationAuthorization
+        env:
+          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
+          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
+          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
+          fingerprint: ${{ secrets.fingerprint }}
       - name: Upload Integration - Authorization Results
         uses: actions/upload-artifact@v4
         with:
@@ -54,6 +70,14 @@ jobs:
             --filter FullyQualifiedName~SecurityTests.InputValidationTests \
             --logger "trx;LogFileName=Security_InputValidation.trx" \
             --results-directory ./TestResults/SecurityInputValidation
+        env:
+          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
+          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
+          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
+          fingerprint: ${{ secrets.fingerprint }}
       - name: Upload Security - InputValidation Results
         uses: actions/upload-artifact@v4
         with:
@@ -66,6 +90,14 @@ jobs:
             --filter FullyQualifiedName~UnitTests.Controllers.AuthControllerTests \
             --logger "trx;LogFileName=Unit_Controllers_Auth.trx" \
             --results-directory ./TestResults/UnitControllersAuth
+        env:
+          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
+          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
+          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
+          fingerprint: ${{ secrets.fingerprint }}
       - name: Upload Unit - Controllers - Auth Results
         uses: actions/upload-artifact@v4
         with:
@@ -78,6 +110,14 @@ jobs:
             --filter FullyQualifiedName~UnitTests.Controllers.UniversityControllerTests \
             --logger "trx;LogFileName=Unit_Controllers_University.trx" \
             --results-directory ./TestResults/UnitControllersUniversity
+        env:
+          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
+          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
+          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
+          fingerprint: ${{ secrets.fingerprint }}
       - name: Upload Unit - Controllers - University Results
         uses: actions/upload-artifact@v4
         with:
@@ -90,6 +130,14 @@ jobs:
             --filter FullyQualifiedName~UnitTests.Services.TokenServiceTests \
             --logger "trx;LogFileName=Unit_Services_TokenService.trx" \
             --results-directory ./TestResults/UnitServicesTokenService
+        env:
+          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
+          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
+          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
+          fingerprint: ${{ secrets.fingerprint }}
       - name: Upload Unit - Services - TokenService Results
         uses: actions/upload-artifact@v4
         with:
@@ -102,6 +150,14 @@ jobs:
             --filter FullyQualifiedName~UnitTests.Services.UniversityServiceTests \
             --logger "trx;LogFileName=Unit_Services_UniversityService.trx" \
             --results-directory ./TestResults/UnitServicesUniversityService
+        env:
+          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
+          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
+          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
+          fingerprint: ${{ secrets.fingerprint }}
       - name: Upload Unit - Services - UniversityService Results
         uses: actions/upload-artifact@v4
         with:
@@ -114,6 +170,14 @@ jobs:
             --filter FullyQualifiedName~UnitTests.Middleware.ExceptionHandlingMiddlewareTests \
             --logger "trx;LogFileName=Unit_Middleware_ExceptionHandling.trx" \
             --results-directory ./TestResults/UnitMiddlewareExceptionHandling
+        env:
+          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
+          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
+          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
+          fingerprint: ${{ secrets.fingerprint }}
       - name: Upload Unit - Middleware - ExceptionHandling Results
         uses: actions/upload-artifact@v4
         with:
