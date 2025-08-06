@@ -11,7 +11,6 @@ using UniversityAPI.Framework;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Service;
 using UniversityAPI.Tests.Shared.Helpers;
-using UniversityAPI.Tests.Shared.Models;
 using UniversityAPI.Utility;
 
 namespace UniversityAPI.Tests.Shared.Fixtures
@@ -40,42 +39,49 @@ namespace UniversityAPI.Tests.Shared.Fixtures
                                                    .Build();
             builder.UseConfiguration(config);
 
-
             _ = builder.ConfigureServices(services =>
             {
-                var contextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-                    .UseInMemoryDatabase(databaseName: "testserver")
-                    .Options;
-
-                services.Replace(ServiceDescriptor.Singleton(typeof(DbContextOptions<ApplicationDbContext>), new DbContextOptions<ApplicationDbContext>()));
-                services.Replace(ServiceDescriptor.Singleton(typeof(ApplicationDbContext), new ApplicationDbContext(contextOptions)));
-
-                services.AddUtilityLayer();
-                services.AddServiceLayer();
-
-                services
-                    .AddAuthentication("Test")
-                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
-                services.PostConfigure<MvcOptions>(options =>
+                try
                 {
-                    options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter());
-                });
-                services.Configure<AuthenticationOptions>(options =>
+                    var contextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+                        .UseInMemoryDatabase(databaseName: "testserver")
+                        .Options;
+
+                    services.Replace(ServiceDescriptor.Singleton(typeof(DbContextOptions<ApplicationDbContext>), new DbContextOptions<ApplicationDbContext>()));
+                    services.Replace(ServiceDescriptor.Singleton(typeof(ApplicationDbContext), new ApplicationDbContext(contextOptions)));
+
+                    services.AddUtilityLayer();
+                    services.AddServiceLayer();
+
+                    services
+                        .AddAuthentication("Test")
+                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
+                    services.PostConfigure<MvcOptions>(options =>
+                    {
+                        options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter());
+                    });
+                    services.Configure<AuthenticationOptions>(options =>
+                    {
+                        options.DefaultAuthenticateScheme = "Test";
+                        options.DefaultChallengeScheme = "Test";
+                    });
+
+                    var serviceProvider = services.BuildServiceProvider();
+
+                    using var scope = serviceProvider.CreateScope();
+                    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserDM>>();
+
+                    context.Database.EnsureCreated();
+                    TestDataSeeder.SeedDataAsync(context, roleManager, userManager).Wait();
+                }
+                catch (Exception ex)
                 {
-                    options.DefaultAuthenticateScheme = "Test";
-                    options.DefaultChallengeScheme = "Test";
-                });
-                //services.AddSingleton<TestAuthOptions>();
-
-                var serviceProvider = services.BuildServiceProvider();
-
-                using var scope = serviceProvider.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserDM>>();
-
-                context.Database.EnsureCreated();
-                TestDataSeeder.SeedDataAsync(context, roleManager, userManager).Wait();
+                    Console.WriteLine($"Error configuring test services: {ex.Message}");
+                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                    throw;
+                }
             });
         }
     }

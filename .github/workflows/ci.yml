@@ -24,12 +24,40 @@ jobs:
       - name: Build
         run: dotnet build --no-restore UniversityAPI/UniversityAPI.sln
 
+      - name: Test Application Startup
+        run: |
+          echo "=== Testing Application Startup ==="
+          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
+            --filter "FullyQualifiedName~IntegrationTests.ApiIntegrationTests.GetUniversities_ReturnsSuccessStatusCode" \
+            --verbosity detailed \
+            --logger console
+        env:
+          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
+          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
+          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
+          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
+          FINGERPRINT: ${{ secrets.FINGERPRINT }}
+          Jwt__Issuer: "UniversityAPI"
+          Jwt__Audience: "UniversityAPIClient"
+
       - name: Test Integration - API
         run: |
+          echo "=== Environment Variables Check ==="
+          echo "JWT_KEY exists: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY != '' }}"
+          echo "PUBLIC_KEY exists: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY != '' }}"
+          echo "DB_CONNECTION exists: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION != '' }}"
+          echo "ADMIN_USERNAME exists: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME != '' }}"
+          echo "ADMIN_PASSWORD exists: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD != '' }}"
+          echo "ADMIN_EMAIL exists: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL != '' }}"
+          echo "FINGERPRINT exists: ${{ secrets.FINGERPRINT != '' }}"
+          echo "=== Running Tests ==="
           dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
             --filter FullyQualifiedName~IntegrationTests.ApiIntegrationTests \
             --logger "trx;LogFileName=Integration_Api.trx" \
-            --results-directory ./TestResults/IntegrationApi
+            --results-directory ./TestResults/IntegrationApi \
+            --verbosity detailed
         env:
           TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
           TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
