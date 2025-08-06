@@ -24,62 +24,98 @@ jobs:
       - name: Build
         run: dotnet build --no-restore UniversityAPI/UniversityAPI.sln
 
-      - name: Test Unit - Controllers
+      - name: Test Integration - API
         run: |
           dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~UnitTests.Controllers \
-            --logger "trx;LogFileName=Unit_Controllers.trx" \
-            --results-directory ./TestResults/UnitControllers
-      - name: Upload Unit - Controllers Results
+            --filter FullyQualifiedName~IntegrationTests.ApiIntegrationTests \
+            --logger "trx;LogFileName=Integration_Api.trx" \
+            --results-directory ./TestResults/IntegrationApi
+      - name: Upload Integration - API Results
         uses: actions/upload-artifact@v4
         with:
-          name: Unit_Controllers_TestResults
-          path: ./TestResults/UnitControllers
+          name: Integration_Api_TestResults
+          path: ./TestResults/IntegrationApi
 
-      - name: Test Unit - Services
+      - name: Test Integration - Authorization
         run: |
           dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~UnitTests.Services \
-            --logger "trx;LogFileName=Unit_Services.trx" \
-            --results-directory ./TestResults/UnitServices
-      - name: Upload Unit - Services Results
+            --filter FullyQualifiedName~IntegrationTests.AuthorizationTests \
+            --logger "trx;LogFileName=Integration_Authorization.trx" \
+            --results-directory ./TestResults/IntegrationAuthorization
+      - name: Upload Integration - Authorization Results
         uses: actions/upload-artifact@v4
         with:
-          name: Unit_Services_TestResults
-          path: ./TestResults/UnitServices
+          name: Integration_Authorization_TestResults
+          path: ./TestResults/IntegrationAuthorization
 
-      - name: Test Unit - Middleware
+      - name: Test Security - InputValidation
         run: |
           dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~UnitTests.Middleware \
-            --logger "trx;LogFileName=Unit_Middleware.trx" \
-            --results-directory ./TestResults/UnitMiddleware
-      - name: Upload Unit - Middleware Results
+            --filter FullyQualifiedName~SecurityTests.InputValidationTests \
+            --logger "trx;LogFileName=Security_InputValidation.trx" \
+            --results-directory ./TestResults/SecurityInputValidation
+      - name: Upload Security - InputValidation Results
         uses: actions/upload-artifact@v4
         with:
-          name: Unit_Middleware_TestResults
-          path: ./TestResults/UnitMiddleware
+          name: Security_InputValidation_TestResults
+          path: ./TestResults/SecurityInputValidation
 
-      - name: Test Integration
+      - name: Test Unit - Controllers - Auth
         run: |
           dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~IntegrationTests \
-            --logger "trx;LogFileName=Integration.trx" \
-            --results-directory ./TestResults/Integration
-      - name: Upload Integration Results
+            --filter FullyQualifiedName~UnitTests.Controllers.AuthControllerTests \
+            --logger "trx;LogFileName=Unit_Controllers_Auth.trx" \
+            --results-directory ./TestResults/UnitControllersAuth
+      - name: Upload Unit - Controllers - Auth Results
         uses: actions/upload-artifact@v4
         with:
-          name: Integration_TestResults
-          path: ./TestResults/Integration
+          name: Unit_Controllers_Auth_TestResults
+          path: ./TestResults/UnitControllersAuth
 
-      - name: Test Security
+      - name: Test Unit - Controllers - University
         run: |
           dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~SecurityTests \
-            --logger "trx;LogFileName=Security.trx" \
-            --results-directory ./TestResults/Security
-      - name: Upload Security Results
+            --filter FullyQualifiedName~UnitTests.Controllers.UniversityControllerTests \
+            --logger "trx;LogFileName=Unit_Controllers_University.trx" \
+            --results-directory ./TestResults/UnitControllersUniversity
+      - name: Upload Unit - Controllers - University Results
         uses: actions/upload-artifact@v4
         with:
-          name: Security_TestResults
-          path: ./TestResults/Security
+          name: Unit_Controllers_University_TestResults
+          path: ./TestResults/UnitControllersUniversity
+
+      - name: Test Unit - Services - TokenService
+        run: |
+          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
+            --filter FullyQualifiedName~UnitTests.Services.TokenServiceTests \
+            --logger "trx;LogFileName=Unit_Services_TokenService.trx" \
+            --results-directory ./TestResults/UnitServicesTokenService
+      - name: Upload Unit - Services - TokenService Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unit_Services_TokenService_TestResults
+          path: ./TestResults/UnitServicesTokenService
+
+      - name: Test Unit - Services - UniversityService
+        run: |
+          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
+            --filter FullyQualifiedName~UnitTests.Services.UniversityServiceTests \
+            --logger "trx;LogFileName=Unit_Services_UniversityService.trx" \
+            --results-directory ./TestResults/UnitServicesUniversityService
+      - name: Upload Unit - Services - UniversityService Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unit_Services_UniversityService_TestResults
+          path: ./TestResults/UnitServicesUniversityService
+
+      - name: Test Unit - Middleware - ExceptionHandling
+        run: |
+          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
+            --filter FullyQualifiedName~UnitTests.Middleware.ExceptionHandlingMiddlewareTests \
+            --logger "trx;LogFileName=Unit_Middleware_ExceptionHandling.trx" \
+            --results-directory ./TestResults/UnitMiddlewareExceptionHandling
+      - name: Upload Unit - Middleware - ExceptionHandling Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unit_Middleware_ExceptionHandling_TestResults
+          path: ./TestResults/UnitMiddlewareExceptionHandling
