@@ -36,6 +36,7 @@ namespace UniversityAPI.Tests.Shared.Fixtures
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json")
                                                    .AddJsonFile("appsettings.Development.json", optional: true)
                                                    .AddUserSecrets<Program>()
+                                                   .AddEnvironmentVariables()
                                                    .Build();
             builder.UseConfiguration(config);
 
