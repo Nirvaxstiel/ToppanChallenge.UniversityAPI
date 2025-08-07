@@ -1,6 +1,6 @@
 using UniversityAPI.Tests.UnitTests.Shared;
 
-namespace UniversityAPI.Tests.Shared.Fixtures
+namespace UniversityAPI.Tests.UnitTests.Shared
 {
     public class UnitTestFixture : BaseUnitTestFixture
     {

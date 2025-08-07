@@ -25,13 +25,13 @@ jobs:
       - name: Build
         run: dotnet build --no-restore UniversityAPI/UniversityAPI.sln
 
-      - name: Test Application Startup
+      - name: Run Unit Tests
         run: |
-          echo "=== Testing Application Startup ==="
           dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter "FullyQualifiedName~IntegrationTests.ApiIntegrationTests.GetUniversities_ReturnsSuccessStatusCode" \
-            --verbosity detailed \
-            --logger console
+            --filter FullyQualifiedName~UnitTests \
+            --logger "trx;LogFileName=Unit.trx" \
+            --results-directory ./TestResults/Unit \
+            --verbosity normal
         env:
           TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
           TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
@@ -42,45 +42,19 @@ jobs:
           FINGERPRINT: ${{ secrets.FINGERPRINT }}
           Jwt__Issuer: "UniversityAPI"
           Jwt__Audience: "UniversityAPIClient"
-
-      - name: Test Integration - API
-        run: |
-          echo "=== Environment Variables Check ==="
-          echo "JWT_KEY exists: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY != '' }}"
-          echo "PUBLIC_KEY exists: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY != '' }}"
-          echo "DB_CONNECTION exists: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION != '' }}"
-          echo "ADMIN_USERNAME exists: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME != '' }}"
-          echo "ADMIN_PASSWORD exists: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD != '' }}"
-          echo "ADMIN_EMAIL exists: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL != '' }}"
-          echo "FINGERPRINT exists: ${{ secrets.FINGERPRINT != '' }}"
-          echo "=== Running Tests ==="
-          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~IntegrationTests.ApiIntegrationTests \
-            --logger "trx;LogFileName=Integration_Api.trx" \
-            --results-directory ./TestResults/IntegrationApi \
-            --verbosity detailed
-        env:
-          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
-          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
-          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          FINGERPRINT: ${{ secrets.FINGERPRINT }}
-          Jwt__Issuer: "UniversityAPI"
-          Jwt__Audience: "UniversityAPIClient"
-      - name: Upload Integration - API Results
+      - name: Upload Unit Test Results
         uses: actions/upload-artifact@v4
         with:
-          name: Integration_Api_TestResults
-          path: ./TestResults/IntegrationApi
+          name: Unit_TestResults
+          path: ./TestResults/Unit
 
-      - name: Test Integration - Authorization
+      - name: Run Integration Tests
         run: |
           dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~IntegrationTests.AuthorizationTests \
-            --logger "trx;LogFileName=Integration_Authorization.trx" \
-            --results-directory ./TestResults/IntegrationAuthorization
+            --filter FullyQualifiedName~IntegrationTests \
+            --logger "trx;LogFileName=Integration.trx" \
+            --results-directory ./TestResults/Integration \
+            --verbosity normal
         env:
           TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
           TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
@@ -91,18 +65,19 @@ jobs:
           FINGERPRINT: ${{ secrets.FINGERPRINT }}
           Jwt__Issuer: "UniversityAPI"
           Jwt__Audience: "UniversityAPIClient"
-      - name: Upload Integration - Authorization Results
+      - name: Upload Integration Test Results
         uses: actions/upload-artifact@v4
         with:
-          name: Integration_Authorization_TestResults
-          path: ./TestResults/IntegrationAuthorization
+          name: Integration_TestResults
+          path: ./TestResults/Integration
 
-      - name: Test Security - InputValidation
+      - name: Run Security Tests
         run: |
           dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~SecurityTests.InputValidationTests \
-            --logger "trx;LogFileName=Security_InputValidation.trx" \
-            --results-directory ./TestResults/SecurityInputValidation
+            --filter FullyQualifiedName~SecurityTests \
+            --logger "trx;LogFileName=Security.trx" \
+            --results-directory ./TestResults/Security \
+            --verbosity normal
         env:
           TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
           TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
@@ -113,118 +88,8 @@ jobs:
           FINGERPRINT: ${{ secrets.FINGERPRINT }}
           Jwt__Issuer: "UniversityAPI"
           Jwt__Audience: "UniversityAPIClient"
-      - name: Upload Security - InputValidation Results
+      - name: Upload Security Test Results
         uses: actions/upload-artifact@v4
         with:
-          name: Security_InputValidation_TestResults
-          path: ./TestResults/SecurityInputValidation
-
-      - name: Test Unit - Controllers - Auth
-        run: |
-          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~UnitTests.Controllers.AuthControllerTests \
-            --logger "trx;LogFileName=Unit_Controllers_Auth.trx" \
-            --results-directory ./TestResults/UnitControllersAuth
-        env:
-          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
-          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
-          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          FINGERPRINT: ${{ secrets.FINGERPRINT }}
-          Jwt__Issuer: "UniversityAPI"
-          Jwt__Audience: "UniversityAPIClient"
-      - name: Upload Unit - Controllers - Auth Results
-        uses: actions/upload-artifact@v4
-        with:
-          name: Unit_Controllers_Auth_TestResults
-          path: ./TestResults/UnitControllersAuth
-
-      - name: Test Unit - Controllers - University
-        run: |
-          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~UnitTests.Controllers.UniversityControllerTests \
-            --logger "trx;LogFileName=Unit_Controllers_University.trx" \
-            --results-directory ./TestResults/UnitControllersUniversity
-        env:
-          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
-          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
-          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          FINGERPRINT: ${{ secrets.FINGERPRINT }}
-          Jwt__Issuer: "UniversityAPI"
-          Jwt__Audience: "UniversityAPIClient"
-      - name: Upload Unit - Controllers - University Results
-        uses: actions/upload-artifact@v4
-        with:
-          name: Unit_Controllers_University_TestResults
-          path: ./TestResults/UnitControllersUniversity
-
-      - name: Test Unit - Services - TokenService
-        run: |
-          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~UnitTests.Services.TokenServiceTests \
-            --logger "trx;LogFileName=Unit_Services_TokenService.trx" \
-            --results-directory ./TestResults/UnitServicesTokenService
-        env:
-          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
-          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
-          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          FINGERPRINT: ${{ secrets.FINGERPRINT }}
-          Jwt__Issuer: "UniversityAPI"
-          Jwt__Audience: "UniversityAPIClient"
-      - name: Upload Unit - Services - TokenService Results
-        uses: actions/upload-artifact@v4
-        with:
-          name: Unit_Services_TokenService_TestResults
-          path: ./TestResults/UnitServicesTokenService
-
-      - name: Test Unit - Services - UniversityService
-        run: |
-          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~UnitTests.Services.UniversityServiceTests \
-            --logger "trx;LogFileName=Unit_Services_UniversityService.trx" \
-            --results-directory ./TestResults/UnitServicesUniversityService
-        env:
-          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
-          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
-          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          FINGERPRINT: ${{ secrets.FINGERPRINT }}
-          Jwt__Issuer: "UniversityAPI"
-          Jwt__Audience: "UniversityAPIClient"
-      - name: Upload Unit - Services - UniversityService Results
-        uses: actions/upload-artifact@v4
-        with:
-          name: Unit_Services_UniversityService_TestResults
-          path: ./TestResults/UnitServicesUniversityService
-
-      - name: Test Unit - Middleware - ExceptionHandling
-        run: |
-          dotnet test UniversityAPI.Tests/UniversityAPI.Tests.csproj \
-            --filter FullyQualifiedName~UnitTests.Middleware.ExceptionHandlingMiddlewareTests \
-            --logger "trx;LogFileName=Unit_Middleware_ExceptionHandling.trx" \
-            --results-directory ./TestResults/UnitMiddlewareExceptionHandling
-        env:
-          TOPPAN_UNIVERSITYAPI_PUBLIC_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_PUBLIC_KEY }}
-          TOPPAN_UNIVERSITYAPI_JWT_KEY: ${{ secrets.TOPPAN_UNIVERSITYAPI_JWT_KEY }}
-          TOPPAN_UNIVERSITYAPI_DB_CONNECTION: ${{ secrets.TOPPAN_UNIVERSITYAPI_DB_CONNECTION }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD }}
-          TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL: ${{ secrets.TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL }}
-          FINGERPRINT: ${{ secrets.FINGERPRINT }}
-          Jwt__Issuer: "UniversityAPI"
-          Jwt__Audience: "UniversityAPIClient"
-      - name: Upload Unit - Middleware - ExceptionHandling Results
-        uses: actions/upload-artifact@v4
-        with:
-          name: Unit_Middleware_ExceptionHandling_TestResults
-          path: ./TestResults/UnitMiddlewareExceptionHandling
+          name: Security_TestResults
+          path: ./TestResults/Security

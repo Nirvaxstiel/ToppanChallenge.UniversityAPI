@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Service;
-using UniversityAPI.Tests.Shared.Fixtures;
+using UniversityAPI.Tests.UnitTests.Shared;
 using UniversityAPI.Utility;
 
 namespace UniversityAPI.Tests.UnitTests.Services
