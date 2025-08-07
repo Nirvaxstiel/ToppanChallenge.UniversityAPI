@@ -27,6 +27,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\UniversityAPI.Framework\UniversityAPI.Framework.csproj" />
+	  <ProjectReference Include="..\UniversityAPI.Resource\UniversityAPI.Resource.csproj" />
 	  <ProjectReference Include="..\UniversityAPI.Service\UniversityAPI.Service.csproj" />
 	  <ProjectReference Include="..\UniversityAPI.Utility\UniversityAPI.Utility.csproj" />
 	</ItemGroup>

@@ -8,6 +8,7 @@ using UniversityAPI.Framework;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Tests.Shared.Helpers;
 using UniversityAPI.Utility;
+using UniversityAPI.Utility.Helpers;
 using UniversityAPI.Utility.Interfaces;
 
 namespace UniversityAPI.Tests.Shared.Fixtures

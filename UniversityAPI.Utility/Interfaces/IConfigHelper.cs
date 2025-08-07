@@ -17,5 +17,8 @@
         T GetValue<T>(string key);
 
         T ConvertValue<T>(string value);
+
+        T GetConfigSection<T>(string sectionName)
+            where T : new();
     }
 }

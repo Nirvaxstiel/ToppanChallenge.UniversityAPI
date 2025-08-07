@@ -1,15 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.ComponentModel;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.ComponentModel;
 using UniversityAPI.Utility.Interfaces;
 
-namespace UniversityAPI.Utility
+namespace UniversityAPI.Utility.Helpers
 {
     public class ConfigHelper : IConfigHelper
     {
-        private readonly IConfiguration configuration;
-        private readonly ILogger<IConfiguration> logger;
-
         private const string PUBLICKEYNAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
         private const string JWTKEYKEYNAME = "TOPPAN_UNIVERSITYAPI_JWT_KEY";
         private const string DBCONNECTIONKEYNAME = "TOPPAN_UNIVERSITYAPI_DB_CONNECTION";
@@ -17,15 +14,18 @@ namespace UniversityAPI.Utility
         private const string ADMININITPASSWORDKEYNAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD";
         private const string ADMININITEMAILKEYNAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL";
 
+        private readonly IConfiguration configuration;
+        private readonly ILogger<IConfiguration> logger;
+
         public ConfigHelper(IConfiguration configuration, ILogger<IConfiguration> logger)
         {
             this.configuration = configuration;
-            this.logger = logger;
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public T GetValue<T>(string key)
         {
-            this.TryGetValue<T>(key, out var value);
+            TryGetValue<T>(key, out var value);
             return value;
         }
 
@@ -33,10 +33,10 @@ namespace UniversityAPI.Utility
         {
             try
             {
-                var configValue = this.configuration[key];
+                var configValue = configuration[key];
                 if (!string.IsNullOrWhiteSpace(configValue))
                 {
-                    value = this.ConvertValue<T>(configValue);
+                    value = ConvertValue<T>(configValue);
                     return true;
                 }
 
@@ -44,15 +44,15 @@ namespace UniversityAPI.Utility
                 var envValue = Environment.GetEnvironmentVariable(envKey);
                 if (!string.IsNullOrWhiteSpace(envValue))
                 {
-                    value = this.ConvertValue<T>(envValue);
+                    value = ConvertValue<T>(envValue);
                     return true;
                 }
 
-                this.logger.LogWarning("Configuration key '{Key}' not found in configuration or environment variables.", key);
+                logger.LogWarning("Configuration key '{Key}' not found in configuration or environment variables.", key);
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "Failed to retrieve configuration value for key '{Key}'", key);
+                logger.LogError(ex, "Failed to retrieve configuration value for key '{Key}'", key);
             }
 
             value = default!;
@@ -63,7 +63,7 @@ namespace UniversityAPI.Utility
         {
             try
             {
-                return this.configuration.GetSection(sectionKey).Get<T>() ?? new T();
+                return configuration.GetSection(sectionKey).Get<T>() ?? new T();
             }
             catch
             {
@@ -73,32 +73,32 @@ namespace UniversityAPI.Utility
 
         public T GetPublicCipherKey<T>()
         {
-            return this.GetValue<T>(PUBLICKEYNAME);
+            return GetValue<T>(PUBLICKEYNAME);
         }
 
         public T GetJwtKey<T>()
         {
-            return this.GetValue<T>(JWTKEYKEYNAME);
+            return GetValue<T>(JWTKEYKEYNAME);
         }
 
         public T GetDbConnection<T>()
         {
-            return this.GetValue<T>(DBCONNECTIONKEYNAME);
+            return GetValue<T>(DBCONNECTIONKEYNAME);
         }
 
         public T GetAdminInitUsername<T>()
         {
-            return this.GetValue<T>(ADMININITUSERNAMEKEYNAME);
+            return GetValue<T>(ADMININITUSERNAMEKEYNAME);
         }
 
         public T GetAdminInitPassword<T>()
         {
-            return this.GetValue<T>(ADMININITPASSWORDKEYNAME);
+            return GetValue<T>(ADMININITPASSWORDKEYNAME);
         }
 
         public T GetAdminInitEmail<T>()
         {
-            return this.GetValue<T>(ADMININITEMAILKEYNAME);
+            return GetValue<T>(ADMININITEMAILKEYNAME);
         }
 
         public T ConvertValue<T>(string value)
@@ -133,6 +133,14 @@ namespace UniversityAPI.Utility
 
             // Fallback to Convert.ChangeType
             return (T)Convert.ChangeType(value, underlyingType);
+        }
+
+        public T GetConfigSection<T>(string sectionName)
+            where T : new()
+        {
+            var section = new T();
+            configuration.GetSection(sectionName).Bind(section);
+            return section;
         }
     }
 }
