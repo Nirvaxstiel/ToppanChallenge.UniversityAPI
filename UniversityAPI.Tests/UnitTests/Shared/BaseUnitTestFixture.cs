@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using UniversityAPI.Framework;
 using UniversityAPI.Framework.Model;
@@ -16,9 +16,14 @@ namespace UniversityAPI.Tests.UnitTests.Shared
     public abstract class BaseUnitTestFixture : IDisposable
     {
         public ApplicationDbContext Context { get; }
+
         public UserManager<UserDM> UserManager { get; }
+
         public RoleManager<IdentityRole> RoleManager { get; }
+
         public IConfigHelper ConfigHelper { get; }
+
+        private readonly SqliteConnection connection;
 
         protected BaseUnitTestFixture()
         {
@@ -35,14 +40,15 @@ namespace UniversityAPI.Tests.UnitTests.Shared
             this.ConfigHelper = new ConfigHelper(config, logger);
             this.ConfigHelper.InjectStaticConfig();
 
-            var serviceProvider = new ServiceCollection()
-                .AddEntityFrameworkInMemoryDatabase()
-                .BuildServiceProvider();
+            connection = new SqliteConnection("DataSource=:memory:");
+            connection.Open();
+
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: GetDatabaseName())
+                .UseSqlite(connection)
                 .Options;
 
             this.Context = new ApplicationDbContext(options);
+            this.Context.Database.EnsureCreated();
 
             var identityOptions = Microsoft.Extensions.Options.Options.Create(new IdentityOptions()
             {
@@ -65,9 +71,13 @@ namespace UniversityAPI.Tests.UnitTests.Shared
             SeedData();
         }
 
-        protected virtual string GetDatabaseName() => $"{GetType().Name}_{Guid.NewGuid()}";
         protected virtual void SeedData() => TestDataSeeder.SeedDataAsync(this.Context, this.RoleManager, this.UserManager).Wait();
 
-        public void Dispose() => this.Context.Dispose();
+        public void Dispose()
+        {
+            this.Context.Dispose();
+            connection.Close();
+            connection.Dispose();
+        }
     }
 }

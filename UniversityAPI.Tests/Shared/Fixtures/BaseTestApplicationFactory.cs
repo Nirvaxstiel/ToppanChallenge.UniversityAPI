@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,8 @@ namespace UniversityAPI.Tests.Shared.Fixtures
         protected abstract string DatabaseNamePrefix { get; }
 
         protected string DatabaseName { get; }
+
+        private SqliteConnection connection;
 
         public async Task ExecuteScopeAsync(Func<IServiceProvider, Task> action)
         {
@@ -45,12 +48,22 @@ namespace UniversityAPI.Tests.Shared.Fixtures
                                                    .Build();
             builder.UseConfiguration(config);
 
-            _ = builder.ConfigureServices(services =>
+            builder.ConfigureServices(services =>
             {
                 try
                 {
+                    var descriptor = services.SingleOrDefault(
+                        d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+                    if (descriptor != null)
+                    {
+                        services.Remove(descriptor);
+                    }
+
+                    connection = new SqliteConnection("DataSource=:memory:");
+                    connection.Open();
+
                     var contextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-                        .UseInMemoryDatabase(databaseName: this.DatabaseName)
+                        .UseSqlite(connection)
                         .Options;
 
                     services.Replace(ServiceDescriptor.Singleton(typeof(DbContextOptions<ApplicationDbContext>), new DbContextOptions<ApplicationDbContext>()));
@@ -73,7 +86,6 @@ namespace UniversityAPI.Tests.Shared.Fixtures
                     });
 
                     var serviceProvider = services.BuildServiceProvider();
-
                     using var scope = serviceProvider.CreateScope();
                     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -89,6 +101,13 @@ namespace UniversityAPI.Tests.Shared.Fixtures
                     throw;
                 }
             });
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            connection?.Close();
+            connection?.Dispose();
         }
     }
 }

@@ -4,34 +4,23 @@ using UniversityAPI.Framework.Model;
 
 namespace UniversityAPI.Middleware
 {
-    public class ExceptionHandlingMiddleware
+    public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger, IWebHostEnvironment env)
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionHandlingMiddleware> _logger;
-        private readonly IWebHostEnvironment _env;
-
-        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger, IWebHostEnvironment env)
-        {
-            _next = next;
-            _logger = logger;
-            _env = env;
-        }
-
         public async Task InvokeAsync(HttpContext context)
         {
             try
             {
-                await _next(context);
+                await next(context);
             }
             catch (ApiException ex)
             {
-                _logger.LogError(ex, "API Exception occurred");
-                await HandleExceptionAsync(context, ex, _env);
+                logger.LogError(ex, "API Exception occurred");
+                await HandleExceptionAsync(context, ex, env);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unhandled exception occurred");
-                await HandleExceptionAsync(context, ex, _env);
+                logger.LogError(ex, "An unhandled exception occurred");
+                await HandleExceptionAsync(context, ex, env);
             }
         }
 

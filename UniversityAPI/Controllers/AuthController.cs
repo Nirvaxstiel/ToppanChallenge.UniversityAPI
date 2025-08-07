@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using UniversityAPI.Framework.Infrastructure.Transactions;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Service;
 
@@ -9,17 +10,9 @@ namespace UniversityAPI.Controllers
     [ApiController]
     [Route("api/auth")]
     [AllowAnonymous]
-    public class AuthController : ControllerBase
+    [Transactional]
+    public class AuthController(UserManager<UserDM> userManager, ITokenService tokenService) : ControllerBase
     {
-        private readonly UserManager<UserDM> _userManager;
-        private readonly ITokenService _tokenService;
-
-        public AuthController(UserManager<UserDM> userManager, ITokenService tokenService)
-        {
-            _userManager = userManager;
-            _tokenService = tokenService;
-        }
-
         [HttpPost("login")]
         public async Task<ActionResult<AuthResponse>> Login(LoginDto loginDto)
         {
@@ -28,11 +21,11 @@ namespace UniversityAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = await _userManager.FindByNameAsync(loginDto.Username);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
+            var user = await userManager.FindByNameAsync(loginDto.Username);
+            if (user == null || !await userManager.CheckPasswordAsync(user, loginDto.Password))
                 return Unauthorized();
 
-            var token = await _tokenService.GenerateToken(user);
+            var token = await tokenService.GenerateToken(user);
             return new AuthResponse
             {
                 Username = user.UserName,
@@ -49,20 +42,20 @@ namespace UniversityAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var existingUserByUsername = await _userManager.FindByNameAsync(registerDto.Username);
+            var existingUserByUsername = await userManager.FindByNameAsync(registerDto.Username);
             if (existingUserByUsername != null)
             {
                 return Conflict(new { message = "Username already exists" });
             }
 
-            var existingUserByEmail = await _userManager.FindByEmailAsync(registerDto.Email);
+            var existingUserByEmail = await userManager.FindByEmailAsync(registerDto.Email);
             if (existingUserByEmail != null)
             {
                 return Conflict(new { message = "Email already exists" });
             }
 
             var user = new UserDM { UserName = registerDto.Username, Email = registerDto.Email };
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            var result = await userManager.CreateAsync(user, registerDto.Password);
 
             if (!result.Succeeded)
             {
@@ -73,8 +66,8 @@ namespace UniversityAPI.Controllers
                 return ValidationProblem();
             }
 
-            await _userManager.AddToRoleAsync(user, "User");
-            var token = await _tokenService.GenerateToken(user);
+            await userManager.AddToRoleAsync(user, "User");
+            var token = await tokenService.GenerateToken(user);
 
             return new AuthResponse
             {

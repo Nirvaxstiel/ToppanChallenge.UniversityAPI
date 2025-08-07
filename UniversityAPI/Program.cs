@@ -15,17 +15,15 @@ using UniversityAPI.Utility.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+#region Service Registration
+
+// OpenAPI/Swagger
 builder.Services.AddOpenApi();
-// Prefer user-secrets/configuration, then environment variables, then appsettings.json
-var jwtKey = builder.Configuration["TOPPAN_UNIVERSITYAPI_JWT_KEY"]
-    ?? Environment.GetEnvironmentVariable("TOPPAN_UNIVERSITYAPI_JWT_KEY")
-    ?? builder.Configuration["Jwt:Key"];
+
+// Database
 var dbConnection = builder.Configuration["TOPPAN_UNIVERSITYAPI_DB_CONNECTION"]
     ?? Environment.GetEnvironmentVariable("TOPPAN_UNIVERSITYAPI_DB_CONNECTION")
     ?? builder.Configuration.GetConnectionString("DefaultConnection");
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(
@@ -33,10 +31,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         b => b.MigrationsAssembly("UniversityAPI"));
 });
 
+// Identity
 builder.Services.AddIdentity<UserDM, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequireDigit = true;
@@ -47,6 +45,10 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredUniqueChars = 5;
 });
 
+// Authentication (JWT)
+var jwtKey = builder.Configuration["TOPPAN_UNIVERSITYAPI_JWT_KEY"]
+    ?? Environment.GetEnvironmentVariable("TOPPAN_UNIVERSITYAPI_JWT_KEY")
+    ?? builder.Configuration["Jwt:Key"];
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -67,18 +69,20 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Authorization
+builder.Services.AddAuthorizationBuilder()
+                .AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"))
+                .AddPolicy("CanEditUniversity", policy =>
+                {
+                    policy.RequireAssertion(context => context.User.IsInRole("Admin")
+                                                       || context.User.HasClaim("Permission", "EditUniversity"));
+                });
+// Utility/Service Layers
+builder.Services.AddFrameworkLayer();
 builder.Services.AddUtilityLayer();
 builder.Services.AddServiceLayer();
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("CanEditUniversity", policy =>
-        policy.RequireAssertion(context =>
-            context.User.IsInRole("Admin") ||
-            context.User.HasClaim("Permission", "EditUniversity")));
-});
-
+// Rate Limiting, Caching, CORS
 builder.Services.AddMemoryCache();
 builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
 builder.Services.AddInMemoryRateLimiting();
@@ -95,6 +99,7 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Controllers & Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(config =>
@@ -110,25 +115,20 @@ builder.Services.AddSwaggerGen(config =>
             Email = "your.email@example.com"
         }
     });
-
-    // Include XML comments (optional)
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
     {
         config.IncludeXmlComments(xmlPath);
     }
-
-    // Add JWT Authentication to Swagger
     config.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Description = "JWT Authorization header using the Bearer scheme. Example: 'Authorization: Bearer {token}'",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
-
     config.AddSecurityRequirement(new OpenApiSecurityRequirement()
     {
         {
@@ -148,21 +148,28 @@ builder.Services.AddSwaggerGen(config =>
     });
 });
 
+#endregion Service Registration
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+#region Middleware Pipeline
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(config => config.SwaggerEndpoint("/swagger/v1/swagger.json", "University API V1"));
 }
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors("DefaultPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-// Add this before your controllers/middleware pipeline
+
+#endregion Middleware Pipeline
+
+#region Database Seeding
 
 using (var scope = app.Services.CreateScope())
 {
@@ -182,5 +189,7 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred during migration");
     }
 }
+
+#endregion Database Seeding
 
 app.Run();

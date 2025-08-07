@@ -11,7 +11,7 @@ namespace System
 {
     public sealed class MapHelper
     {
-        private static Hashtable cache = new Hashtable();
+        private static readonly ConcurrentDictionary<string, object> cache = new ConcurrentDictionary<string, object>();
         private static readonly object lockedDuplicate = new object();
 
         public static TModel Copy<TModel>(TModel model) where TModel : class
@@ -30,16 +30,18 @@ namespace System
             {
                 return null;
             }
-
-            lock (lockedDuplicate)
+            var key = $"{from.GetType().FullName}&{typeof(TTo).FullName}";
+            if (!cache.ContainsKey(key))
             {
-                if (!cache.ContainsKey($"{from.GetType().FullName}&{typeof(TTo).FullName}"))
+                lock (lockedDuplicate)
                 {
-                    TinyMapper.Bind(from.GetType(), typeof(TTo));
-                    cache.Add($"{from.GetType().FullName}&{typeof(TTo).FullName}", null);
+                    if (!cache.ContainsKey(key))
+                    {
+                        TinyMapper.Bind(from.GetType(), typeof(TTo));
+                        cache.TryAdd(key, null);
+                    }
                 }
             }
-
             return TinyMapper.Map<TTo>(from);
         }
 
@@ -50,24 +52,28 @@ namespace System
             {
                 return new List<TTo>();
             }
-
             IList<TTo> results = new List<TTo>();
             foreach (object item in list)
             {
                 results.Add(ToItem<TTo>(item));
             }
-
             return results;
         }
 
         public static TTo Map<TFrom, TTo>(TFrom from) where TTo : class
         {
-            if (!cache.ContainsKey($"{typeof(TFrom).FullName}&{typeof(TTo).FullName}"))
+            var key = $"{typeof(TFrom).FullName}&{typeof(TTo).FullName}";
+            if (!cache.ContainsKey(key))
             {
-                TinyMapper.Bind<TFrom, TTo>();
-                cache.Add($"{typeof(TFrom).FullName}&{typeof(TTo).FullName}", null);
+                lock (lockedDuplicate)
+                {
+                    if (!cache.ContainsKey(key))
+                    {
+                        TinyMapper.Bind<TFrom, TTo>();
+                        cache.TryAdd(key, null);
+                    }
+                }
             }
-
             return from == null ? null : TinyMapper.Map<TTo>(from);
         }
 
@@ -88,13 +94,11 @@ namespace System
             {
                 return list;
             }
-
             var builder = DataRowEntityBuilder.GetBuilder<TTo>(table.Rows[0]);
             foreach (DataRow row in table.Rows)
             {
                 list.Add(builder(row));
             }
-
             return list;
         }
     }
@@ -102,7 +106,6 @@ namespace System
     public sealed class DataRowEntityBuilder
     {
         private static ConcurrentDictionary<string, Delegate> cache = new ConcurrentDictionary<string, Delegate>();
-
         private static readonly MethodInfo getValueMethod = typeof(DataRow).GetMethod("get_Item", [typeof(int)]);
         private static readonly MethodInfo isDBNullMethod = typeof(DataRow).GetMethod("IsNull", [typeof(int)]);
 
@@ -113,7 +116,6 @@ namespace System
             {
                 cache[key] = CreateBuilder<T>(row);
             }
-
             return cache[key] as Func<DataRow, T>;
         }
 
@@ -164,9 +166,7 @@ namespace System
             {
                 builder.Append(column.ColumnName.Trim());
             }
-
             builder.Append(row.ItemArray.Length.ToString());
-
             return EncryptByMd5(builder.ToString());
         }
 
@@ -241,7 +241,6 @@ namespace System
             {
                 return null;
             }
-
             return new Guid(value.ToString());
         }
 
@@ -251,7 +250,6 @@ namespace System
             {
                 return null;
             }
-
             return Convert.ToBoolean(value);
         }
 
@@ -261,7 +259,6 @@ namespace System
             {
                 return null;
             }
-
             return Convert.ToInt16(value);
         }
 
@@ -271,7 +268,6 @@ namespace System
             {
                 return null;
             }
-
             return Convert.ToInt32(value);
         }
 
@@ -281,7 +277,6 @@ namespace System
             {
                 return null;
             }
-
             return Convert.ToInt64(value);
         }
 
@@ -291,7 +286,6 @@ namespace System
             {
                 return null;
             }
-
             return Convert.ToDecimal(value);
         }
 
@@ -301,7 +295,6 @@ namespace System
             {
                 return null;
             }
-
             return Convert.ToDateTime(value);
         }
     }

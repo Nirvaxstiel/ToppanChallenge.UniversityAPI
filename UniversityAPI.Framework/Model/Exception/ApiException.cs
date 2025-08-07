@@ -8,8 +8,8 @@
         public ApiException(string message, int statusCode, string? errorCode = null)
             : base(message)
         {
-            StatusCode = statusCode;
-            ErrorCode = errorCode;
+            this.StatusCode = statusCode;
+            this.ErrorCode = errorCode;
         }
 
         public ApiException() : base()

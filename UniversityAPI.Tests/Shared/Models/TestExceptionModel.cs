@@ -10,6 +10,7 @@ namespace UniversityAPI.Tests.Shared.Models
     public class TestExceptionModel
     {
        public  ApiException Exception { get; set; }
+
         public int ExpectedStatusCode { get; set; }
     }
 }

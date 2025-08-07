@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using UniversityAPI.Framework.Infrastructure.Transactions;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Service;
 using UniversityAPI.Utility;
@@ -9,17 +10,8 @@ namespace UniversityAPI.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class UniversityController : ControllerBase
+    public class UniversityController(IUniversityService universityService, ICurrentUserService currentUserService) : ControllerBase
     {
-        private readonly IUniversityService universityService;
-        private readonly ICurrentUserService currentUserService;
-
-        public UniversityController(IUniversityService universityService, ICurrentUserService currentUserService)
-        {
-            this.universityService = universityService;
-            this.currentUserService = currentUserService;
-        }
-
         [HttpGet]
         public async Task<ActionResult<PagedResult<UniversityDto>>> GetUniversities([FromQuery] UniversityFilter filter, [FromQuery] PaginationParams pagination)
         {
