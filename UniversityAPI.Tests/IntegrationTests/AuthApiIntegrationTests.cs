@@ -12,11 +12,13 @@ using UniversityAPI.Tests.Shared.Helpers;
 using UniversityAPI.Tests.Shared.Models;
 using UniversityAPI.Utility;
 
+using UniversityAPI.Tests.Shared.Fixtures;
+
 namespace UniversityAPI.Tests.IntegrationTests
 {
-    public class AuthApiIntegrationTests(ApiTestApplicationFactory factory) : IClassFixture<ApiTestApplicationFactory>
+    public class AuthApiIntegrationTests(AuthApiTestApplicationFactory factory) : IClassFixture<AuthApiTestApplicationFactory>
     {
-        private readonly ApiTestApplicationFactory factory = factory;
+        private readonly AuthApiTestApplicationFactory factory = factory;
 
         [Fact]
         public async Task Register_ValidData_ReturnsCreated()

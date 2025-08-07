@@ -1,22 +1,19 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using UniversityAPI.Framework;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Tests.Shared.Fixtures;
-using UniversityAPI.Tests.Shared.Helpers;
 using UniversityAPI.Tests.Shared.Models;
 using UniversityAPI.Utility;
 
 namespace UniversityAPI.Tests.SecurityTests
 {
-    public class UniversityInputValidationTests(ApiTestApplicationFactory factory) : IClassFixture<ApiTestApplicationFactory>
+    public class UniversityInputValidationTests(UniversityInputValidationTestApplicationFactory factory) : IClassFixture<UniversityInputValidationTestApplicationFactory>
     {
-        private readonly ApiTestApplicationFactory factory = factory;
+        private readonly UniversityInputValidationTestApplicationFactory factory = factory;
 
         [Fact]
         public async Task CreateUniversity_EmptyName_ReturnsBadRequest()

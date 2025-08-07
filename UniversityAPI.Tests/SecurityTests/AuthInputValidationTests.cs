@@ -1,30 +1,27 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using UniversityAPI.Framework;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using UniversityAPI.Framework.Model;
 using UniversityAPI.Tests.Shared.Fixtures;
 using UniversityAPI.Tests.Shared.Helpers;
-using UniversityAPI.Tests.Shared.Models;
-using UniversityAPI.Utility;
 
 namespace UniversityAPI.Tests.SecurityTests
 {
-    public class AuthInputValidationTests(ApiTestApplicationFactory factory) : IClassFixture<ApiTestApplicationFactory>
+    public class AuthInputValidationTests(AuthInputValidationTestApplicationFactory factory) : IClassFixture<AuthInputValidationTestApplicationFactory>
     {
-        private readonly ApiTestApplicationFactory factory = factory;
+        private readonly AuthInputValidationTestApplicationFactory factory = factory;
 
         [Fact]
         public async Task Register_WeakPassword_ReturnsBadRequest_And_Success_WithStrongPassword()
         {
             var registerDto = new RegisterDto
             {
-                Username = "testuser",
-                Email = "test@example.com",
+                Username = $"testuser_{Guid.NewGuid()}",
+                Email = $"test_{RandomNumberGenerator.GetInt32(0, 9999)}@example.com",
                 Password = "weak"
             };
 

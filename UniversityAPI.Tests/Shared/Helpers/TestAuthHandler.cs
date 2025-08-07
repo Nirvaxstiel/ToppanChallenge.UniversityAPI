@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Security.Claims;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using UniversityAPI.Tests.Shared.Models;
 
 namespace UniversityAPI.Tests.Shared.Helpers
 {
     public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+#pragma warning disable SYSLIB0051
 
-        #pragma warning disable SYSLIB0051
         public TestAuthHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
@@ -19,7 +18,8 @@ namespace UniversityAPI.Tests.Shared.Helpers
             : base(options, logger, encoder, clock)
         {
         }
-        #pragma warning restore SYSLIB0051
+
+#pragma warning restore SYSLIB0051
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {

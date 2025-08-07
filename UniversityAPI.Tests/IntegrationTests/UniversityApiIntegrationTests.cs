@@ -12,11 +12,13 @@ using UniversityAPI.Tests.Shared.Helpers;
 using UniversityAPI.Tests.Shared.Models;
 using UniversityAPI.Utility;
 
+using UniversityAPI.Tests.Shared.Fixtures;
+
 namespace UniversityAPI.Tests.IntegrationTests
 {
-    public class UniversityApiIntegrationTests(ApiTestApplicationFactory factory) : IClassFixture<ApiTestApplicationFactory>
+    public class UniversityApiIntegrationTests(UniversityApiTestApplicationFactory factory) : IClassFixture<UniversityApiTestApplicationFactory>
     {
-        private readonly ApiTestApplicationFactory factory = factory;
+        private readonly UniversityApiTestApplicationFactory factory = factory;
 
         [Fact]
         public async Task GetUniversities_ReturnsSuccessStatusCode()
