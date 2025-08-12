@@ -1,10 +1,12 @@
-﻿using System.Collections;
-
-namespace System.Linq
+﻿namespace UniversityAPI.Utility.Helpers.Extensions
 {
+    using System.Collections;
+    using UniversityAPI.Utility.Helpers;
+    using UniversityAPI.Utility.Helpers.Extensions;
+
     public static class EnumerableExtension
     {
-        private static Random random = new Random();
+        private static Random random = new();
 
         public static void Each<TSource>(this IEnumerable<TSource> source, Action<TSource> execution) //where TSource : new()
         {
@@ -42,7 +44,8 @@ namespace System.Linq
             return source.Select(model => selector(model)).Distinct();
         }
 
-        public static IEnumerable<TSource> SortByPosition<TSource>(this IEnumerable<TSource> source) where TSource : ISortable
+        public static IEnumerable<TSource> SortByPosition<TSource>(this IEnumerable<TSource> source)
+            where TSource : ISortable
         {
             var position = 1;
 
@@ -78,7 +81,8 @@ namespace System.Linq
             return source;
         }
 
-        public static IList<TSource> Shift<TSource>(this IList<TSource> source, int from, int to) where TSource : class, ISortable, new()
+        public static IList<TSource> Shift<TSource>(this IList<TSource> source, int from, int to)
+            where TSource : class, ISortable, new()
         {
             int start = from > to ? to : from + 1;
             int end = from > to ? from - 1 : to;
@@ -141,7 +145,8 @@ namespace System.Linq
             return source.ThenByDescending(model => keySelector(model)).ToList();
         }
 
-        public static IList<TSource> SortByPositionList<TSource>(this IEnumerable<TSource> source) where TSource : ISortable
+        public static IList<TSource> SortByPositionList<TSource>(this IEnumerable<TSource> source)
+            where TSource : ISortable
         {
             return source.SortByPosition().ToList();
         }

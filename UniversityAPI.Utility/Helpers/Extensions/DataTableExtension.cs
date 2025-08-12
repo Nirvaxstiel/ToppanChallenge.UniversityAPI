@@ -1,12 +1,13 @@
-﻿using System.Reflection;
-
-namespace System.Data
+﻿namespace UniversityAPI.Utility.Helpers.Extensions
 {
+    using System.Data;
+    using System.Reflection;
+
     public static class DataTableExtension
     {
         public static DataTable ListToDataTable<T>(IEnumerable<T> list, string _tableName)
         {
-            DataTable dt = new DataTable(_tableName);
+            DataTable dt = new(_tableName);
 
             foreach (PropertyInfo info in typeof(T).GetProperties())
             {

@@ -1,13 +1,13 @@
-﻿using System.Collections.Concurrent;
-using System.Data;
-using System.Data.SqlTypes;
-using System.Reflection;
-using System.Reflection.Emit;
-using UniversityAPI.Utility;
-using UniversityAPI.Utility.Interfaces;
-
-namespace System
+﻿namespace UniversityAPI.Utility.Helpers
 {
+    using System.Collections.Concurrent;
+    using System.Data;
+    using System.Data.SqlTypes;
+    using System.Reflection;
+    using System.Reflection.Emit;
+    using UniversityAPI.Utility.Helpers.Extensions;
+    using UniversityAPI.Utility.Interfaces;
+
     public static class TimeZoneHelper
     {
         private static string DEFAULTSTANDARDTIME;
@@ -196,19 +196,19 @@ namespace System
 
         private static bool IsConvertableType(Type type)
         {
-            if (type == typeof(Char) || type == (typeof(String)))
+            if (type == typeof(char) || type == typeof(string))
             {
                 return false;
             }
-            if (type == typeof(Int16) || type == (typeof(Int32)) || type == (typeof(Int64)))
+            if (type == typeof(short) || type == typeof(int) || type == typeof(long))
             {
                 return false;
             }
-            if (type == typeof(Single) || type == (typeof(Double)) || type == (typeof(Decimal)))
+            if (type == typeof(float) || type == typeof(double) || type == typeof(decimal))
             {
                 return false;
             }
-            if (type == typeof(Boolean))
+            if (type == typeof(bool))
             {
                 return false;
             }
@@ -277,8 +277,8 @@ namespace System
         private static readonly MethodInfo fromUtc8Method = typeof(TimeZoneHelper).GetMethod("FromUtc8");
         private static readonly MethodInfo fromNullableUtc8Method = typeof(TimeZoneHelper).GetMethod("FromNullableUtc8");
 
-        private static ConcurrentDictionary<string, Delegate> timeToUtc8Cache = new ConcurrentDictionary<string, Delegate>();
-        private static ConcurrentDictionary<string, Delegate> timeFromUtc8Cache = new ConcurrentDictionary<string, Delegate>();
+        private static ConcurrentDictionary<string, Delegate> timeToUtc8Cache = new();
+        private static ConcurrentDictionary<string, Delegate> timeFromUtc8Cache = new();
 
         public static Action<T, TimeZoneInfo> GetTimeToUtc8Action<T>(string[] ignores)
         {
@@ -304,7 +304,7 @@ namespace System
 
         private static Action<T, TimeZoneInfo> CreateTimeToUtc8Action<T>(string[] ignores)
         {
-            var method = new DynamicMethod("TimeToUtc8Action", null, new Type[] { typeof(T), typeof(TimeZoneInfo) });
+            var method = new DynamicMethod("TimeToUtc8Action", null, [typeof(T), typeof(TimeZoneInfo)]);
             var il = method.GetILGenerator();
 
             var properties = GetSupportProperies(typeof(T), ignores);
@@ -327,7 +327,7 @@ namespace System
 
         private static Action<T, TimeZoneInfo> CreatedTimeFromUtc8Builder<T>()
         {
-            var method = new DynamicMethod("TimeFromUtc8Action", null, new Type[] { typeof(T), typeof(TimeZoneInfo) });
+            var method = new DynamicMethod("TimeFromUtc8Action", null, [typeof(T), typeof(TimeZoneInfo)]);
             var il = method.GetILGenerator();
 
             var properties = GetSupportProperies(typeof(T), null);
@@ -381,7 +381,7 @@ namespace System
             var flags = BindingFlags.Instance | BindingFlags.Public;
             var properties = type.GetProperties(flags).Where(property => IsSupportProperty(property));
 
-            return (ignores != null && ignores.Length > 0) ? properties.Where(property => !StringHelper.Contains(ignores, property.Name)) : properties;
+            return ignores != null && ignores.Length > 0 ? properties.Where(property => !StringHelper.Contains(ignores, property.Name)) : properties;
         }
 
         private static bool IsIgnored(PropertyInfo property)
@@ -393,13 +393,8 @@ namespace System
         }
     }
 
-    public class TimeZoneColumnAttribute : Attribute
+    public class TimeZoneColumnAttribute(bool isIgnored) : Attribute
     {
-        public bool IsIgnored { get; set; }
-
-        public TimeZoneColumnAttribute(bool isIgnored)
-        {
-            this.IsIgnored = isIgnored;
-        }
+        public bool IsIgnored { get; set; } = isIgnored;
     }
 }

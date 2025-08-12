@@ -1,24 +1,21 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using System.Net;
-using System.Text;
-using System.Text.Json;
-using UniversityAPI.Framework;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Tests.Shared.Fixtures;
-using UniversityAPI.Tests.Shared.Helpers;
-using UniversityAPI.Tests.Shared.Models;
-using UniversityAPI.Utility;
-
-using UniversityAPI.Tests.Shared.Fixtures;
-
 namespace UniversityAPI.Tests.IntegrationTests
 {
+    using System.Net;
+    using System.Text;
+    using System.Text.Json;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
+    using UniversityAPI.Framework.Database;
+    using UniversityAPI.Framework.Model.University.DTO;
+    using UniversityAPI.Framework.Model.User;
+    using UniversityAPI.Tests.Shared.Fixtures;
+    using UniversityAPI.Tests.Shared.Models;
+    using UniversityAPI.Utility.Helpers;
+
     public class UniversityApiIntegrationTests(UniversityApiTestApplicationFactory factory) : IClassFixture<UniversityApiTestApplicationFactory>
     {
         private readonly UniversityApiTestApplicationFactory factory = factory;
+        private readonly JsonSerializerOptions jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
         [Fact]
         public async Task GetUniversities_ReturnsSuccessStatusCode()
@@ -39,10 +36,7 @@ namespace UniversityAPI.Tests.IntegrationTests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<PagedResult<UniversityDto>>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var result = JsonSerializer.Deserialize<PagedResult<UniversityDto>>(content, jsonSerializerOptions);
 
             Assert.NotNull(result);
             Assert.True(result.Items.Count <= 5);
@@ -62,10 +56,7 @@ namespace UniversityAPI.Tests.IntegrationTests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
-            var university = JsonSerializer.Deserialize<UniversityDto>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var university = JsonSerializer.Deserialize<UniversityDto>(content, jsonSerializerOptions);
 
             Assert.NotNull(university);
             Assert.Equal(existingUniversity.Id, university.Id);
@@ -90,12 +81,7 @@ namespace UniversityAPI.Tests.IntegrationTests
                 return await context.Universities.FirstOrDefaultAsync();
             });
 
-            var createDto = new CreateUniversityDto
-            {
-                Name = "Test University",
-                Country = "Test Country",
-                Webpage = "https://test.edu"
-            };
+            var createDto = new CreateUniversityDto(Guid.NewGuid(), $"Test University {Guid.NewGuid}", $"Test Country  {Guid.NewGuid}", "https://test.edu");
 
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -105,10 +91,7 @@ namespace UniversityAPI.Tests.IntegrationTests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var responseContent = await response.Content.ReadAsStringAsync();
-            var createdUniversity = JsonSerializer.Deserialize<UniversityDto>(responseContent, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var createdUniversity = JsonSerializer.Deserialize<UniversityDto>(responseContent, jsonSerializerOptions);
 
             Assert.NotNull(createdUniversity);
             Assert.Equal(createDto.Name, createdUniversity.Name);
@@ -124,12 +107,7 @@ namespace UniversityAPI.Tests.IntegrationTests
                 return await context.Universities.FirstOrDefaultAsync();
             });
 
-            var createDto = new CreateUniversityDto
-            {
-                Name = existingUniversity.Name,
-                Country = existingUniversity.Country,
-                Webpage = "https://different.edu"
-            };
+            var createDto = new CreateUniversityDto(Guid.NewGuid(), existingUniversity.Name, existingUniversity.Country, "https://test.edu");
 
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -148,12 +126,7 @@ namespace UniversityAPI.Tests.IntegrationTests
                 var context = scope.GetRequiredService<ApplicationDbContext>();
                 return await context.Universities.FirstOrDefaultAsync();
             });
-            var updateDto = new UpdateUniversityDto
-            {
-                Name = "Updated University Name",
-                Country = "Updated Country",
-                Webpage = "https://updated.edu"
-            };
+            var updateDto = new UpdateUniversityDto($"Updated Name {existingUniversity.Name}", $"Updated Country {existingUniversity.Country}", "https://updated.edu");
 
             var json = JsonSerializer.Serialize(updateDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -169,12 +142,7 @@ namespace UniversityAPI.Tests.IntegrationTests
         public async Task UpdateUniversity_NonExistentId_ReturnsNotFound()
         {
             var nonExistentId = Guid.NewGuid();
-            var updateDto = new UpdateUniversityDto
-            {
-                Name = "Updated Name",
-                Country = "Updated Country",
-                Webpage = "https://updated.edu"
-            };
+            var updateDto = new UpdateUniversityDto("Updated Name", "Updated Country", "https://updated.edu");
 
             var json = JsonSerializer.Serialize(updateDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");

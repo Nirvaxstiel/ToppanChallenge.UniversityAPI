@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace UniversityAPI.Framework.Model.Exception
+﻿namespace UniversityAPI.Framework.Model.Exception
 {
-    public class UnauthorisedError : ApiException
+    using Microsoft.AspNetCore.Http;
+
+    public class UnauthorisedError(string message, string? errorCode = null) : ApiException(message, StatusCodes.Status401Unauthorized, errorCode)
     {
-        public UnauthorisedError(string message, string? errorCode = null)
-              : base(message, StatusCodes.Status401Unauthorized, errorCode) { }
     }
 }

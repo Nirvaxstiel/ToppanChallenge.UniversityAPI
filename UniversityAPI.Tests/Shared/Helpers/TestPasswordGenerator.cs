@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace UniversityAPI.Tests.Shared.Helpers
+﻿namespace UniversityAPI.Tests.Shared.Helpers
 {
+    using Microsoft.AspNetCore.Identity;
+
     public static class TestPasswordGenerator
     {
         public static string GeneratePassword(PasswordOptions options)

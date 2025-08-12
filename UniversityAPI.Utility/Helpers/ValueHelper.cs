@@ -1,11 +1,14 @@
-﻿namespace System
+﻿namespace UniversityAPI.Utility.Helpers
 {
     public sealed class ValueHelper
     {
         public static bool IsNullOrEmpty(object value)
         {
             if (value == null || value == DBNull.Value)
+            {
                 return true;
+            }
+
             var str = value.ToString();
             return string.IsNullOrWhiteSpace(str);
         }
@@ -18,7 +21,10 @@
         public static string GetTextValue(object value)
         {
             if (value == null || value == DBNull.Value)
+            {
                 return string.Empty;
+            }
+
             var str = value.ToString();
             return IsNullOrEmpty(str) ? string.Empty : str;
         }

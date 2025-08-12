@@ -1,31 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
-using UniversityAPI.Framework;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Utility;
-
-namespace UniversityAPI.Service
+﻿namespace UniversityAPI.Service.University
 {
-    public class UniversityService : IUniversityService
+    using Microsoft.EntityFrameworkCore;
+    using UniversityAPI.Framework.Database;
+    using UniversityAPI.Framework.Model.Exception;
+    using UniversityAPI.Framework.Model.University;
+    using UniversityAPI.Framework.Model.University.DTO;
+    using UniversityAPI.Framework.Model.User;
+    using UniversityAPI.Framework.Model.User.DTO;
+    using UniversityAPI.Service.University.Interface;
+    using UniversityAPI.Utility.Helpers;
+    using UniversityAPI.Utility.Helpers.Filters;
+
+    public class UniversityService(ApplicationDbContext context) : IUniversityService
     {
-        private readonly ApplicationDbContext context;
-
-        public UniversityService(ApplicationDbContext context)
-        {
-            this.context = context;
-        }
-
         public async Task<PagedResult<UniversityDto>> GetUniversitiesAsync(Guid userId, UniversityFilter filter, PaginationParams pagination)
         {
             var query = context.Universities.Where(u => u.IsActive).AsQueryable();
 
             if (!string.IsNullOrEmpty(filter.Name))
             {
-                query = query.Where(u => u.Name.ToUpper().Contains(filter.Name.ToUpper()));
+                query = query.Where(u => u.Name.Contains(filter.Name, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrEmpty(filter.Country))
             {
-                query = query.Where(u => u.Country.ToUpper().Contains(filter.Country.ToUpper()));
+                query = query.Where(u => u.Country.Contains(filter.Country, StringComparison.OrdinalIgnoreCase));
             }
 
             var combinedQuery = query.Select(u => new { University = u, IsBookmarked = false });
@@ -54,8 +53,7 @@ namespace UniversityAPI.Service
             var result = items.ConvertAll(item =>
             {
                 var dto = MapHelper.Map<UniversityDM, UniversityDto>(item.University);
-                dto.IsBookmarked = item.IsBookmarked;
-                return dto;
+                return dto with { IsBookmarked = item.IsBookmarked };
             });
 
             return new PagedResult<UniversityDto>

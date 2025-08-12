@@ -1,16 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using UniversityAPI.Framework.Model;
-
-namespace UniversityAPI.Framework
+﻿namespace UniversityAPI.Framework.Database
 {
-    public class ApplicationDbContext : IdentityDbContext<UserDM>
-    {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-        {
-        }
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore;
+    using UniversityAPI.Framework.Model.University;
+    using UniversityAPI.Framework.Model.User;
 
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<UserDM>(options)
+    {
         public DbSet<UserDM> Users { get; set; }
         public DbSet<UniversityDM> Universities { get; set; }
         public DbSet<UserBookmarkDM> UserBookmarks { get; set; }

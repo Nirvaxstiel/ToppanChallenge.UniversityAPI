@@ -1,8 +1,4 @@
-﻿namespace UniversityAPI.Framework.Model
+﻿namespace UniversityAPI.Framework.Model.User.DTO
 {
-    public class UserBookmarkDto
-    {
-        public Guid UserId { get; set; }
-        public Guid UniversityId { get; set; }
-    }
+    public record UserBookmarkDto(Guid UserId, Guid UniversityId);
 }

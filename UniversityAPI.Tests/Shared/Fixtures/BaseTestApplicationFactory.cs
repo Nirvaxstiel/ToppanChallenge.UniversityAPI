@@ -1,21 +1,21 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using UniversityAPI.Framework;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Service;
-using UniversityAPI.Tests.Shared.Helpers;
-using UniversityAPI.Utility;
-
 namespace UniversityAPI.Tests.Shared.Fixtures
 {
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Testing;
+    using Microsoft.Data.Sqlite;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+    using UniversityAPI.Framework.Database;
+    using UniversityAPI.Framework.Model.User;
+    using UniversityAPI.Service;
+    using UniversityAPI.Tests.Shared.Helpers;
+    using UniversityAPI.Utility;
+
     public abstract class BaseTestApplicationFactory : WebApplicationFactory<Program>
     {
         protected BaseTestApplicationFactory() => this.DatabaseName = $"{this.DatabaseNamePrefix}_{Guid.NewGuid()}";

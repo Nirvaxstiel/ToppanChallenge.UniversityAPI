@@ -1,13 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace UniversityAPI.Framework.Model
+﻿namespace UniversityAPI.Framework.Model.User.DTO
 {
-    public class LoginDto
+    using System.ComponentModel.DataAnnotations;
+
+    public record LoginDto
     {
-        [Required(AllowEmptyStrings = false)]
-        public string Username { get; set; }
+        public LoginDto(string username,
+                           string password)
+        {
+            Username = username;
+            Password = password;
+        }
 
         [Required(AllowEmptyStrings = false)]
-        public string Password { get; set; }
+        public string Username { get; init; }
+        [Required(AllowEmptyStrings = false)]
+        public string Password { get; init; }
     }
 }

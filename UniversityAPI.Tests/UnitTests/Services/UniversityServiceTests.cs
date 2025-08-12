@@ -1,12 +1,15 @@
-using Microsoft.EntityFrameworkCore;
-using Moq;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Service;
-using UniversityAPI.Tests.UnitTests.Shared;
-using UniversityAPI.Utility;
-
 namespace UniversityAPI.Tests.UnitTests.Services
 {
+    using Microsoft.EntityFrameworkCore;
+    using Moq;
+    using UniversityAPI.Framework.Model.Exception;
+    using UniversityAPI.Framework.Model.University.DTO;
+    using UniversityAPI.Service.University;
+    using UniversityAPI.Service.User.Interface;
+    using UniversityAPI.Tests.UnitTests.Shared;
+    using UniversityAPI.Utility.Helpers;
+    using UniversityAPI.Utility.Helpers.Filters;
+
     public class UniversityServiceTests : IClassFixture<UnitTestFixture>
     {
         private readonly UnitTestFixture fixture;
@@ -27,12 +30,7 @@ namespace UniversityAPI.Tests.UnitTests.Services
         {
             var userId = this.mockCurrentUserService.Object.UserId;
             var existingUniversity = this.fixture.Context.Universities.First();
-            var duplicateDto = new CreateUniversityDto
-            {
-                Name = existingUniversity.Name,
-                Country = existingUniversity.Country,
-                Webpage = "http://different.edu"
-            };
+            var duplicateDto = new CreateUniversityDto(Guid.NewGuid(), existingUniversity.Name, existingUniversity.Country, "http://different.edu");
 
             var exception = await Assert.ThrowsAsync<ConflictError>(() =>
                 this.universityService.CreateUniversityAsync(duplicateDto, userId));
@@ -45,12 +43,7 @@ namespace UniversityAPI.Tests.UnitTests.Services
         {
             var userId = this.mockCurrentUserService.Object.UserId;
             var nonExistentId = Guid.NewGuid();
-            var updateDto = new UpdateUniversityDto
-            {
-                Name = "Updated Name",
-                Country = "Updated Country",
-                Webpage = "http://updated.edu"
-            };
+            var updateDto = new UpdateUniversityDto("Updated Name", "Updated Country", "http://different.edu");
 
             var exception = await Assert.ThrowsAsync<NotFoundError>(() =>
                 this.universityService.UpdateUniversityAsync(nonExistentId, updateDto, userId));
@@ -110,12 +103,7 @@ namespace UniversityAPI.Tests.UnitTests.Services
             var universityToUpdate = universities[0];
             var duplicateUniversity = universities[1];
 
-            var updateDto = new UpdateUniversityDto
-            {
-                Name = duplicateUniversity.Name,
-                Country = duplicateUniversity.Country,
-                Webpage = "http://updated.edu"
-            };
+            var updateDto = new UpdateUniversityDto(duplicateUniversity.Name, duplicateUniversity.Country, "http://different.edu");
 
             var exception = await Assert.ThrowsAsync<ConflictError>(() =>
                 this.universityService.UpdateUniversityAsync(universityToUpdate.Id, updateDto, userId));
@@ -150,12 +138,7 @@ namespace UniversityAPI.Tests.UnitTests.Services
         public async Task CreateUniversity_ValidData_Succeeds()
         {
             var userId = this.mockCurrentUserService.Object.UserId;
-            var createDto = new CreateUniversityDto
-            {
-                Name = "Test University",
-                Country = "Test Country",
-                Webpage = "https://test.edu"
-            };
+            var createDto = new CreateUniversityDto(Guid.NewGuid(), $"Test University {Guid.NewGuid()}", $"Test Country {Guid.NewGuid()}", "http://different.edu");
 
             var result = await this.universityService.CreateUniversityAsync(createDto, userId);
 
@@ -174,12 +157,7 @@ namespace UniversityAPI.Tests.UnitTests.Services
         {
             var userId = this.mockCurrentUserService.Object.UserId;
             var existingUniversity = this.fixture.Context.Universities.First();
-            var updateDto = new UpdateUniversityDto
-            {
-                Name = "Updated University Name",
-                Country = "Updated Country",
-                Webpage = "https://updated.edu"
-            };
+            var updateDto = new UpdateUniversityDto($"Update University Name {existingUniversity.Name}", $"Update University Country {existingUniversity.Country}", "https://updated.edu");
 
             var result = await this.universityService.UpdateUniversityAsync(existingUniversity.Id, updateDto, userId);
 

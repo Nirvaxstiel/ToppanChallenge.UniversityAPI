@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
-using UniversityAPI.Framework;
-using UniversityAPI.Framework.Model;
-
-namespace UniversityAPI.Tests.Shared.Helpers
+﻿namespace UniversityAPI.Tests.Shared.Helpers
 {
+    using Microsoft.AspNetCore.Identity;
+    using UniversityAPI.Framework.Database;
+    using UniversityAPI.Framework.Model.University;
+    using UniversityAPI.Framework.Model.User;
+    using UniversityAPI.Utility.Helpers;
+
     public static class TestDataSeeder
     {
         public static async Task SeedDataAsync(ApplicationDbContext context, RoleManager<IdentityRole> roleManager, UserManager<UserDM> userManager)
@@ -79,8 +81,7 @@ namespace UniversityAPI.Tests.Shared.Helpers
         {
             var universities = new List<UniversityDM>
             {
-                new UniversityDM
-                {
+                new() {
                     Id = Guid.NewGuid(),
                     Name = "Harvard University",
                     Country = "United States",
@@ -88,8 +89,7 @@ namespace UniversityAPI.Tests.Shared.Helpers
                     CreatedBy = createdBy,
                     IsActive = true
                 },
-                new UniversityDM
-                {
+                new() {
                     Id = Guid.NewGuid(),
                     Name = "Stanford University",
                     Country = "United States",
@@ -97,8 +97,7 @@ namespace UniversityAPI.Tests.Shared.Helpers
                     CreatedBy = createdBy,
                     IsActive = true
                 },
-                new UniversityDM
-                {
+                new() {
                     Id = Guid.NewGuid(),
                     Name = "University of Oxford",
                     Country = "United Kingdom",
@@ -106,8 +105,7 @@ namespace UniversityAPI.Tests.Shared.Helpers
                     CreatedBy = createdBy,
                     IsActive = true
                 },
-                new UniversityDM
-                {
+                new() {
                     Id = Guid.NewGuid(),
                     Name = "ETH Zurich",
                     Country = "Switzerland",
@@ -115,8 +113,7 @@ namespace UniversityAPI.Tests.Shared.Helpers
                     CreatedBy = createdBy,
                     IsActive = true
                 },
-                new UniversityDM
-                {
+                new() {
                     Id = Guid.NewGuid(),
                     Name = "University of Tokyo",
                     Country = "Japan",
@@ -134,37 +131,32 @@ namespace UniversityAPI.Tests.Shared.Helpers
         {
             var bookmarks = new List<UserBookmarkDM>
             {
-                new UserBookmarkDM
-                {
+                new() {
                     UserId = userId1,
                     UniversityId = universities[3].Id,
                     BookmarkedAt = DateTime.UtcNow.AddDays(-5),
                     CreatedBy = userId1
                 },
-                new UserBookmarkDM
-                {
+                new() {
                     UserId = userId1,
                     UniversityId = universities[4].Id,
                     BookmarkedAt = DateTime.UtcNow.AddDays(-3),
                     CreatedBy = userId1
                 },
 
-                new UserBookmarkDM
-                {
+                new() {
                     UserId = userId2,
                     UniversityId = universities[2].Id,
                     BookmarkedAt = DateTime.UtcNow.AddDays(-2),
                     CreatedBy = userId2
                 },
-                new UserBookmarkDM
-                {
+                new() {
                     UserId = userId2,
                     UniversityId = universities[3].Id,
                     BookmarkedAt = DateTime.UtcNow.AddDays(-1),
                     CreatedBy = userId2
                 },
-                new UserBookmarkDM
-                {
+                new() {
                     UserId = userId2,
                     UniversityId = universities[4].Id,
                     BookmarkedAt = DateTime.UtcNow,

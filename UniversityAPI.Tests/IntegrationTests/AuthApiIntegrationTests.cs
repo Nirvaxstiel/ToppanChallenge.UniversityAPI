@@ -1,24 +1,24 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using System.Net;
-using System.Text;
-using System.Text.Json;
-using UniversityAPI.Framework;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Tests.Shared.Fixtures;
-using UniversityAPI.Tests.Shared.Helpers;
-using UniversityAPI.Tests.Shared.Models;
-using UniversityAPI.Utility;
-
-using UniversityAPI.Tests.Shared.Fixtures;
-
 namespace UniversityAPI.Tests.IntegrationTests
 {
+    using System.Net;
+    using System.Security.Cryptography;
+    using System.Text;
+    using System.Text.Json;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
+    using UniversityAPI.Framework.Database;
+    using UniversityAPI.Framework.Model.Authentication.DTO;
+    using UniversityAPI.Framework.Model.User.DTO;
+    using UniversityAPI.Tests.Shared.Fixtures;
+    using UniversityAPI.Tests.Shared.Helpers;
+    using UniversityAPI.Utility.Helpers;
+
     public class AuthApiIntegrationTests(AuthApiTestApplicationFactory factory) : IClassFixture<AuthApiTestApplicationFactory>
     {
         private readonly AuthApiTestApplicationFactory factory = factory;
+        private readonly JsonSerializerOptions jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
         [Fact]
         public async Task Register_ValidData_ReturnsCreated()
@@ -29,12 +29,7 @@ namespace UniversityAPI.Tests.IntegrationTests
                 return TestPasswordGenerator.GeneratePassword(identityOptions.Password);
             });
 
-            var registerDto = new RegisterDto
-            {
-                Username = "newuser@example.com",
-                Email = "newuser@example.com",
-                Password = strongPassword,
-            };
+            var registerDto = new RegisterDto($"newuser{RandomNumberGenerator.GetInt32(0, 9999)}@example.com", $"newuser{RandomNumberGenerator.GetInt32(0, 9999)}@example.com", strongPassword);
 
             var json = JsonSerializer.Serialize(registerDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -56,15 +51,9 @@ namespace UniversityAPI.Tests.IntegrationTests
                 var identityOptions = scope.GetRequiredService<IOptions<IdentityOptions>>().Value;
                 string strongPassword = TestPasswordGenerator.GeneratePassword(identityOptions.Password);
                 return (user, strongPassword);
-
             });
 
-            var registerDto = new RegisterDto
-            {
-                Username = existingUser.UserName,
-                Email = existingUser.Email,
-                Password = strongPassword,
-            };
+            var registerDto = new RegisterDto(existingUser.UserName, existingUser.Email, strongPassword);
 
             var json = JsonSerializer.Serialize(registerDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -83,11 +72,8 @@ namespace UniversityAPI.Tests.IntegrationTests
                 return await context.Users.FirstOrDefaultAsync();
             });
 
-            var loginDto = new LoginDto
-            {
-                Username = existingUser.UserName,
-                Password = "Admin123!@@123" // seeded password
-            };
+            // seeded password
+            var loginDto = new LoginDto(existingUser.UserName, "Admin123!@@123");
 
             var json = JsonSerializer.Serialize(loginDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -97,10 +83,7 @@ namespace UniversityAPI.Tests.IntegrationTests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var responseContent = await response.Content.ReadAsStringAsync();
-            var authResponse = JsonSerializer.Deserialize<AuthResponse>(responseContent, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var authResponse = JsonSerializer.Deserialize<AuthResponse>(responseContent, jsonSerializerOptions);
 
             Assert.NotNull(authResponse);
             Assert.NotNull(authResponse.Token);
@@ -110,7 +93,7 @@ namespace UniversityAPI.Tests.IntegrationTests
         [Fact]
         public async Task Login_InvalidCredentials_ReturnsUnauthorized()
         {
-            var loginDto = new LoginDto
+            var loginDto = new LoginDto(default, default)
             {
                 Username = "nonexistentUser",
                 Password = "WrongPassword123!@@@"

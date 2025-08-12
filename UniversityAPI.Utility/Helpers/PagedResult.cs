@@ -1,4 +1,4 @@
-﻿namespace UniversityAPI.Utility
+﻿namespace UniversityAPI.Utility.Helpers
 {
     public class PagedResult<T>
     {

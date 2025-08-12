@@ -1,18 +1,18 @@
-﻿using System.Data;
-using System.Text.RegularExpressions;
-
-namespace UniversityAPI.Utility
+﻿namespace UniversityAPI.Utility.Helpers
 {
+    using System.Data;
+    using System.Text.RegularExpressions;
+    using UniversityAPI.Utility.Helpers.Extensions;
+
     public sealed class StringHelper
     {
-        private static string[] ValidAttributes = new string[]
-            { "STYLE", "SRC", "ALT", "HREF", "BORDER", "CELLPADDING", "CELLSPACING", "TARGET", "CLASS", "WIDTH", "HEIGHT", "CONTROLS" };
+        private static string[] ValidAttributes = ["STYLE", "SRC", "ALT", "HREF", "BORDER", "CELLPADDING", "CELLSPACING", "TARGET", "CLASS", "WIDTH", "HEIGHT", "CONTROLS"];
 
         public const string CAPITALLETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private static readonly string LinuxNewLine = "\n";
 
-        private static readonly string[] WildCards = new string[] { "%", "^", "*", "_" };
-        private static readonly string[] HtmlSanitizerAllowedTags = new string[] { "video" };
+        private static readonly string[] WildCards = ["%", "^", "*", "_"];
+        private static readonly string[] HtmlSanitizerAllowedTags = ["video"];
 
         public static bool Compare(string value1, int value2)
         {
@@ -124,9 +124,12 @@ namespace UniversityAPI.Utility
 
         public static string Replace(string value, object append)
         {
-            Regex reg = new Regex(@"(?is)<img[^>]*?src=(['""\s]?)((?:[^'""\s])*)\1[^>]*?(style=\"")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(\"")>");
+            Regex reg = new(@"(?is)<img[^>]*?src=(['""\s]?)((?:[^'""\s])*)\1[^>]*?(style=\"")([a-zA-Z0-9:;\.\s\(\)\-\,]*)(\"")>");
 
-            if (!reg.IsMatch(value)) return value;
+            if (!reg.IsMatch(value))
+            {
+                return value;
+            }
 
             var matches = reg.Matches(value);
             foreach (Match match in matches)
@@ -350,7 +353,11 @@ namespace UniversityAPI.Utility
 
         public static string ToMask(string value, int unmaskCharCount)
         {
-            if (value.Length <= unmaskCharCount) return value;
+            if (value.Length <= unmaskCharCount)
+            {
+                return value;
+            }
+
             return Regex.Replace(value, ".(?=.{" + unmaskCharCount + "})", "*");
         }
     }

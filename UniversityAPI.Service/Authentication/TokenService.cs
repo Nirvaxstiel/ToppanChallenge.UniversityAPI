@@ -1,36 +1,31 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Utility.Interfaces;
-
-namespace UniversityAPI.Service
+﻿namespace UniversityAPI.Service.Authentication
 {
-    public class TokenService : ITokenService
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using System.Text;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.IdentityModel.Tokens;
+    using UniversityAPI.Framework.Model.User;
+    using UniversityAPI.Service.Authentication.Interface;
+    using UniversityAPI.Utility.Interfaces;
+
+    public class TokenService(IConfigHelper configHelper, UserManager<UserDM> userManager) : ITokenService
     {
-        private readonly UserManager<UserDM> userManager;
-        private readonly IConfigHelper configHelper;
-
-        public TokenService(IConfigHelper configHelper, UserManager<UserDM> userManager)
-        {
-            this.userManager = userManager;
-            this.configHelper = configHelper;
-        }
-
         public async Task<string> GenerateToken(UserDM user)
         {
             var jwtKey = configHelper.GetJwtKey<string>();
             if (string.IsNullOrEmpty(jwtKey))
+            {
                 throw new InvalidOperationException("JWT signing key is not configured.");
+            }
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email)
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.Email, user.Email)
             };
 
             var roles = await userManager.GetRolesAsync(user);

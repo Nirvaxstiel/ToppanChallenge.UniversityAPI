@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using UniversityAPI.Framework.Infrastructure.Transactions;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Service;
-using UniversityAPI.Utility;
-
-namespace UniversityAPI.Controllers
+﻿namespace UniversityAPI.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc;
+    using UniversityAPI.Framework.Infrastructure.Transactions;
+    using UniversityAPI.Framework.Model.University.DTO;
+    using UniversityAPI.Service.University.Interface;
+    using UniversityAPI.Service.User.Interface;
+    using UniversityAPI.Utility.Helpers;
+    using UniversityAPI.Utility.Helpers.Filters;
+
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
@@ -23,7 +25,11 @@ namespace UniversityAPI.Controllers
         public async Task<ActionResult<UniversityDto>> GetUniversity(Guid id)
         {
             var result = await universityService.GetUniversityByIdAsync(id);
-            if (result == null) return NotFound();
+            if (result == null)
+            {
+                return NotFound();
+            }
+
             return Ok(result);
         }
 
@@ -32,7 +38,9 @@ namespace UniversityAPI.Controllers
         public async Task<ActionResult<CreateUniversityDto>> CreateUniversity(CreateUniversityDto createUniversityDto)
         {
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
             var result = await universityService.CreateUniversityAsync(createUniversityDto, currentUserService.UserId);
             if (result == null)
@@ -47,7 +55,9 @@ namespace UniversityAPI.Controllers
         public async Task<IActionResult> UpdateUniversity(Guid id, UpdateUniversityDto updateUniversityDto)
         {
             if (!ModelState.IsValid)
+            {
                 return BadRequest(ModelState);
+            }
 
             var result = await universityService.UpdateUniversityAsync(id, updateUniversityDto, currentUserService.UserId);
             if (result == null)

@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.Text.Json;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Utility.Interfaces;
-
-namespace UniversityAPI.Framework
+﻿namespace UniversityAPI.Framework.Database
 {
+    using System.Text.Json;
+    using Microsoft.AspNetCore.Identity;
+    using UniversityAPI.Framework.Model.University;
+    using UniversityAPI.Framework.Model.User;
+    using UniversityAPI.Utility.Interfaces;
+
     public static class Seed
     {
         private const string UNABLETOSEEDADMINMESSAGE = "Admin username, email, or password not set. Set TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME, TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL, TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD in dotnet secrets or corresponding environment variables.";
@@ -24,7 +25,7 @@ namespace UniversityAPI.Framework
 
         private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
         {
-            string[] roleNames = { "Admin", "User" };
+            string[] roleNames = ["Admin", "User"];
 
             foreach (var roleName in roleNames)
             {
@@ -73,22 +74,19 @@ namespace UniversityAPI.Framework
             {
                 var universities = new List<UniversityDM>
             {
-                new UniversityDM
-                {
+                new() {
                     Name = "Harvard University",
                     Country = "United States",
                     Webpage = "https://www.harvard.edu",
                     IsActive = true
                 },
-                new UniversityDM
-                {
+                new() {
                     Name = "Stanford University",
                     Country = "United States",
                     Webpage = "https://www.stanford.edu",
                     IsActive = true
                 },
-                new UniversityDM
-                {
+                new() {
                     Name = "University of Oxford",
                     Country = "United Kingdom",
                     Webpage = "https://www.ox.ac.uk",
@@ -107,8 +105,7 @@ namespace UniversityAPI.Framework
             {
                 var bookmarks = new List<UserBookmarkDM>
                 {
-                    new UserBookmarkDM
-                    {
+                    new() {
                     }
                 };
 

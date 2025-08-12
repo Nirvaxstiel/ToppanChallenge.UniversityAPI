@@ -1,13 +1,14 @@
+using System.Reflection;
+using System.Text;
 using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Reflection;
-using System.Text;
 using UniversityAPI.Framework;
-using UniversityAPI.Framework.Model;
+using UniversityAPI.Framework.Database;
+using UniversityAPI.Framework.Model.User;
 using UniversityAPI.Middleware;
 using UniversityAPI.Service;
 using UniversityAPI.Utility;
@@ -160,9 +161,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(config => config.SwaggerEndpoint("/swagger/v1/swagger.json", "University API V1"));
 }
 
-app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors("DefaultPolicy");
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

@@ -1,16 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace UniversityAPI.Framework.Model
+﻿namespace UniversityAPI.Framework.Model.University.DTO
 {
-    public class UpdateUniversityDto
+    using System.ComponentModel.DataAnnotations;
+
+    public record UpdateUniversityDto
     {
+        public UpdateUniversityDto(string name,
+                                      string country,
+                                      string webpage)
+        {
+            Name = name;
+            Country = country;
+            Webpage = webpage;
+        }
+
         [Required(ErrorMessage = "University name is required")]
-        public string Name { get; set; }
-
+        public string Name { get; init; }
         [Required(ErrorMessage = "Country is required")]
-        public string Country { get; set; }
-
+        public string Country { get; init; }
         [Url]
-        public string Webpage { get; set; }
+        public string Webpage { get; init; }
     }
 }

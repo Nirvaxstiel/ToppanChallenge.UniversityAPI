@@ -1,11 +1,11 @@
-﻿using System.ComponentModel;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using UniversityAPI.Utility.Interfaces;
-
-namespace UniversityAPI.Utility.Helpers
+﻿namespace UniversityAPI.Utility.Helpers
 {
-    public class ConfigHelper : IConfigHelper
+    using System.ComponentModel;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using UniversityAPI.Utility.Interfaces;
+
+    public class ConfigHelper(IConfiguration configuration, ILogger<IConfiguration> logger) : IConfigHelper
     {
         private const string PUBLICKEYNAME = "TOPPAN_UNIVERSITYAPI_PUBLIC_KEY";
         private const string JWTKEYKEYNAME = "TOPPAN_UNIVERSITYAPI_JWT_KEY";
@@ -13,15 +13,7 @@ namespace UniversityAPI.Utility.Helpers
         private const string ADMININITUSERNAMEKEYNAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_USERNAME";
         private const string ADMININITPASSWORDKEYNAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_PASSWORD";
         private const string ADMININITEMAILKEYNAME = "TOPPAN_UNIVERSITYAPI_ADMIN_INIT_EMAIL";
-
-        private readonly IConfiguration configuration;
-        private readonly ILogger<IConfiguration> logger;
-
-        public ConfigHelper(IConfiguration configuration, ILogger<IConfiguration> logger)
-        {
-            this.configuration = configuration;
-            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+        private readonly ILogger<IConfiguration> logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         public T GetValue<T>(string key)
         {
@@ -59,7 +51,8 @@ namespace UniversityAPI.Utility.Helpers
             return false;
         }
 
-        public T GetSection<T>(string sectionKey) where T : class, new()
+        public T GetSection<T>(string sectionKey)
+            where T : class, new()
         {
             try
             {

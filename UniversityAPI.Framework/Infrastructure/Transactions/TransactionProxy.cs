@@ -1,9 +1,10 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using UniversityAPI.Framework.Model;
-
 namespace UniversityAPI.Framework.Infrastructure.Transactions
 {
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+    using UniversityAPI.Framework.Database;
+    using UniversityAPI.Framework.Model;
+
     public interface ITransactionProxy
     {
         Task<TResult> RunInTranAsync<TResult>(Func<ApplicationDbContext, Task<TResult>> action, string contextInfo = null);
@@ -12,48 +13,39 @@ namespace UniversityAPI.Framework.Infrastructure.Transactions
         Task RunNoTranAsync(Func<ApplicationDbContext, Task> action, string contextInfo = null);
     }
 
-    public class TransactionProxy : ITransactionProxy
+    public class TransactionProxy(ApplicationDbContext dbContext, ILogger<TransactionProxy> logger) : ITransactionProxy
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly ILogger<TransactionProxy> _logger;
-
-        public TransactionProxy(ApplicationDbContext dbContext, ILogger<TransactionProxy> logger)
-        {
-            this._dbContext = dbContext;
-            this._logger = logger;
-        }
-
         public async Task<TResult> RunInTranAsync<TResult>(Func<ApplicationDbContext, Task<TResult>> action, string contextInfo = null)
         {
-            using var transaction = await this._dbContext.Database.BeginTransactionAsync();
+            using var transaction = await dbContext.Database.BeginTransactionAsync();
             try
             {
-                var result = await action(this._dbContext);
-                await this._dbContext.SaveChangesAsync();
+                var result = await action(dbContext);
+                await dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
                 return result;
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                this._logger.LogError(ex, $"Transaction failed. Context: {contextInfo}");
+                logger.LogError(ex, $"Transaction failed. Context: {contextInfo}");
                 throw;
             }
         }
 
         public async Task RunInTranAsync(Func<ApplicationDbContext, Task> action, string contextInfo = null)
         {
-            using var transaction = await this._dbContext.Database.BeginTransactionAsync();
+            using var transaction = await dbContext.Database.BeginTransactionAsync();
             try
             {
-                await action(this._dbContext);
-                await this._dbContext.SaveChangesAsync();
+                await action(dbContext);
+                await dbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                this._logger.LogError(ex, $"Transaction failed. Context: {contextInfo}");
+                logger.LogError(ex, $"Transaction failed. Context: {contextInfo}");
                 throw;
             }
         }
@@ -62,11 +54,11 @@ namespace UniversityAPI.Framework.Infrastructure.Transactions
         {
             try
             {
-                return await action(this._dbContext);
+                return await action(dbContext);
             }
             catch (Exception ex)
             {
-                this._logger.LogError(ex, $"Non-transactional operation failed. Context: {contextInfo}");
+                logger.LogError(ex, $"Non-transactional operation failed. Context: {contextInfo}");
                 throw;
             }
         }
@@ -75,11 +67,11 @@ namespace UniversityAPI.Framework.Infrastructure.Transactions
         {
             try
             {
-                await action(this._dbContext);
+                await action(dbContext);
             }
             catch (Exception ex)
             {
-                this._logger.LogError(ex, $"Non-transactional operation failed. Context: {contextInfo}");
+                logger.LogError(ex, $"Non-transactional operation failed. Context: {contextInfo}");
                 throw;
             }
         }

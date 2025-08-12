@@ -1,7 +1,8 @@
-﻿using UniversityAPI.Framework.Database;
-
-namespace UniversityAPI.Framework.Model
+﻿namespace UniversityAPI.Framework.Model.User
 {
+    using UniversityAPI.Framework.Database;
+    using UniversityAPI.Framework.Model.University;
+
     public class UserBookmarkDM : DbModel
     {
         public Guid UserId { get; set; }

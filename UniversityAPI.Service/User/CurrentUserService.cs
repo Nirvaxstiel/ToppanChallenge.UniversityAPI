@@ -1,18 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
-using UniversityAPI.Framework.Model.Exception;
-
-namespace UniversityAPI.Service
+﻿namespace UniversityAPI.Service.User
 {
-    public class CurrentUserService : ICurrentUserService
+    using System.Security.Claims;
+    using Microsoft.AspNetCore.Http;
+    using UniversityAPI.Framework.Model.Exception;
+    using UniversityAPI.Service.User.Interface;
+    using UniversityAPI.Utility.Helpers;
+
+    public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICurrentUserService
     {
-        private readonly IHttpContextAccessor httpContextAccessor;
-
-        public CurrentUserService(IHttpContextAccessor httpContextAccessor)
-        {
-            this.httpContextAccessor = httpContextAccessor;
-        }
-
         public Guid UserId
         {
             get
