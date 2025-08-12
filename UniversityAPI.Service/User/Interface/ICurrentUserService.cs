@@ -1,4 +1,4 @@
-﻿namespace UniversityAPI.Service
+﻿namespace UniversityAPI.Service.User.Interface
 {
     public interface ICurrentUserService
     {

@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using UniversityAPI.Framework.Infrastructure.Transactions;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Service;
-
-namespace UniversityAPI.Controllers
+﻿namespace UniversityAPI.Controllers
 {
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
+    using UniversityAPI.Framework.Infrastructure.Transactions;
+    using UniversityAPI.Framework.Model.Authentication.DTO;
+    using UniversityAPI.Framework.Model.User;
+    using UniversityAPI.Framework.Model.User.DTO;
+    using UniversityAPI.Service.Authentication.Interface;
+
     [ApiController]
     [Route("api/auth")]
     [AllowAnonymous]
@@ -23,7 +25,9 @@ namespace UniversityAPI.Controllers
 
             var user = await userManager.FindByNameAsync(loginDto.Username);
             if (user == null || !await userManager.CheckPasswordAsync(user, loginDto.Password))
+            {
                 return Unauthorized();
+            }
 
             var token = await tokenService.GenerateToken(user);
             return new AuthResponse

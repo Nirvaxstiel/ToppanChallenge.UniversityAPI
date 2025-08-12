@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
-using System.Text.Json;
-using UniversityAPI.Framework.Model;
-
-namespace UniversityAPI.Middleware
+﻿namespace UniversityAPI.Middleware
 {
+    using System.Text.Json;
+    using Microsoft.AspNetCore.WebUtilities;
+    using UniversityAPI.Framework.Model.Exception;
+
     public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger, IWebHostEnvironment env)
     {
         public async Task InvokeAsync(HttpContext context)

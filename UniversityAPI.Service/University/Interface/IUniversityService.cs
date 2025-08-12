@@ -1,8 +1,10 @@
-﻿using UniversityAPI.Framework.Model;
-using UniversityAPI.Utility;
-
-namespace UniversityAPI.Service
+﻿namespace UniversityAPI.Service.University.Interface
 {
+    using UniversityAPI.Framework.Model.University.DTO;
+    using UniversityAPI.Framework.Model.User.DTO;
+    using UniversityAPI.Utility.Helpers;
+    using UniversityAPI.Utility.Helpers.Filters;
+
     public interface IUniversityService
     {
         Task<PagedResult<UniversityDto>> GetUniversitiesAsync(Guid userId, UniversityFilter filter, PaginationParams pagination);

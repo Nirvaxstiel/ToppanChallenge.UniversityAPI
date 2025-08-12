@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace UniversityAPI.Framework.Model
+﻿namespace UniversityAPI.Framework.Model.Exception
 {
-    public class ConflictError : ApiException
+    using Microsoft.AspNetCore.Http;
+
+    public class ConflictError(string message, string? errorCode = null) : ApiException(message, StatusCodes.Status409Conflict, errorCode)
     {
-        public ConflictError(string message, string? errorCode = null)
-            : base(message, StatusCodes.Status409Conflict, errorCode) { }
     }
 }

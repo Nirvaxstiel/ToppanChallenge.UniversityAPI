@@ -1,301 +1,169 @@
-﻿using Nelibur.ObjectMapper;
-using System.Collections;
-using System.Collections.Concurrent;
-using System.Data;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Security.Cryptography;
-using System.Text;
-
-namespace System
+﻿namespace UniversityAPI.Utility.Helpers
 {
-    public sealed class MapHelper
+    using System.Collections.Concurrent;
+    using System.Data;
+    using System.Linq.Expressions;
+    using System.Reflection;
+
+    public static class MapHelper
     {
-        private static readonly ConcurrentDictionary<string, object> cache = new ConcurrentDictionary<string, object>();
-        private static readonly object lockedDuplicate = new object();
+        private static readonly ConcurrentDictionary<(Type From, Type To), Delegate> mapCache = new();
 
-        public static TModel Copy<TModel>(TModel model) where TModel : class
+        public static TTo Map<TFrom, TTo>(TFrom from)
         {
-            return Map<TModel, TModel>(model);
-        }
-
-        public static IList<TModel> Copy<TModel>(IList<TModel> models) where TModel : class
-        {
-            return models.SelectList(model => Copy(model));
-        }
-
-        public static TTo ToItem<TTo>(object from) where TTo : class
-        {
-            if (from == null)
+            if (from is null)
             {
-                return null;
+                return default!;
             }
-            var key = $"{from.GetType().FullName}&{typeof(TTo).FullName}";
-            if (!cache.ContainsKey(key))
+
+            var mapper = (Func<TFrom, TTo>)mapCache.GetOrAdd((typeof(TFrom), typeof(TTo)), _ => CreateMapper<TFrom, TTo>());
+            return mapper(from);
+        }
+
+        public static List<TTo> MapList<TFrom, TTo>(IEnumerable<TFrom> source)
+        {
+            if (source is null)
             {
-                lock (lockedDuplicate)
-                {
-                    if (!cache.ContainsKey(key))
-                    {
-                        TinyMapper.Bind(from.GetType(), typeof(TTo));
-                        cache.TryAdd(key, null);
-                    }
-                }
+                return [];
             }
-            return TinyMapper.Map<TTo>(from);
-        }
 
-        public static IList<TTo> ToList<TTo>(object from) where TTo : class
-        {
-            IEnumerable list = from as IEnumerable;
-            if (ValueHelper.IsNullOrEmpty(list))
-            {
-                return new List<TTo>();
-            }
-            IList<TTo> results = new List<TTo>();
-            foreach (object item in list)
-            {
-                results.Add(ToItem<TTo>(item));
-            }
-            return results;
-        }
-
-        public static TTo Map<TFrom, TTo>(TFrom from) where TTo : class
-        {
-            var key = $"{typeof(TFrom).FullName}&{typeof(TTo).FullName}";
-            if (!cache.ContainsKey(key))
-            {
-                lock (lockedDuplicate)
-                {
-                    if (!cache.ContainsKey(key))
-                    {
-                        TinyMapper.Bind<TFrom, TTo>();
-                        cache.TryAdd(key, null);
-                    }
-                }
-            }
-            return from == null ? null : TinyMapper.Map<TTo>(from);
-        }
-
-        public static IList<TTo> Map<TFrom, TTo>(IList<TFrom> from) where TTo : class
-        {
-            return from.SelectList(model => Map<TFrom, TTo>(model));
-        }
-
-        public static TTo Map<TTo>(DataRow row)
-        {
-            return DataRowEntityBuilder.GetBuilder<TTo>(row)(row);
-        }
-
-        public static IList<TTo> Map<TTo>(DataTable table)
-        {
+            var mapper = (Func<TFrom, TTo>)mapCache.GetOrAdd((typeof(TFrom), typeof(TTo)), _ => CreateMapper<TFrom, TTo>());
             var list = new List<TTo>();
-            if (table.Rows.Count == 0)
+            foreach (var item in source)
             {
-                return list;
+                list.Add(mapper(item));
             }
-            var builder = DataRowEntityBuilder.GetBuilder<TTo>(table.Rows[0]);
-            foreach (DataRow row in table.Rows)
-            {
-                list.Add(builder(row));
-            }
+
             return list;
         }
-    }
 
-    public sealed class DataRowEntityBuilder
-    {
-        private static ConcurrentDictionary<string, Delegate> cache = new ConcurrentDictionary<string, Delegate>();
-        private static readonly MethodInfo getValueMethod = typeof(DataRow).GetMethod("get_Item", [typeof(int)]);
-        private static readonly MethodInfo isDBNullMethod = typeof(DataRow).GetMethod("IsNull", [typeof(int)]);
-
-        public static Func<DataRow, T> GetBuilder<T>(DataRow row)
+        public static TTo MapFromDataRow<TTo>(DataRow row)
         {
-            var key = $"{typeof(T)}FromDataRow{GetRowTableIdentifier(row)}";
-            if (!cache.ContainsKey(key))
+            if (row is null)
             {
-                cache[key] = CreateBuilder<T>(row);
+                return default!;
             }
-            return cache[key] as Func<DataRow, T>;
+
+            var mapper = (Func<DataRow, TTo>)mapCache.GetOrAdd((typeof(DataRow), typeof(TTo)), _ => CreateDataRowMapper<TTo>(row.Table));
+            return mapper(row);
         }
 
-        private static Func<DataRow, T> CreateBuilder<T>(DataRow row)
+        public static List<TTo> MapFromDataTable<TTo>(DataTable table)
         {
-            var method = new DynamicMethod("DynamicCreate", typeof(T), new Type[] { typeof(DataRow) }, typeof(T), true);
-            var il = method.GetILGenerator();
-
-            LocalBuilder result = il.DeclareLocal(typeof(T));
-            il.Emit(OpCodes.Newobj, typeof(T).GetConstructor(Type.EmptyTypes));
-            il.Emit(OpCodes.Stloc, result);
-
-            for (int i = 0; i < row.ItemArray.Length; i++)
+            if (table?.Rows.Count == 0)
             {
-                var property = typeof(T).GetProperty(row.Table.Columns[i].ColumnName);
-                if (property == null || property.GetSetMethod() == null)
+                return [];
+            }
+
+            var mapper = (Func<DataRow, TTo>)mapCache.GetOrAdd((typeof(DataRow), typeof(TTo)), _ => CreateDataRowMapper<TTo>(table));
+            var list = new List<TTo>(table.Rows.Count);
+            foreach (DataRow row in table.Rows)
+            {
+                list.Add(mapper(row));
+            }
+
+            return list;
+        }
+
+        private static Func<TFrom, TTo> CreateMapper<TFrom, TTo>()
+        {
+            var targetType = typeof(TTo);
+            var sourceType = typeof(TFrom);
+            var sourceParam = Expression.Parameter(sourceType, "src");
+
+            var ctor = targetType.GetConstructors()
+                                 .OrderByDescending(c => c.GetParameters().Length)
+                                 .FirstOrDefault();
+
+            if (ctor is not null && ctor.GetParameters().Length > 0)
+            {
+                var args = ctor.GetParameters()
+                               .Select(p =>
+                               {
+                                   var srcProp = sourceType.GetProperty(p.Name!, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                                   if (srcProp is null || !srcProp.CanRead)
+                                   {
+                                       return (Expression)Expression.Default(p.ParameterType);
+                                   }
+                                   var propAccess = Expression.Property(sourceParam, srcProp);
+                                   return Expression.Convert(propAccess, p.ParameterType);
+                               })
+                               .ToArray();
+
+                var newExpr = Expression.New(ctor, args);
+                return Expression.Lambda<Func<TFrom, TTo>>(newExpr, sourceParam).Compile();
+            }
+            else
+            {
+                var bindings = new List<MemberBinding>();
+
+                foreach (var targetProp in targetType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                                     .Where(p => p.CanWrite))
                 {
-                    continue;
+                    var sourceProp = sourceType.GetProperty(targetProp.Name, BindingFlags.Public | BindingFlags.Instance);
+                    if (sourceProp is null || !sourceProp.CanRead)
+                    {
+                        continue;
+                    }
+
+                    var propAccess = Expression.Property(sourceParam, sourceProp);
+                    bindings.Add(Expression.Bind(targetProp, Expression.Convert(propAccess, targetProp.PropertyType)));
                 }
 
-                Label endIfLabel = il.DefineLabel();
-
-                il.Emit(OpCodes.Ldarg_0);
-                il.Emit(OpCodes.Ldc_I4, i);
-                il.Emit(OpCodes.Callvirt, isDBNullMethod);
-                il.Emit(OpCodes.Brtrue, endIfLabel);
-
-                il.Emit(OpCodes.Ldloc, result);
-                il.Emit(OpCodes.Ldarg_0);
-                il.Emit(OpCodes.Ldc_I4, i);
-                il.Emit(OpCodes.Callvirt, getValueMethod);
-                il.Emit(OpCodes.Call, typeof(DataRowConvert).GetMethod($"To{GetTypeName(property)}", new Type[] { typeof(object) }));
-                il.Emit(OpCodes.Callvirt, property.GetSetMethod());
-
-                il.MarkLabel(endIfLabel);
+                var body = Expression.MemberInit(Expression.New(targetType), bindings);
+                return Expression.Lambda<Func<TFrom, TTo>>(body, sourceParam).Compile();
             }
-
-            il.Emit(OpCodes.Ldloc, result);
-            il.Emit(OpCodes.Ret);
-
-            return (Func<DataRow, T>)method.CreateDelegate(typeof(Func<DataRow, T>));
         }
 
-        private static string GetRowTableIdentifier(DataRow row)
+        private static Func<DataRow, TTo> CreateDataRowMapper<TTo>(DataTable table)
         {
-            StringBuilder builder = new StringBuilder();
-            foreach (DataColumn column in row.Table.Columns)
+            var targetType = typeof(TTo);
+            var rowParam = Expression.Parameter(typeof(DataRow), "row");
+
+            var fieldMethod = typeof(DataRowExtensions)
+                .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .First(m => m.Name == "Field" && m.IsGenericMethod && m.GetParameters().Length == 2);
+
+            var ctor = targetType.GetConstructors()
+                .OrderByDescending(c => c.GetParameters().Length)
+                .FirstOrDefault();
+
+            if (ctor is not null && ctor.GetParameters().Length > 0)
             {
-                builder.Append(column.ColumnName.Trim());
+                var args = ctor.GetParameters()
+                               .Select(p =>
+                               {
+                                   if (!table.Columns.Contains(p.Name!))
+                                   {
+                                       throw new InvalidOperationException($"No matching column for '{p.Name}'");
+                                   }
+                                   var colExpr = Expression.Constant(p.Name);
+                                   var genericField = fieldMethod.MakeGenericMethod(p.ParameterType);
+                                   return Expression.Call(genericField, rowParam, colExpr);
+                               })
+                               .ToArray();
+
+                var newExpr = Expression.New(ctor, args);
+                return Expression.Lambda<Func<DataRow, TTo>>(newExpr, rowParam).Compile();
             }
-            builder.Append(row.ItemArray.Length.ToString());
-            return EncryptByMd5(builder.ToString());
-        }
-
-        private static string GetTypeName(PropertyInfo property)
-        {
-            return IsNullable(property.PropertyType) ? $"Nullable{Nullable.GetUnderlyingType(property.PropertyType).Name}" : property.PropertyType.Name;
-        }
-
-        private static bool IsNullable(Type type)
-        {
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-        }
-
-        public static string EncryptByMd5(string input)
-        {
-            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-            byte[] hashBytes = MD5.HashData(inputBytes);
-            return Convert.ToHexString(hashBytes);
-        }
-    }
-
-    public sealed class DataRowConvert
-    {
-        public static Guid ToGuid(object value)
-        {
-            return value == null ? Guid.Empty : new Guid(value.ToString());
-        }
-
-        public static Boolean ToBoolean(object value)
-        {
-            return value == null ? false : Convert.ToBoolean(value);
-        }
-
-        public static Int16 ToInt16(object value)
-        {
-            return Convert.ToInt16(value);
-        }
-
-        public static Int32 ToInt32(object value)
-        {
-            return Convert.ToInt32(value);
-        }
-
-        public static Int64 ToInt64(object value)
-        {
-            return Convert.ToInt64(value);
-        }
-
-        public static Decimal ToDecimal(object value)
-        {
-            return Convert.ToDecimal(value);
-        }
-
-        public static String ToString(object value)
-        {
-            return value == null ? null : value.ToString();
-        }
-
-        public static DateTime ToDateTime(object value)
-        {
-            return Convert.ToDateTime(value);
-        }
-
-        public static TimeSpan ToTimeSpan(object value)
-        {
-            return value == null ? default(TimeSpan) : (TimeSpan)value;
-        }
-
-        public static Guid? ToNullableGuid(object value)
-        {
-            if (value == null)
+            else
             {
-                return null;
-            }
-            return new Guid(value.ToString());
-        }
+                var bindings = new List<MemberBinding>();
 
-        public static Boolean? ToNullableBoolean(object value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-            return Convert.ToBoolean(value);
-        }
+                foreach (var targetProp in targetType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                                     .Where(p => p.CanWrite))
+                {
+                    if (!table.Columns.Contains(targetProp.Name)) continue;
 
-        public static Int16? ToNullableInt16(object value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-            return Convert.ToInt16(value);
-        }
+                    var colExpr = Expression.Constant(targetProp.Name);
+                    var genericField = fieldMethod.MakeGenericMethod(targetProp.PropertyType);
+                    var valueExpr = Expression.Call(genericField, rowParam, colExpr);
+                    bindings.Add(Expression.Bind(targetProp, valueExpr));
+                }
 
-        public static Int32? ToNullableInt32(object value)
-        {
-            if (value == null)
-            {
-                return null;
+                var body = Expression.MemberInit(Expression.New(targetType), bindings);
+                return Expression.Lambda<Func<DataRow, TTo>>(body, rowParam).Compile();
             }
-            return Convert.ToInt32(value);
-        }
-
-        public static Int64? ToNullableInt64(object value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-            return Convert.ToInt64(value);
-        }
-
-        public static Decimal? ToNullableDecimal(object value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-            return Convert.ToDecimal(value);
-        }
-
-        public static DateTime? ToNullableDateTime(object value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-            return Convert.ToDateTime(value);
         }
     }
 }

@@ -1,11 +1,11 @@
-﻿using System.Data;
-using System.Data.SqlTypes;
-using System.Globalization;
-using System.Text;
-using UniversityAPI.Utility;
-
-namespace System
+﻿namespace UniversityAPI.Utility.Helpers
 {
+    using System.Data;
+    using System.Data.SqlTypes;
+    using System.Globalization;
+    using System.Text;
+    using UniversityAPI.Utility.Helpers.Extensions;
+
     public sealed class ConvertHelper
     {
         private static IEnumerable<string> alphaList = new List<string>()
@@ -43,7 +43,7 @@ namespace System
 
         public static DateTime ToDate(object value)
         {
-            return value == null ? default(DateTime) : ToDate(value.ToString());
+            return value == null ? default : ToDate(value.ToString());
         }
 
         public static DateTime? ToNullableDate(string value, string format, IFormatProvider formatProvider)
@@ -85,7 +85,7 @@ namespace System
 
         public static int ToInt(object value)
         {
-            return value == null ? default(int) : ToInt(value.ToString());
+            return value == null ? default : ToInt(value.ToString());
         }
 
         public static int? ToNullableInt(object value)
@@ -98,20 +98,20 @@ namespace System
             return ToInt(value.ToString());
         }
 
-        public static Int64 ToInt64(string value)
+        public static long ToInt64(string value)
         {
-            var result = default(Int64);
-            Int64.TryParse(value, out result);
+            var result = default(long);
+            long.TryParse(value, out result);
 
             return result;
         }
 
-        public static Int64 ToInt64(object value)
+        public static long ToInt64(object value)
         {
-            return value == null ? default(Int64) : ToInt64(value.ToString());
+            return value == null ? default : ToInt64(value.ToString());
         }
 
-        public static Int64? ToNullableInt64(object value)
+        public static long? ToNullableInt64(object value)
         {
             if (ValueHelper.IsNullOrEmpty(value))
             {
@@ -135,7 +135,7 @@ namespace System
 
         public static decimal ToDecimal(object value)
         {
-            return value == null ? default(decimal) : ToDecimal(value.ToString());
+            return value == null ? default : ToDecimal(value.ToString());
         }
 
         public static decimal? ToNullableDecimal(object value)
@@ -154,7 +154,7 @@ namespace System
 
         public static double ToDouble(string value)
         {
-            double result = default(double);
+            double result = default;
             double.TryParse(value, out result);
 
             return result;
@@ -162,7 +162,7 @@ namespace System
 
         public static double ToDouble(object value)
         {
-            return value == null ? default(double) : ToDouble(value.ToString());
+            return value == null ? default : ToDouble(value.ToString());
         }
 
         public static double? ToNullableDouble(object value)
@@ -292,7 +292,7 @@ namespace System
 
         public static TimeSpan ToTimeSpan(object value)
         {
-            return value == null ? default(TimeSpan) : ToTimeSpan(value.ToString());
+            return value == null ? default : ToTimeSpan(value.ToString());
         }
 
         #endregion Convert to Timpspan
@@ -312,7 +312,7 @@ namespace System
             }
 
             var result = ToDate(value.ToString());
-            return result == default(DateTime) ? SqlDateTime.MinValue.Value : result;
+            return result == default ? SqlDateTime.MinValue.Value : result;
         }
 
         public static DateTime ToSqlMaxDate(object value)
@@ -323,7 +323,7 @@ namespace System
             }
 
             var result = ToDate(value.ToString());
-            return result == default(DateTime) ? SqlDateTime.MaxValue.Value : result;
+            return result == default ? SqlDateTime.MaxValue.Value : result;
         }
 
         #endregion Convert to SqlDateTime
@@ -361,7 +361,7 @@ namespace System
 
         public static string ToHtml(DataTable table)
         {
-            StringBuilder html = new StringBuilder();
+            StringBuilder html = new();
 
             html.Append("<table style='border-collapse: collapse;' border=1 >");
             html.Append("<tr>");
@@ -394,7 +394,7 @@ namespace System
 
         public static string ToHtmlTableVerticalHeader(DataTable table)
         {
-            StringBuilder html = new StringBuilder();
+            StringBuilder html = new();
 
             html.Append("<table style='border-collapse: collapse;' border=1 >");
             foreach (DataRow row in table.Rows)

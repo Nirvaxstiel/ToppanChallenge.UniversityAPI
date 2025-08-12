@@ -1,13 +1,15 @@
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using UniversityAPI.Controllers;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Service;
-using UniversityAPI.Tests.Shared.Fixtures;
-using UniversityAPI.Tests.Shared.Helpers;
-
 namespace UniversityAPI.Tests.UnitTests.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+    using Moq;
+    using UniversityAPI.Controllers;
+    using UniversityAPI.Framework.Model.Authentication.DTO;
+    using UniversityAPI.Framework.Model.User;
+    using UniversityAPI.Framework.Model.User.DTO;
+    using UniversityAPI.Service.Authentication.Interface;
+    using UniversityAPI.Tests.Shared.Fixtures;
+    using UniversityAPI.Tests.Shared.Helpers;
+
     public class AuthControllerTests : IClassFixture<UnitTestFixture>
     {
         private readonly UnitTestFixture fixture;
@@ -25,12 +27,7 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         public async Task Register_ValidData_ReturnsOkResult()
         {
             var strongPassword = TestPasswordGenerator.GeneratePassword(this.fixture.UserManager.Options.Password);
-            var registerDto = new RegisterDto
-            {
-                Username = "testuser",
-                Email = "test@example.com",
-                Password = strongPassword
-            };
+            var registerDto = new RegisterDto("testuser", "test@example.com", strongPassword);
 
             var result = await this.authController.Register(registerDto);
 
@@ -50,12 +47,7 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
             var existingUser = this.fixture.Context.Users.First();
             var strongPassword = TestPasswordGenerator.GeneratePassword(this.fixture.UserManager.Options.Password);
 
-            var registerDto = new RegisterDto
-            {
-                Username = "newuser", // Different username
-                Email = existingUser?.Email, // Duplicate email
-                Password = strongPassword
-            };
+            var registerDto = new RegisterDto("newuser", existingUser?.Email, strongPassword);
 
             var result = await this.authController.Register(registerDto);
 
@@ -71,12 +63,7 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
             var existingUser = this.fixture.Context.Users.First();
             var strongPassword = TestPasswordGenerator.GeneratePassword(this.fixture.UserManager.Options.Password);
 
-            var registerDto = new RegisterDto
-            {
-                Username = existingUser?.UserName, // Duplicate username
-                Email = "different@example.com",  // Different email
-                Password = strongPassword
-            };
+            var registerDto = new RegisterDto(existingUser?.UserName, "different@example.com", strongPassword);
 
             var result = await this.authController.Register(registerDto);
 
@@ -102,11 +89,7 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
             var createResult = await this.fixture.UserManager.CreateAsync(testUser, password);
             Assert.True(createResult.Succeeded, "Failed to create test user");
 
-            var loginDto = new LoginDto
-            {
-                Username = testUser.UserName,
-                Password = password
-            };
+            var loginDto = new LoginDto(testUser.UserName, password);
 
             this.mockTokenService.Setup(x => x.GenerateToken(It.IsAny<UserDM>()))
                 .ReturnsAsync("mock-jwt-token");
@@ -126,12 +109,7 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         public async Task Login_InvalidCredentials_ReturnsUnauthorized()
         {
             var strongPassword = TestPasswordGenerator.GeneratePassword(this.fixture.UserManager.Options.Password);
-            var loginDto = new LoginDto
-            {
-                Username = "nonexistent",
-                Password = strongPassword
-            };
-
+            var loginDto = new LoginDto("nonexistent", strongPassword);
             var result = await this.authController.Login(loginDto);
             Assert.IsType<ActionResult<AuthResponse>>(result);
             Assert.NotNull(result.Result);
@@ -142,11 +120,7 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         [Fact]
         public async Task Login_EmptyCredentials_ReturnsBadRequest()
         {
-            var loginDto = new LoginDto
-            {
-                Username = string.Empty,
-                Password = string.Empty
-            };
+            var loginDto = new LoginDto(string.Empty, string.Empty);
             TestModelValidator.ValidateModel(loginDto, this.authController);
             var result = await this.authController.Login(loginDto);
 
@@ -159,12 +133,7 @@ namespace UniversityAPI.Tests.UnitTests.Controllers
         [Fact]
         public async Task Register_EmptyData_ReturnsBadRequest()
         {
-            var registerDto = new RegisterDto
-            {
-                Username = string.Empty,
-                Email = string.Empty,
-                Password = string.Empty
-            };
+            var registerDto = new RegisterDto(string.Empty, string.Empty, string.Empty);
 
             TestModelValidator.ValidateModel(registerDto, this.authController);
 

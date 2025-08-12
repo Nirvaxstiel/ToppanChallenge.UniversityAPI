@@ -1,5 +1,8 @@
-﻿namespace System.Data
+﻿namespace UniversityAPI.Utility.Helpers.Extensions
 {
+    using System.Data;
+    using UniversityAPI.Utility.Helpers;
+
     public static class DataSetExtension
     {
         public static DataTable ToTable(this DataSet dataSet, int tableIndex)

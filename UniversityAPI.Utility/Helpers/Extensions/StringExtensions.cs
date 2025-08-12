@@ -1,12 +1,12 @@
-﻿using System.Data;
-
-namespace System.Text
+﻿namespace UniversityAPI.Utility.Helpers.Extensions
 {
+    using System.Data;
+
     public static class StringExtension
     {
         public static IEnumerable<int> AsInts(this string source)
         {
-            return AsInts(source, ',');
+            return source.AsInts(',');
         }
 
         public static IEnumerable<int> AsInts(this string source, char separator)
@@ -16,7 +16,7 @@ namespace System.Text
 
         public static IEnumerable<Guid> AsGuids(this string source)
         {
-            return AsGuids(source, ',');
+            return source.AsGuids(',');
         }
 
         public static IEnumerable<Guid> AsGuids(this string source, char separator)
@@ -34,7 +34,7 @@ namespace System.Text
 
         public static int ConvertToInt(string value)
         {
-            int result = default(int);
+            int result = default;
             int.TryParse(value, out result);
 
             return result;
@@ -44,7 +44,7 @@ namespace System.Text
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                return new string[] { };
+                return [];
             }
 
             value = value.Replace(";", ",").Replace("，", ",").Replace("；", ",");

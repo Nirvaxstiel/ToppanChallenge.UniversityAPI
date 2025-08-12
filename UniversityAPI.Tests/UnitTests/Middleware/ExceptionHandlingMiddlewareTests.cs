@@ -1,17 +1,18 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Moq;
-using System.Text.Json;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Middleware;
-using UniversityAPI.Tests.Shared.Models;
-using UniversityAPI.Utility;
-
 namespace UniversityAPI.Tests.UnitTests.Middleware
 {
+    using System.Text.Json;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.WebUtilities;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+    using UniversityAPI.Framework.Model;
+    using UniversityAPI.Framework.Model.Exception;
+    using UniversityAPI.Middleware;
+    using UniversityAPI.Tests.Shared.Models;
+    using UniversityAPI.Utility.Helpers;
+
     public class ExceptionHandlingMiddlewareTests
     {
         private readonly Mock<ILogger<ExceptionHandlingMiddleware>> mockLogger;
@@ -147,9 +148,9 @@ namespace UniversityAPI.Tests.UnitTests.Middleware
         {
             var testCases = new List<TestExceptionModel>
             {
-                new TestExceptionModel { Exception = new BadRequestError("Bad request"), ExpectedStatusCode = 400 },
-                new TestExceptionModel { Exception = new NotFoundError("Not found"), ExpectedStatusCode = 404 },
-                new TestExceptionModel { Exception = new ConflictError("Conflict"), ExpectedStatusCode = 409 }
+                new() { Exception = new BadRequestError("Bad request"), ExpectedStatusCode = 400 },
+                new() { Exception = new NotFoundError("Not found"), ExpectedStatusCode = 404 },
+                new() { Exception = new ConflictError("Conflict"), ExpectedStatusCode = 409 }
             };
 
             foreach (var testCase in testCases)

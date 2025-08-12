@@ -1,4 +1,4 @@
-﻿namespace UniversityAPI.Framework.Model
+﻿namespace UniversityAPI.Framework.Model.Exception
 {
     public class ApiException : System.Exception
     {
@@ -8,8 +8,8 @@
         public ApiException(string message, int statusCode, string? errorCode = null)
             : base(message)
         {
-            this.StatusCode = statusCode;
-            this.ErrorCode = errorCode;
+            StatusCode = statusCode;
+            ErrorCode = errorCode;
         }
 
         public ApiException() : base()

@@ -1,4 +1,4 @@
-﻿namespace UniversityAPI.Framework.Model
+﻿namespace UniversityAPI.Framework.Model.Authentication.DTO
 {
     public class AuthResponse
     {

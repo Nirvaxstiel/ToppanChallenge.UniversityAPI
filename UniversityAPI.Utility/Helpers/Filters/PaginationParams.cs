@@ -1,4 +1,4 @@
-﻿namespace UniversityAPI.Utility
+﻿namespace UniversityAPI.Utility.Helpers.Filters
 {
     public class PaginationParams
     {
@@ -9,8 +9,8 @@
 
         public int PageSize
         {
-            get => this.pageSize;
-            set => this.pageSize = value > MaxPageSize ? MaxPageSize : value;
+            get => pageSize;
+            set => pageSize = value > MaxPageSize ? MaxPageSize : value;
         }
     }
 }

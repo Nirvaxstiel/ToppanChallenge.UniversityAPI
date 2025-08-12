@@ -1,18 +1,18 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using UniversityAPI.Framework;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Tests.Shared.Helpers;
-using UniversityAPI.Utility;
-using UniversityAPI.Utility.Helpers;
-using UniversityAPI.Utility.Interfaces;
-
 namespace UniversityAPI.Tests.UnitTests.Shared
 {
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Microsoft.Data.Sqlite;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using UniversityAPI.Framework.Database;
+    using UniversityAPI.Framework.Model.User;
+    using UniversityAPI.Tests.Shared.Helpers;
+    using UniversityAPI.Utility;
+    using UniversityAPI.Utility.Helpers;
+    using UniversityAPI.Utility.Interfaces;
+
     public abstract class BaseUnitTestFixture : IDisposable
     {
         public ApplicationDbContext Context { get; }

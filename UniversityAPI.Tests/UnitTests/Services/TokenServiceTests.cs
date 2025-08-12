@@ -1,16 +1,17 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using Moq;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using UniversityAPI.Service;
-using UniversityAPI.Tests.Shared.Fixtures;
-using UniversityAPI.Utility;
-using UniversityAPI.Utility.Interfaces;
-
 namespace UniversityAPI.Tests.UnitTests.Services
 {
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using System.Text;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.IdentityModel.Tokens;
+    using Moq;
+    using UniversityAPI.Service.Authentication;
+    using UniversityAPI.Tests.Shared.Fixtures;
+    using UniversityAPI.Utility;
+    using UniversityAPI.Utility.Helpers;
+    using UniversityAPI.Utility.Interfaces;
+
     public class TokenServiceTests : IClassFixture<UnitTestFixture>
     {
         private readonly UnitTestFixture fixture;

@@ -1,9 +1,10 @@
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
 namespace UniversityAPI.Framework.Infrastructure.Transactions
 {
+    using Microsoft.AspNetCore.Mvc.Filters;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using UniversityAPI.Framework.Database;
+
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
     public class TransactionalAttribute(bool useTransaction = true) : Attribute, IAsyncActionFilter
     {

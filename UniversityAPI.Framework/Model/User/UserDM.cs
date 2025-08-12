@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace UniversityAPI.Framework.Model
+﻿namespace UniversityAPI.Framework.Model.User
 {
+    using Microsoft.AspNetCore.Identity;
+
     public class UserDM : IdentityUser
     {
         public virtual ICollection<UserBookmarkDM> BookmarkedUniversities { get; set; }

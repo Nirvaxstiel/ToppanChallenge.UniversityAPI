@@ -1,5 +1,8 @@
-﻿namespace System.Collections
+﻿namespace UniversityAPI.Utility.Helpers
 {
+    using System.Collections;
+    using UniversityAPI.Utility.Helpers.Extensions;
+
     public class HashtableHelper
     {
         public static void TryAdd<TKey>(Hashtable hashtable, TKey key, object value)
@@ -30,16 +33,18 @@
             hashtable.Add(key, value);
         }
 
-        public static T GetValue<T>(Hashtable hashtable, Guid key) where T : class
+        public static T GetValue<T>(Hashtable hashtable, Guid key)
+            where T : class
         {
             return GetValue<T>(hashtable, key.ToString());
         }
 
-        public static T GetValue<T>(Hashtable hashtable, string key) where T : class
+        public static T GetValue<T>(Hashtable hashtable, string key)
+            where T : class
         {
             if (string.IsNullOrEmpty(key) || hashtable.ContainsKey(key) == false)
             {
-                return default(T);
+                return default;
             }
 
             return hashtable[key] as T;
@@ -47,7 +52,7 @@
 
         public static Hashtable ToHashtable<T>(IEnumerable<T> items, Func<T, Guid> keySelector)
         {
-            return ToHashtable<T>(items, it => keySelector(it).ToString());
+            return ToHashtable(items, it => keySelector(it).ToString());
         }
 
         public static Hashtable ToHashtable<T>(IEnumerable<T> items, Func<T, string> keySelector)
@@ -65,7 +70,7 @@
 
         public static Hashtable GetHashtable<TModel>(IEnumerable<TModel> items, Func<TModel, string> func)
         {
-            Hashtable hashtable = new Hashtable();
+            Hashtable hashtable = new();
             items.Each(item => TryAdd(hashtable, func(item), item));
 
             return hashtable;
@@ -111,12 +116,12 @@
 
         public static void AddHashItem<T>(Hashtable hashtable, int key, T item)
         {
-            AddHashItem<T>(hashtable, key.ToString(), item);
+            AddHashItem(hashtable, key.ToString(), item);
         }
 
         public static void AddHashItems<T>(Hashtable hashtable, int key, IEnumerable<T> items)
         {
-            AddHashItems<T>(hashtable, key.ToString(), items);
+            AddHashItems(hashtable, key.ToString(), items);
         }
 
         public static void AddHashItem<T>(Hashtable hashtable, string key, T item)
@@ -154,14 +159,14 @@
     {
         public string Key { get; private set; }
 
-        public int Count => this.Items.Count;
+        public int Count => Items.Count;
 
         /// <summary>
         ///
         /// </summary>
         public bool IsList { get; private set; }
 
-        public bool HasValue => ValueHelper.IsNullOrEmpty(this.Items) == false;
+        public bool HasValue => ValueHelper.IsNullOrEmpty(Items) == false;
 
         /// <summary>
         ///
@@ -179,14 +184,14 @@
         /// <param name="item"></param>
         public HashItem(string key, T item)
         {
-            this.Key = key;
-            this.Add(item);
+            Key = key;
+            Add(item);
         }
 
         public HashItem(string key, IEnumerable<T> items)
         {
-            this.Key = key;
-            items.Each(item => this.Add(item));
+            Key = key;
+            items.Each(item => Add(item));
         }
 
         /// <summary>
@@ -195,16 +200,16 @@
         /// <param name="item"></param>
         public void Add(T item)
         {
-            if (this.Items == null)
+            if (Items == null)
             {
-                this.IsList = false;
-                this.First = item;
-                this.Items = new List<T>() { item };
+                IsList = false;
+                First = item;
+                Items = new List<T>() { item };
             }
             else
             {
-                this.IsList = true;
-                this.Items.Add(item);
+                IsList = true;
+                Items.Add(item);
             }
         }
     }

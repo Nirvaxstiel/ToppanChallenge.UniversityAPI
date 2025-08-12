@@ -1,29 +1,26 @@
-using System.Net;
-using System.Text;
-using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using UniversityAPI.Framework;
-using UniversityAPI.Framework.Model;
-using UniversityAPI.Tests.Shared.Fixtures;
-using UniversityAPI.Tests.Shared.Models;
-using UniversityAPI.Utility;
-
 namespace UniversityAPI.Tests.SecurityTests
 {
+    using System.Net;
+    using System.Text;
+    using System.Text.Json;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
+    using UniversityAPI.Framework.Database;
+    using UniversityAPI.Framework.Model.University.DTO;
+    using UniversityAPI.Framework.Model.User;
+    using UniversityAPI.Tests.Shared.Fixtures;
+    using UniversityAPI.Tests.Shared.Models;
+    using UniversityAPI.Utility.Helpers;
+
     public class UniversityInputValidationTests(UniversityInputValidationTestApplicationFactory factory) : IClassFixture<UniversityInputValidationTestApplicationFactory>
     {
         private readonly UniversityInputValidationTestApplicationFactory factory = factory;
+        private readonly JsonSerializerOptions jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
         [Fact]
         public async Task CreateUniversity_EmptyName_ReturnsBadRequest()
         {
-            var createDto = new CreateUniversityDto
-            {
-                Name = string.Empty,
-                Country = $"Test Country {Guid.NewGuid()}",
-                Webpage = "https://test.edu"
-            };
+            var createDto = new CreateUniversityDto(Guid.NewGuid(), string.Empty, $"Test Country {Guid.NewGuid()}", "https://test.edu");
 
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -37,12 +34,7 @@ namespace UniversityAPI.Tests.SecurityTests
         [Fact]
         public async Task CreateUniversity_NullName_ReturnsBadRequest()
         {
-            var createDto = new CreateUniversityDto
-            {
-                Name = null,
-                Country = $"Test Country {Guid.NewGuid()}",
-                Webpage = "https://test.edu"
-            };
+            var createDto = new CreateUniversityDto(Guid.NewGuid(), null, $"Test Country {Guid.NewGuid()}", "https://test.edu");
 
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -56,12 +48,7 @@ namespace UniversityAPI.Tests.SecurityTests
         [Fact]
         public async Task CreateUniversity_InvalidWebpageUrl_ReturnsBadRequest()
         {
-            var createDto = new CreateUniversityDto
-            {
-                Name = "Test University",
-                Country = $"Test Country {Guid.NewGuid()}",
-                Webpage = "not-a-valid-url"
-            };
+            var createDto = new CreateUniversityDto(Guid.NewGuid(), "Test University", $"Test Country {Guid.NewGuid()}", "not-a-valid-url");
 
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -75,12 +62,7 @@ namespace UniversityAPI.Tests.SecurityTests
         [Fact]
         public async Task CreateUniversity_ExtremelyLongName_ReturnsBadRequest()
         {
-            var createDto = new CreateUniversityDto
-            {
-                Name = new string('A', 1001), // Assuming max length is 1000
-                Country = $"Test Country {Guid.NewGuid()}",
-                Webpage = "https://test.edu"
-            };
+            var createDto = new CreateUniversityDto(Guid.NewGuid(), new string('A', 1001), $"Test Country {Guid.NewGuid()}", "https://test.edu");
 
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -99,10 +81,7 @@ namespace UniversityAPI.Tests.SecurityTests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             var json = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<PagedResult<UniversityDto>>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
+            var result = JsonSerializer.Deserialize<PagedResult<UniversityDto>>(json, jsonSerializerOptions);
 
             Assert.IsType<PagedResult<UniversityDto>>(result);
             Assert.Empty(result.Items);
@@ -111,12 +90,7 @@ namespace UniversityAPI.Tests.SecurityTests
         [Fact]
         public async Task CreateUniversity_SqlInjectionAttempt_ReturnsBadRequest()
         {
-            var createDto = new CreateUniversityDto
-            {
-                Name = "'; DROP TABLE Universities; --",
-                Country = $"Test Country {Guid.NewGuid()}",
-                Webpage = "https://test.edu"
-            };
+            var createDto = new CreateUniversityDto(Guid.NewGuid(), "'; DROP TABLE Universities; --", $"Test Country {Guid.NewGuid()}", "https://test.edu");
 
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -140,12 +114,7 @@ namespace UniversityAPI.Tests.SecurityTests
         [Fact]
         public async Task UpdateUniversity_InvalidIdFormat_ReturnsBadRequest()
         {
-            var updateDto = new UpdateUniversityDto
-            {
-                Name = "Updated Name",
-                Country = "Updated Country",
-                Webpage = "https://updated.edu"
-            };
+            var updateDto = new UpdateUniversityDto("Updated Name", "Updated Country", "https://updated.edu");
 
             var json = JsonSerializer.Serialize(updateDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -169,12 +138,7 @@ namespace UniversityAPI.Tests.SecurityTests
         public async Task CreateUniversity_EmptyCountry_ReturnsBadRequest()
         {
             var client = this.CreateAuthenticatedClient(role: TestRoleTypes.Admin);
-            var createDto = new CreateUniversityDto
-            {
-                Name = "Test University",
-                Country = "",
-                Webpage = "https://test.edu"
-            };
+            var createDto = new CreateUniversityDto(Guid.NewGuid(), "Test University", "", "https://test.edu");
 
             var json = JsonSerializer.Serialize(createDto);
             var content = new StringContent(json, Encoding.UTF8, "application/json");

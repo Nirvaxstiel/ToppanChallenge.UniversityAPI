@@ -1,12 +1,12 @@
-﻿using System.Collections.Concurrent;
-using System.Diagnostics.Contracts;
-using System.Reflection;
-
-namespace System
+﻿namespace UniversityAPI.Utility.Helpers
 {
+    using System.Collections.Concurrent;
+    using System.Diagnostics.Contracts;
+    using System.Reflection;
+
     public class PropertyHelper
     {
-        private static ConcurrentDictionary<Type, PropertyHelper[]> reflectionCache = new ConcurrentDictionary<Type, PropertyHelper[]>();
+        private static ConcurrentDictionary<Type, PropertyHelper[]> reflectionCache = new();
 
         private Func<object, object> valueGetter;
 
@@ -14,9 +14,9 @@ namespace System
         {
             Contract.Assert(property != null);
 
-            this.Name = property.Name;
-            this.Type = property.PropertyType;
-            this.valueGetter = MakeFastPropertyGetter(property);
+            Name = property.Name;
+            Type = property.PropertyType;
+            valueGetter = MakeFastPropertyGetter(property);
         }
 
         /// <summary>
@@ -59,9 +59,9 @@ namespace System
 
         public object GetValue(object instance)
         {
-            Contract.Assert(this.valueGetter != null, "Must call Initialize before using this object");
+            Contract.Assert(valueGetter != null, "Must call Initialize before using this object");
 
-            return this.valueGetter(instance);
+            return valueGetter(instance);
         }
 
         /// <summary>

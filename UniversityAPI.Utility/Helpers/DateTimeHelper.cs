@@ -1,7 +1,7 @@
-﻿using System.Globalization;
-
-namespace System
+﻿namespace UniversityAPI.Utility.Helpers
 {
+    using System.Globalization;
+
     public sealed class DateTimeHelper
     {
         public static IList<Week> GetWeeks(DateTime from, DateTime to, CalendarWeekRule rule, DayOfWeek firstDayOfWeek)

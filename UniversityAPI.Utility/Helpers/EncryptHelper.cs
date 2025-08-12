@@ -1,14 +1,14 @@
-﻿using Jose;
-using Jose.keys;
-using System.Text;
-using UniversityAPI.Utility;
-using UniversityAPI.Utility.Interfaces;
-
-namespace System.Security.Cryptography
+﻿namespace UniversityAPI.Utility.Helpers
 {
+    using System.Security.Cryptography;
+    using System.Text;
+    using Jose;
+    using Jose.keys;
+    using UniversityAPI.Utility.Interfaces;
+
     public sealed class EncryptHelper
     {
-        private static byte[] bytes = ASCIIEncoding.ASCII.GetBytes("ZeroCool");
+        private static byte[] bytes = Encoding.ASCII.GetBytes("ZeroCool");
         private static string? fingerprint;
         private static bool isFIPSEnabled;
         private static IConfigHelper? configHelper;
@@ -29,7 +29,7 @@ namespace System.Security.Cryptography
                 return EncryptBySha256(plainText);
             }
 
-            using (MD5CryptoServiceProvider md5Provider = new MD5CryptoServiceProvider())
+            using (MD5CryptoServiceProvider md5Provider = new())
             {
                 byte[] hashedData = md5Provider.ComputeHash(Encoding.UTF8.GetBytes(plainText));
 
@@ -203,7 +203,7 @@ namespace System.Security.Cryptography
                 return string.Empty;
             }
 
-            using (var sha256 = SHA256Managed.Create())
+            using (var sha256 = SHA256.Create())
             {
                 byte[] plainTextBytes = Encoding.Default.GetBytes(plainText);
                 byte[] hashBytes = sha256.ComputeHash(plainTextBytes);
@@ -220,7 +220,7 @@ namespace System.Security.Cryptography
 
         public static string EncryptBySha512(string plainText)
         {
-            using (var sha512 = SHA512Managed.Create())
+            using (var sha512 = SHA512.Create())
             {
                 byte[] plainTextBytes = Encoding.Default.GetBytes(plainText);
                 byte[] hashBytes = sha512.ComputeHash(plainTextBytes);
@@ -237,7 +237,7 @@ namespace System.Security.Cryptography
 
         public static string EncryptByDes(string originalString)
         {
-            if (String.IsNullOrEmpty(originalString))
+            if (string.IsNullOrEmpty(originalString))
             {
                 throw new ArgumentNullException("The string which needs to be encrypted cannot be null.");
             }
@@ -257,7 +257,7 @@ namespace System.Security.Cryptography
 
         public static string DecryptByDes(string cryptedString)
         {
-            if (String.IsNullOrEmpty(cryptedString))
+            if (string.IsNullOrEmpty(cryptedString))
             {
                 throw new ArgumentNullException("The string which needs to be encrypted cannot be null.");
             }
@@ -317,7 +317,7 @@ namespace System.Security.Cryptography
 
         private static AesCryptoServiceProvider GetAesCryptoProvider(string key, string iv, int keySize = 128)
         {
-            AesCryptoServiceProvider aesAlg = new AesCryptoServiceProvider();
+            AesCryptoServiceProvider aesAlg = new();
 
             aesAlg.Mode = CipherMode.CBC;
             aesAlg.Padding = PaddingMode.PKCS7;
@@ -384,11 +384,11 @@ namespace System.Security.Cryptography
         public static byte[] EncryptByAesCbcSalt(byte[] bytesToBeEncrypted, byte[] passwordBytes)
         {
             byte[] encryptedBytes = null;
-            byte[] saltBytes = new byte[] { 2, 4, 6, 8, 1, 3, 5, 7 };
+            byte[] saltBytes = [2, 4, 6, 8, 1, 3, 5, 7];
 
-            using (MemoryStream ms = new MemoryStream())
+            using (MemoryStream ms = new())
             {
-                using (RijndaelManaged AES = new RijndaelManaged())
+                using (RijndaelManaged AES = new())
                 {
                     AES.KeySize = 256;
                     AES.BlockSize = 128;
@@ -427,11 +427,11 @@ namespace System.Security.Cryptography
         public static byte[] DecryptByAesCbcSalt(byte[] bytesToBeDecrypted, byte[] passwordBytes)
         {
             byte[] decryptedBytes = null;
-            byte[] saltBytes = new byte[] { 2, 4, 6, 8, 1, 3, 5, 7 };
+            byte[] saltBytes = [2, 4, 6, 8, 1, 3, 5, 7];
 
-            using (MemoryStream ms = new MemoryStream())
+            using (MemoryStream ms = new())
             {
-                using (RijndaelManaged AES = new RijndaelManaged())
+                using (RijndaelManaged AES = new())
                 {
                     AES.KeySize = 256;
                     AES.BlockSize = 128;
