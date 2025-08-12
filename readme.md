@@ -111,16 +111,6 @@ Download the collection:
 
 ---
 
-## 🧪 Test Execution Notes
-
-> ✅ Full test automation and parallel execution coming soon.
-
-- For now, run tests **folder-by-folder** to isolate errors and ensure individual success.
-- You can use `dotnet test` in specific test folders to target subgroups.
-- Later, I'll enable parallelization via `xunit.runner.json` and CI support.
-
----
-
 ## 📦 Package Installation
 
 > Run one of the following methods depending on your scenario.
